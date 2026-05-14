@@ -1,0 +1,292 @@
+% Supplementary B — Conference paper §II (Method)
+% Full mathematical derivations and pseudocode for the canonical fit,
+% the band-mask sweep, paired ARI, and the Hungarian alignment.
+
+\documentclass[11pt,a4paper]{article}
+\input{../preamble.tex}
+
+\title{Supplementary B --- Full mathematical derivations\\
+{\large Companion to: \emph{A Band-Mask Robustness Diagnostic for LDA on HSI}}}
+\author{Felipe Santib\'a\~nez-Leal}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope}
+This supplement expands Section~II of the conference paper. We
+provide (a)~the full generative model of LDA on HSI documents,
+(b)~the variational lower bound minimised by online VB,
+(c)~the analytic form of the chance-corrected
+adjusted Rand index used as paired-ARI, (d)~the bipartite-matching
+formulation of the Hungarian alignment, and (e)~the full pseudocode
+of the diagnostic.
+
+\section{LDA on band-frequency HSI documents}
+
+\subsection{Tokenisation}
+
+Let $\mathbf{x}_d \in \R_+^B$ be a pixel spectrum on $B$ bands. The
+canonical V1 tokenisation min-max-normalises across bands and
+quantises each band reflectance into $Q+1 = 13$ levels:
+\begin{align}
+\tilde{x}_{d,b}
+&= \frac{x_{d,b} - \min_{b'} x_{d,b'}}{\max_{b'} x_{d,b'} - \min_{b'} x_{d,b'}}
+\in [0, 1],
+\\
+c_{d,b}
+&= \lfloor Q \cdot \tilde{x}_{d,b} \rfloor
+\in \{0, 1, \ldots, Q\}.
+\end{align}
+The document $d$ is represented as the integer count vector
+$\mathbf{c}_d = (c_{d,0}, \ldots, c_{d,B-1})$, treating each band
+index $b$ as a vocabulary item and $c_{d,b}$ as the number of times
+the band-token appeared in the document. The token vocabulary has
+size $V = B$ (one token per band) and the document length is
+$N_d = \sum_b c_{d,b}$.
+
+\subsection{Generative model}
+
+The standard LDA generative process~\cite{blei2003lda} applies
+verbatim to the band-frequency corpus. For $K$ topics and a vocabulary
+of size $V$, with hyperparameters $\alpha > 0, \eta > 0$:
+\begin{align}
+\phi_k &\sim \mathrm{Dirichlet}(\eta \mathbf{1}_V),
+\quad k = 1, \ldots, K,
+\\
+\theta_d &\sim \mathrm{Dirichlet}(\alpha \mathbf{1}_K),
+\quad d = 1, \ldots, D,
+\\
+z_{d,n} &\sim \mathrm{Categorical}(\theta_d),
+\quad n = 1, \ldots, N_d,
+\\
+w_{d,n} &\sim \mathrm{Categorical}(\phi_{z_{d,n}}).
+\end{align}
+The joint posterior $p(\theta, \phi, z \mid w, \alpha, \eta)$ is
+intractable; we approximate it with the online variational Bayes
+inference of Hoffman, Blei, and Bach~\cite{hoffman2010online}.
+
+\subsection{Online VB lower bound}
+
+Let $q(\theta_d, z_d) = q(\theta_d \mid \gamma_d) \prod_n q(z_{d,n}
+\mid \lambda_{d,n})$ be the document-local variational distribution
+and $q(\phi_k) = q(\phi_k \mid \beta_k)$ the topic-word distribution.
+The evidence lower bound (ELBO) on document $d$ is
+\begin{align}
+\mathcal{L}_d(\gamma_d, \lambda_d, \beta)
+&= \E_q[\log p(w_d, z_d, \theta_d, \phi)]
+\nonumber\\
+&\quad - \E_q[\log q(z_d, \theta_d, \phi)],
+\end{align}
+which after expansion and use of the digamma identity
+$\E_{\mathrm{Dirichlet}}[\log \pi_k]
+= \psi(\alpha_k) - \psi(\sum_{k'} \alpha_{k'})$ takes the form
+\begin{align}
+\mathcal{L}_d
+&= \sum_{n=1}^{N_d} \sum_{k=1}^{K}
+  \lambda_{d,n,k} \big[
+    \psi(\gamma_{d,k}) - \psi(\textstyle\sum_{k'} \gamma_{d,k'})
+\nonumber\\
+&\hspace{2.5em} + \psi(\beta_{k, w_{d,n}})
+   - \psi(\textstyle\sum_v \beta_{k,v})
+  \big]
+\nonumber\\
+&\quad - \sum_{n,k} \lambda_{d,n,k} \log \lambda_{d,n,k}
++ C(\alpha, \eta, \gamma_d, \beta).
+\label{eq:elbo}
+\end{align}
+Maximisation w.r.t.\ $\lambda$ yields
+\begin{equation}
+\lambda_{d,n,k}^* \propto
+\exp\!\left[
+  \psi(\gamma_{d,k}) + \psi(\beta_{k, w_{d,n}})
+  - \psi(\textstyle\sum_v \beta_{k,v})
+\right].
+\label{eq:lambda-update}
+\end{equation}
+Maximisation w.r.t.\ $\gamma$ yields
+\begin{equation}
+\gamma_{d,k}^* = \alpha + \sum_n \lambda_{d,n,k}^*.
+\label{eq:gamma-update}
+\end{equation}
+The global $\beta$ is updated via natural-gradient ascent on the
+stochastic mini-batch ELBO with the learning-rate schedule
+$\rho_t = (\tau_0 + t)^{-\kappa}$, $\tau_0 = 10, \kappa = 0.7$,
+mini-batch size $128$, $T_{\max} = 60$ passes over the corpus.
+
+\subsection{Posterior summaries used in the diagnostic}
+
+After convergence we extract:
+\begin{align}
+\phi_{k,b} &= \frac{\beta_{k,b}}{\sum_{v} \beta_{k,v}},
+&& \text{topic-word distributions,}
+\\
+\theta_{d,k} &= \frac{\gamma_{d,k}}{\sum_{k'} \gamma_{d,k'}},
+&& \text{per-document topic posterior,}
+\\
+z_d &= \arg\max_k \theta_{d,k},
+&& \text{dominant topic per document.}
+\end{align}
+
+\section{Band-mask sweep}
+
+\subsection{Mask specification}
+
+A band mask is a function $m : \{0, \ldots, B-1\} \to \{0, 1\}$ with
+$m(b) = 1$ if band $b$ is retained. The masked document-term matrix
+restricts the count vector accordingly: $\mathbf{c}_d^{(m)}
+= (c_{d,b})_{b : m(b) = 1}$. The masked vocabulary size is
+$V^{(m)} = |\{b : m(b) = 1\}|$.
+
+The four canonical masks of the diagnostic are:
+\begin{align}
+m_{\text{vnir}}(b) &= \mathbf{1}[\lambda_b \in [400, 1100]\,\mathrm{nm}],
+\\
+m_{\text{swir}}(b) &= \mathbf{1}[\lambda_b \in [1100, 2500]\,\mathrm{nm}],
+\\
+m_{\text{nw}}(b) &= 1 - \mathbf{1}[\lambda_b \in W],
+\\
+m_{\text{f50}}(b) &= \mathbf{1}[b \in \mathrm{TopK}_{50}(F)],
+\end{align}
+where $W = [1350, 1430] \cup [1800, 1950] \cup [2480, 2500]$ nm and
+$F_b$ is the per-band Fisher discriminant ratio
+\begin{equation}
+F_b = \frac{\sum_\ell n_\ell (\mu_{b,\ell} - \mu_b)^2}
+            {\sum_\ell n_\ell \sigma_{b,\ell}^2}
+\label{eq:fisher}
+\end{equation}
+with $\mu_{b,\ell}, \sigma_{b,\ell}$ the per-class mean and standard
+deviation of reflectance at band $b$ for class $\ell$, computed on
+the \emph{unmasked} spectrum.
+
+\subsection{Masked refit}
+
+For each $m$ we refit the LDA model with the same $K, \alpha, \eta,
+T_{\max}, \mathrm{seed}$ as the canonical fit but using the restricted
+document-term matrix. This yields $\phi^{(m)}, \theta^{(m)}$, and a
+masked dominant-topic map $z^{(m)}_d$.
+
+\section{Paired adjusted Rand index}
+
+\begin{definition}[Adjusted Rand index]
+Let $U = \{U_1, \ldots, U_K\}$ and $V = \{V_1, \ldots, V_{K'}\}$ be
+two partitions of the same set $\mathcal{S}$. Let $n_{kj} = |U_k
+\cap V_j|$, $n_k = |U_k|$, $n_j = |V_j|$, $n = |\mathcal{S}|$. The
+Rand index is
+$
+R = (a + b)/\binom{n}{2}
+$
+where $a$ counts pairs in the same cluster under both $U$ and $V$
+and $b$ counts pairs in different clusters under both. The adjusted
+Rand index corrects for chance via the standard form
+\begin{align}
+\ari(U, V)
+&= \frac{\sum_{k,j} \binom{n_{kj}}{2}
+       - \big[\sum_k \binom{n_k}{2} \sum_j \binom{n_j}{2}\big]/\binom{n}{2}}
+       {\tfrac{1}{2}\big[\sum_k \binom{n_k}{2} + \sum_j \binom{n_j}{2}\big]
+       - \big[\sum_k \binom{n_k}{2} \sum_j \binom{n_j}{2}\big]/\binom{n}{2}}.
+\nonumber
+\end{align}
+\end{definition}
+
+The paired-ARI in the diagnostic is
+\begin{equation}
+\ari_{\text{paired}}(m) = \ari\!\left(
+  \{z_d\}_{d \in \mathcal{S}}, \{z^{(m)}_d\}_{d \in \mathcal{S}}
+\right),
+\end{equation}
+with $\mathcal{S}$ the set of pixels labelled in both the canonical
+and masked dominant-topic maps (sentinel 255 excluded).
+
+\section{Hungarian topic-id alignment}
+
+ARI is invariant under topic-id permutations of $V$, so it summarises
+how much agreement exists but not which masked topic corresponds to
+which canonical topic. We recover the correspondence by solving the
+maximum-weight bipartite matching on the confusion matrix.
+
+\begin{definition}[Confusion matrix]
+$C \in \mathbb{Z}_{\ge 0}^{K \times K^{(m)}}$ with
+$C_{k,j} = |\{d \in \mathcal{S} : z_d = k \wedge z^{(m)}_d = j\}|$.
+\end{definition}
+
+\begin{definition}[Hungarian permutation]
+$\sigma^* : \{0, \ldots, K-1\} \to \{0, \ldots, K^{(m)}-1\}$ is the
+solution of the linear-assignment problem
+\begin{equation}
+\sigma^* = \arg\max_{\sigma}
+\sum_{k=0}^{K-1} C_{k, \sigma(k)},
+\end{equation}
+computed in $O(K^3)$ time by the Hungarian
+algorithm~\cite{kuhn1955hungarian}, as implemented in
+\texttt{scipy.optimize.linear\_sum\_assignment}
+\cite{scipy_assignment,virtanen2020scipy}.
+\end{definition}
+
+The swap rate under alignment is
+\begin{equation}
+\mathrm{swap\_rate}(m) =
+\frac{1}{|\mathcal{S}|} \sum_{d \in \mathcal{S}}
+\mathbf{1}[z^{(m)}_d \neq \sigma^*(z_d)],
+\end{equation}
+the fraction of pixels whose dominant topic still changes after the
+masked topic ids have been relabelled to maximise diagonal mass.
+
+\begin{proposition}[Relationship between paired ARI and swap rate]
+Under the canonical $K = K^{(m)}$ assumption, a paired ARI of 1
+corresponds to swap rate 0, and vice versa. For
+$\ari_{\text{paired}}(m) < 1$ the swap rate strictly bounds the
+disagreement in pixel labels under the best permutation; ARI in
+addition adjusts for the chance baseline given the marginal cluster
+sizes.
+\end{proposition}
+
+\section{Diagnostic pseudocode}
+
+\begin{algorithm}
+\caption{Band-mask robustness diagnostic}\label{alg:diag}
+\begin{algorithmic}[1]
+\Require Pixel spectra $\mathbf{X} \in \R^{D \times B}$, ground-truth
+labels $\mathbf{y} \in \mathbb{Z}^D$, wavelengths $\boldsymbol{\lambda}
+\in \R^B$.
+\State $\mathbf{C} \gets \text{Tokenise}(\mathbf{X}; Q=12)$
+\Comment{$D \times B$ counts}
+\State $\theta, \phi \gets \text{OnlineVB-LDA}(\mathbf{C}; K, \alpha,
+\eta, T_{\max}, \mathrm{seed})$
+\State $z_d \gets \arg\max_k \theta_{d,k}$ for $d = 1, \ldots, D$
+\Comment{canonical map}
+\State Compute Fisher rank $F$ via Eq.~\ref{eq:fisher}.
+\For{$m \in \{\text{vnir}, \text{swir}, \text{nw}, \text{f50}\}$}
+  \State $\mathbf{C}^{(m)} \gets$ retain columns of $\mathbf{C}$
+  satisfying $m(b) = 1$
+  \If{$V^{(m)} < 8$} \State \textbf{continue}
+  \Comment{auto-skip Pavia U $\times$ SWIR}
+  \EndIf
+  \State $\theta^{(m)}, \phi^{(m)} \gets \text{OnlineVB-LDA}
+  (\mathbf{C}^{(m)}; K, \alpha, \eta, T_{\max}, \mathrm{seed})$
+  \State $z^{(m)}_d \gets \arg\max_k \theta^{(m)}_{d,k}$
+  \State $\mathcal{S} \gets \{d : z_d \ne 255 \wedge z^{(m)}_d \ne 255\}$
+  \State $\ari_{\text{p}}(m) \gets \ari(\{z_d\}_\mathcal{S},
+  \{z^{(m)}_d\}_\mathcal{S})$
+  \State Build $C \in \mathbb{Z}^{K \times K}$ from $\mathcal{S}$.
+  \State $\sigma^*(m) \gets$ \textsc{LinearSumAssignment}$(-C)$
+  \State $\mathrm{swap}(m) \gets |\mathcal{S}|^{-1}
+  \sum_\mathcal{S} \mathbf{1}[z^{(m)}_d \ne \sigma^*(z_d)]$
+\EndFor
+\State \Return $\{\ari_{\text{p}}(m), \sigma^*(m), \mathrm{swap}(m)\}_m$
+\end{algorithmic}
+\end{algorithm}
+
+\section{Numerical complexity}
+
+Per (scene, mask) tuple: one OnlineVB-LDA fit at $O(T_{\max} \cdot D
+\cdot V^{(m)} \cdot K)$, one $K \times K^{(m)}$ confusion-matrix
+construction at $O(|\mathcal{S}|)$, one Hungarian assignment at
+$O(K^3)$. On the largest labelled scene (Salinas, $D = 3520, K = 12,
+V = 204$, $T_{\max} = 60$) the canonical-vs-masked diagnostic
+completes in \textasciitilde~12 seconds on a single CPU core.
+
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+
+\end{document}
