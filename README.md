@@ -39,6 +39,13 @@ CAOS_LDA_HSI_Paper/
 │   ├── figures/                   SVG/PDF figures
 │   ├── word/                      .docx (Pandoc-converted)
 │   └── build/                     PDF output (gitignored)
+├── supplementary/               Per-chapter supplementary material
+│   ├── conference/                5 supplements A..E (one per
+│   │                              conference §)
+│   ├── journal/                   7 supplements A..G (one per
+│   │                              journal §)
+│   ├── build/                     supplement PDFs (gitignored)
+│   └── word/                      supplement DOCX (gitignored)
 ├── bibliography/                Shared .bib file + validation notes
 ├── venues/                      Venue research (conferences + journals)
 ├── templates/                   IEEEtran reference templates
@@ -48,9 +55,9 @@ CAOS_LDA_HSI_Paper/
 ├── data/                        Manuscript-specific extracted data
 │                                (small enough to commit; e.g. CSVs
 │                                of paired ARI numbers, etc.)
-└── figures/source/              SVG sources hand-drawn for the paper
-                                  (vs figures derived from data,
-                                  which live next to each manuscript)
+└── figures/                     9 deterministic figures + builders
+    └── source/                  Python builders driven from
+                                  CAOS_LDA_HSI/data/derived/
 ```
 
 ## Branch flow

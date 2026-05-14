@@ -40,6 +40,11 @@
 # explicitly exclude paper-level PDFs that may sit next to .tex)
 conference/tex/main.pdf
 journal/tex/main.pdf
+supplementary/conference/*.pdf
+supplementary/journal/*.pdf
+
+# Supplementary Word output (regenerable via build-supplements scripts)
+supplementary/word/
 
 # Reference templates downloaded archives
 templates/*.zip
