@@ -34,11 +34,16 @@ Total: **37 entries**.
 
 ## Open verification tasks before submission
 
-- `escalante2018hidsag` is marked as a **placeholder** — the
-  canonical HIDSAG dataset descriptor needs to be located and
-  cited correctly before either manuscript ships. The HIDSAG
-  database is referenced through `data/derived/core/hidsag_curated_subset.json`
-  in the companion code repo; the published dataset descriptor will
-  determine the proper citation form.
+- `hidsag_database` (previously `escalante2018hidsag`) is now a
+  `@misc` dataset-descriptor entry that cites the HIDSAG database
+  as a resource rather than a specific publication. If a canonical
+  published descriptor exists (DOI / journal article / conference
+  proceedings), replace this entry with the verified citation
+  before the journal submission. The HIDSAG curated subset that
+  the project actually consumes is documented in
+  `data/derived/core/hidsag_curated_subset.json` of the companion
+  code repository; all numerical HIDSAG results in the manuscripts
+  are read directly from public derived artefacts and do not
+  depend on the specific bibliographic form of this entry.
 - Cross-check IF figures cited in `venues/venue-research.md`
   against the latest JCR.
