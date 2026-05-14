@@ -1,0 +1,46 @@
+# LaTeX build artifacts
+**/build/
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.bcf
+*.run.xml
+*-blx.bib
+*.brf
+*.idx
+*.ind
+*.ilg
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.ist
+*.nav
+*.snm
+
+# Editor temp
+.DS_Store
+*.swp
+*.swo
+~$*
+*.tmp
+
+# Pandoc temp
+*.pandoc-aux
+
+# Generated PDFs (live in build/ already gitignored above, but
+# explicitly exclude paper-level PDFs that may sit next to .tex)
+conference/tex/main.pdf
+journal/tex/main.pdf
+
+# Reference templates downloaded archives
+templates/*.zip
+templates/*.tar.gz
