@@ -31,6 +31,7 @@ Companion to `journal/tex/main.tex` (IEEE TGRS target, ~20-25 pages):
 | E | §V Experimental setup | Full dataset descriptors incl. HIDSAG depth | `build/journal_suppl_E_datasets.pdf` |
 | F | §VI Results | Extended per-axis results across 6 scenes + 5 HIDSAG subsets | `build/journal_suppl_F_extended_results.pdf` |
 | G | §VII Discussion | Limitations + threats to validity + 2nd-paper redesign notes | `build/journal_suppl_G_limitations.pdf` |
+| H | cross-section visual annex | Topic spectra: do different topics have different basis spectra? (4 dedicated figures) | `build/journal_suppl_H_topic_spectra.pdf` |
 
 ## Layout
 
@@ -51,7 +52,8 @@ supplementary/
 │   ├── suppl_D_mathematical_derivations.tex
 │   ├── suppl_E_datasets.tex
 │   ├── suppl_F_extended_results.tex
-│   └── suppl_G_limitations.tex
+│   ├── suppl_G_limitations.tex
+│   └── suppl_H_topic_spectra.tex
 ├── build/             (PDFs, gitignored except for the latest set)
 └── word/              (DOCX conversions via pandoc, see scripts/build-supplements.{ps1,sh})
 ```
@@ -106,3 +108,4 @@ also in the .bib file.
 | Journal E | ✅ | ✅ | (build) | shipped |
 | Journal F | ✅ | ✅ | (build) | shipped |
 | Journal G | ✅ | ✅ | (build) | shipped |
+| Journal H | ✅ | ✅ | (build) | shipped |

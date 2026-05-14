@@ -18,6 +18,11 @@ from a single Python script under `figures/source/`.
 | `cross-method-ari-grid.{svg,pdf}` | `source/build_cross_method_grid.py` | `cross_method_agreement/<scene>.json` × 6 | Journal B-6, Suppl F |
 | `basis-spectra-grid.{svg,pdf}` | `source/build_basis_spectra_grid.py` | `topic_views/<scene>.json` × 6 (`topic_band_profiles`, `wavelengths_nm`) | Journal III, Suppl D |
 | `hidsag-band-mask.{svg,pdf}` | `source/build_hidsag_band_mask.py` | `band_masks_hidsag/index.json` | Journal B-5 (HIDSAG side), Suppl F |
+| `topic-profile-cards-salinas-a.{svg,pdf}` | `source/build_topic_profile_cards.py` | `topic_views/salinas-a-corrected.json` + `topic_to_data/salinas-a-corrected.json` | Suppl H |
+| `topic-profile-cards-indian-pines.{svg,pdf}` | same | `topic_views/indian-pines-corrected.json` + `topic_to_data/indian-pines-corrected.json` | Suppl H |
+| `topic-spectra-contrast.{svg,pdf}` | `source/build_topic_spectra_contrast.py` | `topic_views/{salinas-a-corrected,kennedy-space-center}.json` | Suppl H |
+| `topic-pairwise-distance.{svg,pdf}` | `source/build_topic_pairwise_distance.py` | `topic_views/<scene>.json` × 6 (`topic_distance_cosine`) | Suppl H |
+| `hidsag-topic-spectra.{svg,pdf}` | `source/build_hidsag_topic_spectra.py` | `band_masks_hidsag/<subset>/swir/summary.json` × 5 | Suppl H |
 
 ## Honest gaps
 
