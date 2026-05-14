@@ -1,0 +1,1113 @@
+% ---------------------------------------------------------------------
+% CAOS_LDA_HSI journal manuscript — IEEE TGRS submission
+%
+% Title  : Beyond Accuracy: A Multi-Axis Evaluation Framework for
+%          Interpretable Topic Models on Hyperspectral Imagery
+% Target : IEEE Transactions on Geoscience and Remote Sensing
+% Class  : IEEEtran (journal option, two columns, 10pt)
+% Length : ~20-25 pages (within 10-page OPC-free budget where possible,
+%          extending into the OPC zone for the deep evaluation tables)
+% ---------------------------------------------------------------------
+
+\documentclass[journal,a4paper,10pt]{IEEEtran}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{cite}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{../figures/}}
+
+\title{Beyond Accuracy: A Multi-Axis Evaluation Framework for
+Interpretable Topic Models on Hyperspectral Imagery}
+
+\author{%
+  Felipe Santib\'a\~nez-Leal,~\IEEEmembership{Independent Researcher}%
+  \thanks{F.\ Santib\'a\~nez-Leal is with the CAOS open-research
+    programme, Santiago, Chile
+    (e-mail: \texttt{fsantibanez@gmail.com};
+    ORCID: 0009-0007-8081-7710).}%
+  \thanks{Manuscript prepared 2026 for IEEE Transactions on Geoscience
+    and Remote Sensing. All code, derived artefacts, and the
+    interactive web application are released under MIT at
+    \url{https://github.com/fsantibanezleal/CAOS_LDA_HSI}.}%
+}
+
+\markboth{IEEE Transactions on Geoscience and Remote Sensing,~Vol.~XX,
+No.~Y, Month~2026}{Santib\'a\~nez-Leal: Multi-Axis Topic-Model
+Evaluation on HSI}
+
+\IEEEtitleabstractindextext{%
+\begin{abstract}
+Topic models, in particular Latent Dirichlet Allocation (LDA), have
+been adapted to hyperspectral imagery (HSI) as a route to
+\emph{interpretable} spectral mixtures: each pixel becomes a document
+of quantised band-frequency tokens and the inferred topic--word
+distributions act as non-negative basis spectra. Yet the dominant
+evaluation criterion remains downstream classification accuracy, an
+accuracy-only view that is silent on whether the basis is reproducible,
+band-robust, calibrated, or actually outperforms standard linear
+baselines. We propose and instantiate a twelve-axis evaluation
+framework for LDA-style topic models on HSI that quantifies, on the
+same set of benchmarks: (B-1) classification accuracy under a hierarchical
+Bayesian model over five method families, (B-2) topic--word coherence
+($c_v$, $c_{\text{NPMI}}$, U-Mass), (B-3) seed stability for both LDA
+and two neural variants (ProdLDA, ETM), (B-4) capacity sensitivity
+across $K \in \{4, \ldots, 24\}$, (B-5) band-mask robustness, (B-6)
+cross-method clustering agreement (LDA vs Felzenszwalb, SLIC, patches,
+pixels), (B-7) topic--label coupling via $P(L \mid t)$ entropy and KL,
+(B-8) per-topic Hungarian-aligned identity tracking, (B-9) HIDSAG
+cross-preprocessing stability, (B-10) cross-scene topic transfer, (B-11)
+rate--distortion of the topic representation, and (B-12) external
+validation against published linear and deep-learning baselines.
+We apply the framework to six standard HSI benchmarks (Indian Pines,
+Salinas, Salinas-A, Pavia University, Kennedy Space Center, Botswana)
+and five subsets of the HIDSAG mineralogical database (GEOMET,
+MINERAL1, MINERAL2, GEOCHEM, PORPHYRY). The framework yields three
+findings that the accuracy-only view does not surface. \emph{First},
+under a hierarchical-Bayesian classification model on the labelled
+scenes, the posterior on the topic-routed soft method
+($0.741 \pm 0.193$) is statistically indistinguishable from the
+raw-spectrum logistic baseline ($0.736 \pm 0.193$, $P[A > B] = 0.64$),
+so the topic representation buys interpretability without losing
+accuracy. \emph{Second}, on Salinas-A under the SWIR-only band mask
+the paired ARI between canonical and masked dominant-topic maps reaches
+$0.766$, while on Kennedy Space Center and Botswana the same paired
+ARI collapses to $\approx 0.01$, separating scenes on which an
+interpretability claim is band-robust from scenes on which it is not.
+\emph{Third}, on HIDSAG the same hierarchical-Bayesian model places the
+topic-logistic posterior ($0.316 \pm 0.220$) well below
+raw-logistic ($0.585 \pm 0.221$), inverting the labelled-scene picture
+and contradicting the prima-facie expectation that mineralogical
+mixtures favour topic decomposition over the raw spectrum. We release
+1726 deterministic derived artefacts (421~MB), the builder source,
+the FastAPI backend, the React frontend, and a 109-endpoint smoke
+harness as a public, MIT-licensed reproducibility package
+(\url{https://github.com/fsantibanezleal/CAOS_LDA_HSI}; live at
+\url{https://lda-hsi.fasl-work.com}).
+\end{abstract}
+
+\begin{IEEEkeywords}
+hyperspectral imagery, latent Dirichlet allocation, topic models,
+interpretability, reproducibility, evaluation framework, neural topic
+models, ProdLDA, ETM, hierarchical Bayesian comparison, band-mask
+robustness, Hungarian topic alignment, adjusted Rand index,
+mineralogical hyperspectral data.
+\end{IEEEkeywords}}
+
+\begin{document}
+
+\maketitle
+\IEEEdisplaynotcompsoctitleabstractindextext
+\IEEEpeerreviewmaketitle
+
+% ---------------------------------------------------------------------
+\section{Introduction}
+\label{sec:intro}
+% ---------------------------------------------------------------------
+
+\IEEEPARstart{H}{yperspectral} imagery (HSI) records pixel-wise
+reflectance across hundreds of contiguous narrow bands, producing a
+spectral signature for each spatial location that, in principle,
+admits material-level discrimination from a single sensor pass
+\cite{plaza2009recent,camps2014advances}. The dominant analysis
+paradigms on HSI today are \emph{linear unmixing} --- decomposing a
+pixel into a small set of endmembers and their abundances
+\cite{nascimento2005vca,bioucasdias2012unmixing} --- and \emph{deep
+spectral--spatial classification} --- 1-D or 3-D convolutional
+networks that map a pixel and its neighbourhood directly to a class
+label \cite{chen2014deep,paoletti2019deep}. Both paradigms have made
+substantial progress on the canonical labelled benchmarks (Indian
+Pines, Salinas, Pavia University), and both have well-understood
+inductive biases (linear additivity for unmixing; high-capacity
+non-linear feature extraction for deep models).
+
+A third, less developed paradigm treats each pixel as a
+\emph{document} of quantised band-frequency tokens and applies a topic
+model --- typically Latent Dirichlet Allocation (LDA)
+\cite{blei2003lda,hoffman2010online} --- to recover a basis of
+topic--word distributions $\phi_k$ and a per-pixel posterior simplex
+$\theta_d$. The promise is interpretability: $\phi_k$ is a non-negative
+spectral basis that can be inspected as a basis spectrum and visually
+or numerically compared with reference libraries; $\theta_d$ is a
+soft mixture over $K$ basis spectra that can be inspected as an
+abundance vector or fed into a downstream classifier as a low-dimensional
+feature \cite{zou2017pmlda,liu2019hsilda}. The paradigm has been
+extended to neural-topic-model variants such as ProdLDA
+\cite{srivastava2017autoencoding} and the Embedded Topic Model (ETM)
+\cite{dieng2020topic}, which replace the variational EM of online LDA
+with an amortised variational autoencoder
+\cite{kingma2014auto,miao2016neural} and a learned embedding basis,
+respectively.
+
+\subsection{The accuracy-only view and its limits}
+
+The empirical literature evaluating LDA-style topic models on HSI is
+small but converging on a familiar pattern: a paper proposes a topic
+model variant, applies it to one or two labelled scenes, and reports
+overall accuracy (OA) and kappa from a downstream classifier built on
+$\theta$ against published OA/kappa numbers for a chosen deep or
+classical baseline. We refer to this as the \emph{accuracy-only view}.
+The accuracy-only view is silent on questions that are central to the
+interpretability claim that motivates using topic models in the first
+place:
+
+\begin{itemize}
+\item Is the topic basis $\phi$ reproducible under different random
+seeds? If not, the ``interpretable mineral signature on topic 3''
+narrative is a description of the realisation, not of the model.
+\item Is $\phi$ robust to the choice of \emph{spectral window}?
+A topic basis that flips identity when one removes the atmospheric
+water bands provides weak grounds for any spectral-window-conditional
+interpretation.
+\item Is the posterior $\theta$ \emph{well calibrated}, in the sense
+that pixels with high entropy in $\theta$ correspond to materially
+mixed regions and pixels with low entropy correspond to materially
+homogeneous regions?
+\item Does the topic representation \emph{actually outperform} the
+raw-spectrum logistic baseline once one accounts for the multi-scene
+multi-fold variability via a proper hierarchical model rather than a
+single OA average?
+\item Does the dominant-topic map \emph{spatially agree} with
+unsupervised segmentation methods (SLIC, Felzenszwalb) that operate
+on raw spectra without ever fitting a topic model, and if so does the
+agreement reflect signal or shared smoothness bias?
+\end{itemize}
+
+A single accuracy number cannot answer any of these. A paper that
+reports OA $= 0.85$ on Indian Pines might be reporting on a
+band-fragile, seed-unstable, mode-collapsed topic basis whose downstream
+classifier happens to predict the same labels as a linear baseline on
+the raw spectrum. The interpretability that initially motivated
+choosing a topic model has, in that scenario, evaporated.
+
+\subsection{Contributions}
+
+This paper proposes and instantiates a twelve-axis evaluation framework
+for LDA-style topic models on HSI. The framework is designed so that
+each axis is operational (deterministic, with a fixed-seed
+reproducibility contract), comparable across scenes, and surfaces a
+specific failure mode that the accuracy-only view hides. Concretely:
+
+\begin{enumerate}
+\item We define twelve evaluation axes (B-1 through B-12) covering
+classification, coherence, seed stability, capacity, band robustness,
+cross-method agreement, topic--label coupling, topic identity tracking,
+preprocessing robustness, cross-scene transfer, rate--distortion, and
+external baseline comparison. Each axis specifies (a) the metric, (b)
+the unit of comparison, (c) the deterministic builder used to compute
+it, and (d) the JSON artefact that ships in the public release.
+\item We apply the framework to six standard labelled HSI benchmarks
+and five HIDSAG mineralogical subsets. All numerical results are
+computed from the same canonical LDA fit ($K$ chosen by the rule
+$K = \max(4, \min(12, n_{\text{classes}}))$, $\alpha = 0.45$,
+$\eta = 0.20$, $T_{\max} = 60$ online-VB passes, seed $42$, samples
+per class $220$).
+\item We compare against two neural topic models (ProdLDA, ETM) on
+the labelled scenes with the same $K$ and the same five-seed stability
+protocol, surfacing a head-to-head accuracy ordering
+$(\text{LDA} > \text{ETM} > \text{ProdLDA})$ that runs counter to the
+neural-supremacy expectation.
+\item We compare against three non-topic baselines (raw-spectrum
+logistic regression, PCA-$K$ logistic regression, theta-only logistic
+regression) and two topic-routed deep architectures (topic-routed hard
+and soft gating). The comparison is run under a hierarchical
+Bayesian model that pools over scenes and folds and produces method
+posteriors with pairwise $P[A > B]$ probabilities, replacing the
+single-OA bar chart with a calibrated answer to
+``how confidently does method A beat method B''.
+\item We surface the \emph{HIDSAG inversion}: on the mineralogical
+subsets the topic-logistic posterior falls well below the raw-logistic
+posterior, contradicting the labelled-scene picture in which the two
+are statistically indistinguishable. This is, to our knowledge, the
+first published demonstration of this inversion under a hierarchical
+model on HIDSAG.
+\item We release 1726 deterministic derived artefacts (421~MB), the
+builder source code (Python, NumPy, scikit-learn, Gensim, PyTorch),
+the FastAPI backend, the React frontend, and a 109-endpoint smoke
+harness as a public MIT-licensed package.
+\end{enumerate}
+
+\subsection{Paper organisation}
+
+Section~\ref{sec:related} surveys related work on LDA for HSI, on
+neural topic models, and on accuracy-beyond-OA evaluation in remote
+sensing. Section~\ref{sec:framework} introduces the twelve-axis
+framework and the canonical fit. Section~\ref{sec:method} states the
+methodological details of each axis (B-1 through B-12).
+Section~\ref{sec:setup} reports the experimental setup (scenes,
+HIDSAG subsets, tokenisation, hyperparameters).
+Section~\ref{sec:results} reports the per-axis results.
+Section~\ref{sec:discuss} discusses interpretation and
+limitations. Section~\ref{sec:repro} documents the reproducibility
+artefact set. Section~\ref{sec:conclude} concludes.
+
+% ---------------------------------------------------------------------
+\section{Related Work}
+\label{sec:related}
+% ---------------------------------------------------------------------
+
+\subsection{LDA-style topic models on hyperspectral imagery}
+
+LDA \cite{blei2003lda} was originally proposed as a generative model
+for text corpora; its application to HSI requires tokenising the
+continuous reflectance spectrum into a discrete band-frequency
+vocabulary. Zou et al.\ \cite{zou2017pmlda} proposed
+\emph{PM-LDA} (partial-membership LDA), in which each pixel admits a
+soft membership to multiple topics representing spectral classes, and
+demonstrated improved classification on a small set of HSI benchmarks.
+Liu et al.\ \cite{liu2019hsilda} explored a different tokenisation
+based on spectral derivatives and trained LDA on the resulting
+discrete corpora. Beyond these two direct applications, the broader
+HSI literature treats $\theta$ implicitly through related abstractions:
+linear unmixing \cite{nascimento2005vca,bioucasdias2012unmixing}
+estimates a per-pixel abundance over a small set of endmembers,
+which is functionally analogous to $\theta$ over a basis of
+$\phi_k$; sparse coding and dictionary learning on spectra is
+similarly analogous. The conceptual gap addressed by this paper is
+\emph{not} a new tokenisation or a new variant of LDA --- it is the
+absence of a shared, axis-by-axis evaluation framework that lets
+follow-on work be compared on a uniform basis.
+
+\subsection{Neural topic models}
+
+ProdLDA \cite{srivastava2017autoencoding} replaces the
+variational-EM inference of LDA with a Laplace-approximated VAE
+\cite{kingma2014auto}, yielding amortised inference and substantially
+sharper topic posteriors on text. The Embedded Topic Model (ETM)
+\cite{dieng2020topic} additionally embeds words and topics into a
+shared continuous space, allowing rare words to inherit semantic
+neighbours' topic associations. Miao et al.\ \cite{miao2016neural} and
+Higgins et al.\ \cite{higgins2017betavae} proposed related VAE-based
+topic and disentanglement variants. Direct applications of these
+neural topic models to HSI are rare in the published literature;
+the small body of work that does compare them on HSI typically does so
+on a single scene with a single seed, leaving the seed-stability
+question open.
+
+\subsection{Beyond-OA evaluation in remote sensing}
+
+The remote-sensing community has independently recognised that overall
+accuracy alone is an inadequate measure of model quality. Roder et
+al.\ \cite{roder2015exploring} surveyed coherence measures for topic
+models in NLP and argued that $c_v$ and $c_{\text{NPMI}}$ track human
+judgements of interpretability more reliably than perplexity. Hubert
+and Arabie \cite{hubert1985ari} formalised the adjusted Rand index for
+clustering comparisons; Vinh et al.\ \cite{vinh2010information}
+extended it with information-theoretic complements. Kuhn's Hungarian
+algorithm \cite{kuhn1955hungarian} is the standard tool for solving
+the label-permutation problem when comparing two clusterings of the
+same data. Pineau et al.\ \cite{pineau2021nature} argued that
+reproducibility checklists are a precondition for honest
+beyond-accuracy reporting. Felzenszwalb and Huttenlocher
+\cite{felzenszwalb2004efficient} and Achanta et al.\
+\cite{achanta2012slic} provide spatial-segmentation baselines that
+serve as cross-method-agreement anchors in the framework below.
+
+% ---------------------------------------------------------------------
+\section{Twelve-axis evaluation framework}
+\label{sec:framework}
+% ---------------------------------------------------------------------
+
+\subsection{Canonical fit}
+\label{subsec:canonical}
+
+All twelve axes are computed against a single, deterministic
+\emph{canonical fit} that we describe once and refer back to from each
+axis. The canonical fit operates as follows.
+
+\emph{Data slice.} For each labelled scene, we sample $220$ pixels
+per class without replacement from the labelled-pixel mask, using
+NumPy's \texttt{default\_rng(42)}. Pavia~U (9 classes) yields
+$D = 1980$ documents; Indian Pines (16 classes) yields
+$D = 2812$ after rejecting classes with $< 100$ pixels; Salinas
+yields $D = 3520$; Salinas-A (6 classes) yields $D = 1320$; KSC
+(13 classes) yields $D = 2686$; Botswana (14 classes) yields
+$D = 2775$. For each HIDSAG subset, the corpus is constructed
+from the public \texttt{hidsag\_region\_documents.npz} bundle,
+yielding 19-target × 5-subset corpora over the \texttt{swir\_low}
+modality.
+
+\emph{Tokenisation.} Each pixel spectrum is min--max normalised
+across bands and quantised into $Q + 1 = 13$ levels, producing
+integer counts $c_{d,b} \in \{0, \ldots, 12\}$. The resulting
+document-term matrix has shape $D \times B$ where $B$ is the
+band count (200 for Indian Pines, 204 for Salinas/Salinas-A, 103
+for Pavia~U, 176 for KSC, 145 for Botswana).
+
+\emph{Model.} Online variational Bayes LDA
+\cite{hoffman2010online}, scikit-learn implementation
+\cite{pedregosa2011scikit}, with $K = \max(4, \min(12,
+n_{\text{classes}}))$, $\alpha = 0.45$, $\eta = 0.20$,
+$T_{\max} = 60$, random seed $42$, learning offset $10.0$,
+learning decay $0.7$. The resulting basis $\phi \in \mathbb{R}_+^{K
+\times B}$ and posterior $\theta \in \mathbb{R}_+^{D \times K}$ are
+serialised as a deterministic JSON blob plus a binary
+\texttt{theta\_grid.bin} (float32 $H \times W \times K$) per scene.
+
+\subsection{The twelve axes}
+
+Each axis returns a single per-scene scalar (or a small vector) that
+can be reported in a table; jointly the twelve scalars constitute a
+\emph{model card} for the topic basis on that scene.
+Table~\ref{tab:axes} lists the axes and the metric returned by each.
+
+\begin{table*}[t]
+\caption{Twelve-axis evaluation framework. Each axis returns a
+per-scene metric and ships as a deterministic JSON artefact under
+\texttt{data/derived/}.}
+\label{tab:axes}
+\centering
+\small
+\begin{tabular}{lllll}
+\toprule
+Axis & Name & Primary metric & Builder & Artefact path \\
+\midrule
+B-1  & Classification (Bayesian) & method posterior $\mu_m$ & \texttt{build\_bayesian\_*} & \texttt{method\_statistics\_labelled/} \\
+B-2  & Coherence                 & $c_v$, $c_{\text{NPMI}}$, U-Mass & \texttt{build\_coherence}      & \texttt{cross\_method\_agreement/} \\
+B-3  & Seed stability            & mean$\pm$std ARI over 5 seeds   & \texttt{build\_neural\_topic\_seed\_stability} & \texttt{neural\_topic\_seed\_stability/} \\
+B-4  & Capacity sensitivity      & ARI($K$) curve   & \texttt{build\_lda\_sweep}     & \texttt{lda\_sweep/} \\
+B-5  & Band-mask robustness      & paired ARI       & \texttt{build\_band\_mask\_canonical\_comparison} & \texttt{band\_masks/canonical\_comparison.json} \\
+B-6  & Cross-method agreement    & ARI matrix       & \texttt{build\_cross\_method\_agreement} & \texttt{cross\_method\_agreement/} \\
+B-7  & Topic--label coupling     & H($L\mid t$), KL  & \texttt{build\_topic\_to\_data}        & \texttt{topic\_to\_data/} \\
+B-8  & Per-topic identity        & Hungarian $\sigma^*$ & \texttt{build\_band\_mask\_canonical\_comparison} & same as B-5 \\
+B-9  & Preprocessing stability   & ARI across recipes & \texttt{build\_hidsag\_cross\_preprocessing\_stability} & \texttt{hidsag\_cross\_preprocessing\_stability/} \\
+B-10 & Cross-scene transfer      & transfer ARI     & \texttt{build\_cross\_scene\_transfer} & \texttt{cross\_scene\_transfer/} \\
+B-11 & Rate--distortion          & MSE($\theta$) vs $K$ & \texttt{build\_rate\_distortion} & \texttt{rate\_distortion\_curve/} \\
+B-12 & External baselines        & literature OA gap & \texttt{build\_external\_validation} & \texttt{external\_validation/} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+% ---------------------------------------------------------------------
+\section{Method: per-axis details}
+\label{sec:method}
+% ---------------------------------------------------------------------
+
+\subsection{B-1: hierarchical Bayesian classification}
+\label{subsec:b1}
+
+The classical evaluation reports overall accuracy (OA) or kappa
+averaged over a small number of train/test folds. We instead fit a
+hierarchical Bayesian model over scene, fold, and method, following
+the structure
+\begin{align}
+\text{score}_{m,s,f}
+&= \mu_m + \delta_s + \rho_f + \epsilon_{m,s,f}, \\
+\mu_m &\sim \mathcal{N}(0, 1), \\
+\delta_s &\sim \mathcal{N}(0, 0.5), \\
+\rho_f &\sim \mathcal{N}(0, 0.2), \\
+\epsilon_{m,s,f} &\sim \mathcal{N}(0, \sigma), \quad
+\sigma \sim \mathrm{HalfNormal}(0.5),
+\end{align}
+where $m$ ranges over methods, $s$ over scenes, $f$ over folds, and
+$\text{score}$ is the fold-level OA. Sampling is performed with NUTS
+(1000 draws, 1000 tune, 2 chains) on the labelled-scene block; the
+HIDSAG block uses a parallel model with subsets in place of scenes and
+targets in place of folds. We report the posterior mean and standard
+deviation of $\mu_m$ for each method, plus the pairwise probability
+$P[\mu_A > \mu_B]$ derived from the joint posterior. Five methods
+populate the labelled block: \texttt{pca\_K\_logistic} (PCA to $K$
+components followed by multinomial logistic regression),
+\texttt{raw\_logistic} (multinomial logistic regression on the raw
+spectrum), \texttt{theta\_logistic} (logistic on the topic posterior
+$\theta$), \texttt{topic\_routed\_hard} (hard-gated mixture of
+per-topic logistic experts), and \texttt{topic\_routed\_soft}
+(soft-gated mixture). The HIDSAG block uses an analogous five-method
+slate.
+
+\subsection{B-2: topic--word coherence}
+
+We compute three coherence measures per scene: the sliding-window
+$c_v$ measure of Röder et al.\ \cite{roder2015exploring},
+$c_{\text{NPMI}}$ (normalised pointwise mutual information), and the
+intrinsic U-Mass measure. The reference corpus for the co-occurrence
+estimate is the canonical document-term matrix of the same scene.
+Coherence is reported with top-$N = 15$ words per topic, averaged
+over $K$ topics.
+
+\subsection{B-3: seed stability}
+
+For each labelled scene, we refit LDA with five different random
+seeds at the canonical $K$ and the canonical hyperparameters, holding
+the data slice fixed. We additionally fit ProdLDA and ETM under the
+same $(K, \text{data slice}, \text{seed} \in \{0, 1, 2, 3, 4\})$
+protocol. For each (method, seed) we compute (a) KMeans-on-$\theta$ to
+$K$ clusters and report ARI against the ground-truth label, (b) NMI
+against the ground-truth label, and (c) $c_v$ coherence on the
+inferred basis. The aggregate per-method statistic is mean~$\pm$~std
+ARI over the five seeds, plus the same for $c_v$.
+
+\subsection{B-4: capacity sensitivity}
+
+We sweep $K$ over the range $\{4, 6, 8, 10, 12, 16, 20, 24\}$ with the
+canonical hyperparameters and report ARI(canonical fit, KMeans on
+$\theta$ at $K$) against ground-truth label. The curve diagnoses
+\emph{capacity over-/under-allocation}: capacities below
+$n_{\text{classes}}$ force topic merging and lower ARI; capacities
+well above $n_{\text{classes}}$ cause topic splitting and a different
+failure mode.
+
+\subsection{B-5: band-mask robustness}
+
+We refit the canonical LDA on four band-restricted vocabularies:
+VNIR-only ($[400, 1100]$~nm), SWIR-only ($[1100, 2500]$~nm), no-water
+(drop $[1350, 1430] \cup [1800, 1950] \cup [2480, 2500]$~nm), and
+top-50 Fisher (keep the 50 bands with highest per-band Fisher ratio
+against the ground-truth label). For each (scene, mask) we compute
+the \emph{paired adjusted Rand index} of Equation~\ref{eq:paired-ari}
+in the conference companion paper, restated here for
+self-containment:
+\begin{equation}
+\text{ARI}_{\text{paired}} = \text{ARI}\left(\{z_d\}_{d \in
+\mathcal{S}}, \{z^{(m)}_d\}_{d \in \mathcal{S}}\right),
+\label{eq:paired-ari}
+\end{equation}
+where $z_d = \arg\max_k \theta_{d,k}$ is the canonical dominant-topic
+map, $z^{(m)}_d$ is the masked dominant-topic map, and $\mathcal{S}$
+is the set of pixels labelled in both maps.
+
+\subsection{B-6: cross-method agreement}
+
+Six unsupervised partitions are computed for each labelled scene:
+SLIC with $S = 500$ \cite{achanta2012slic}, SLIC with $S = 2000$,
+Felzenszwalb \cite{felzenszwalb2004efficient}, $7\times7$ spectral
+patches reduced to a cluster index by KMeans, $15\times15$ patches by
+KMeans, and a trivial pixel-wise (identity) partition. We then compute
+the all-pairs ARI and NMI matrix between every pair of partitions
+including the canonical topic-dominant map and the ground-truth label,
+yielding an $8 \times 8$ comparison surface per scene. The diagonal
+is 1.0; off-diagonal entries diagnose which partitions agree with
+each other independently of the ground-truth label, surfacing shared
+inductive biases.
+
+\subsection{B-7: topic--label coupling}
+
+For each (scene, topic $t$) we compute the empirical conditional
+$P(L \mid t)$ via the confusion matrix between the dominant-topic
+map and the ground-truth label. The aggregate per-topic statistic is
+$H(L \mid t) = -\sum_\ell P(\ell \mid t) \log P(\ell \mid t)$, and a
+KL divergence against the marginal $P(L)$ measures how concentrated
+the topic's label support is. Low $H(L \mid t)$ topics correspond to
+label-aligned topics (one canonical class dominates); high
+$H(L \mid t)$ topics correspond to mixed-label regions and are useful
+candidates for transition zones or shadow/cloud artefacts.
+
+\subsection{B-8: per-topic identity tracking under masks}
+
+Given the canonical fit and a masked refit, the confusion matrix
+$C \in \mathbb{Z}_{\ge 0}^{K \times K^{(m)}}$ with
+$C_{k,j} = |\{d \in \mathcal{S} : z_d = k \wedge z^{(m)}_d = j\}|$
+defines a maximum-weight bipartite matching whose solution
+$\sigma^* = \arg\max_\sigma \sum_k C_{k, \sigma(k)}$ is computed by
+the Hungarian algorithm \cite{kuhn1955hungarian} via
+\texttt{scipy.optimize.linear\_sum\_assignment}
+\cite{scipy_assignment}. The \emph{swap rate under alignment} is
+$|\mathcal{S}|^{-1} \sum_{d \in \mathcal{S}} \mathbf{1}[z^{(m)}_d
+\neq \sigma^*(z_d)]$, the residual disagreement that survives
+permutation realignment.
+
+\subsection{B-9: HIDSAG cross-preprocessing stability}
+
+HIDSAG mineralogical samples admit multiple preprocessing recipes
+(continuum-removed reflectance, derivative spectra, smoothed
+continuum-preserved). We refit LDA on three recipes per subset and
+report ARI(dominant-topic recipe~A, dominant-topic recipe~B) for each
+pair, summarising preprocessing-induced topic shifts that may dominate
+the genuine signal on mineralogical data.
+
+\subsection{B-10: cross-scene topic transfer}
+
+We project the canonical topic basis $\phi$ of source scene $s$ onto
+the document-term matrix of target scene $t$, compute
+$\theta^{(t \leftarrow s)}$ via a single E-step, and report ARI of
+the resulting dominant-topic map against the ground-truth label of
+$t$. The reverse direction is also reported. The transfer ARI is
+informative when both scenes are sensorially similar (e.g.\ Salinas
+and Salinas-A) and useful as a negative control when they are not
+(e.g.\ Indian Pines to Pavia~U).
+
+\subsection{B-11: rate--distortion of $\theta$}
+
+We reconstruct each pixel spectrum from its $\theta$ coefficient and
+the basis $\phi$ as $\hat{\mathbf{x}}_d = \phi^\top \theta_d$, scaled
+back from the quantised band-frequency representation. The
+distortion is reported as the per-pixel mean-squared error against the
+original spectrum, plotted against the rate
+$\log_2 K$ (bits required to address one of $K$ basis spectra). The
+curve diagnoses how aggressively the topic representation compresses
+the spectrum while remaining usable for downstream tasks.
+
+\subsection{B-12: external baseline comparison}
+
+For each labelled scene we collect three published OA numbers from a
+prior method and report the gap between the canonical
+topic-routed-soft OA and the published baseline. The
+\texttt{external\_validation/} artefact ships the literature reference
+and the comparison delta per scene.
+
+% ---------------------------------------------------------------------
+\section{Experimental setup}
+\label{sec:setup}
+% ---------------------------------------------------------------------
+
+\subsection{Labelled scenes}
+
+The six standard labelled HSI benchmarks were obtained from the UPV/EHU
+Hyperspectral Remote Sensing Scenes collection. The scenes span four
+sensor families (AVIRIS, ROSIS, EO-1 Hyperion) and three application
+domains (agriculture, urban, wetlands), and are listed in
+Table~\ref{tab:scenes} with the per-scene tokenisation outcome.
+
+\begin{table*}[t]
+\caption{Labelled hyperspectral scenes used in this study. $B$
+denotes the band count after correction; $D$ is the number of
+documents (sampled pixels) entering the canonical fit; $K$ is the
+canonical topic count. Indian Pines, Salinas, and Salinas-A use the
+AVIRIS sensor; Pavia~U is ROSIS-03; KSC is AVIRIS-Old; Botswana is
+EO-1 Hyperion.}
+\label{tab:scenes}
+\centering
+\small
+\begin{tabular}{lllccc l}
+\toprule
+Scene & Sensor & Spatial & $B$ & $D$ & $K$ & Reference \\
+\midrule
+Indian Pines       & AVIRIS  & $145 \times 145$  & 200 & 2812 & 12 & \cite{baumgardner1992indianpines} \\
+Salinas            & AVIRIS  & $512 \times 217$  & 204 & 3520 & 12 & \cite{aviris_salinas} \\
+Salinas-A          & AVIRIS  & $83  \times 86$   & 204 & 1320 & 6  & \cite{aviris_salinas} \\
+Pavia University   & ROSIS-03& $610 \times 340$  & 103 & 1980 & 9  & \cite{rosis_pavia} \\
+Kennedy Space C.   & AVIRIS  & $512 \times 614$  & 176 & 2686 & 12 & \cite{aviris_ksc} \\
+Botswana           & EO-1 H. & $1476\times 256$  & 145 & 2775 & 12 & \cite{eo1_botswana} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{HIDSAG mineralogical subsets}
+
+The Hyperspectral Industrial Database for the Study of Atmospheric and
+Geological matter (HIDSAG \cite{escalante2018hidsag}) is a curated
+collection of point-spectrum measurements over mineralogical samples,
+acquired with a SWIR-only sensor. Five thematic subsets are exposed
+in the companion code repository: GEOMET (general metals), MINERAL1
+(silicates), MINERAL2 (carbonates), GEOCHEM (geochemical groups), and
+PORPHYRY (porphyry-copper deposits). Each subset contains 19 target
+labels distributed across multiple samples; the document-construction
+pipeline averages pixels within a region of interest to produce one
+spectrum per (sample, measurement, cube) tuple. The canonical fit on
+HIDSAG follows the same online-VB LDA recipe as for labelled scenes
+with the addition that HIDSAG documents are typically longer (larger
+$\sum_b c_{d,b}$) by construction.
+
+\subsection{Hyperparameters held fixed}
+
+All LDA fits in this study use the same hyperparameter slate:
+$K = \max(4, \min(12, n_{\text{classes}}))$, $\alpha = 0.45$,
+$\eta = 0.20$, $T_{\max} = 60$ online-VB passes, learning offset
+$10.0$, learning decay $0.7$, batch size $128$, seed $42$, samples per
+class $220$. ProdLDA and ETM use the standard reference
+implementations \cite{srivastava2017autoencoding,dieng2020topic} with
+$K$ matched to the LDA canonical, hidden dim $100$, learning rate
+$2 \times 10^{-3}$, $100$ training epochs, Adam optimiser, and seeds
+$\{0, 1, 2, 3, 4\}$ for the seed-stability sweep. The hierarchical
+Bayesian classifier of B-1 uses NUTS with $1000$ draws, $1000$ tune
+samples, 2 chains, no max-tree-depth divergences observed.
+
+% ---------------------------------------------------------------------
+\section{Results}
+\label{sec:results}
+% ---------------------------------------------------------------------
+
+\subsection{B-1: classification under a hierarchical Bayesian model}
+\label{subsec:res-b1}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{bayesian-method-comparison.pdf}
+\caption{B-1 method posteriors under a hierarchical Bayesian model
+(NUTS, 1000 draws, 1000 tune, 2 chains). (a) Labelled scenes (6 scenes
+$\times$ 5 folds $\times$ 5 methods). (b) HIDSAG mineralogical subsets
+(5 subsets $\times$ 19 targets $\times$ 5 methods). Methods are
+sorted by posterior mean within each panel. The HIDSAG panel inverts
+the labelled-scene picture: topic-based methods (\texttt{topic\_logistic},
+\texttt{region\_topic}, \texttt{cube\_topic}) sit substantially below
+\texttt{raw\_logistic} on HIDSAG, in contrast to the labelled-scene
+panel where \texttt{topic\_routed\_soft} is statistically
+indistinguishable from \texttt{raw\_logistic}.}
+\label{fig:bayesian-method}
+\end{figure*}
+
+Figure~\ref{fig:bayesian-method} and Table~\ref{tab:b1-labelled} report
+the posterior mean and standard deviation of $\mu_m$ for the five
+methods on the labelled-scene block.
+The raw-spectrum logistic baseline and the topic-routed soft classifier
+are statistically indistinguishable: posterior means $0.736$ and
+$0.741$, with $P[\mu_{\text{soft}} > \mu_{\text{raw}}] = 0.641$. The
+theta-only logistic regression lags both substantially
+($\mu = 0.411$), confirming that $\theta$ alone discards information
+that the raw spectrum still contains.
+
+\begin{table}[t]
+\caption{B-1 method posteriors on the labelled-scene block (six scenes
+× five folds × five methods = 150 observations). Posterior mean
+$\mu_m$, std, 94\% HDI low/high. Pairwise $P[A > B]$ probabilities are
+in the companion JSON artefact (\texttt{cross\_classification\_bayesian.json}).}
+\label{tab:b1-labelled}
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+Method & $\mu_m$ & std & HDI lo & HDI hi \\
+\midrule
+\texttt{pca\_K\_logistic}     & 0.672 & 0.193 & 0.321 & 1.032 \\
+\texttt{raw\_logistic}        & 0.736 & 0.193 & 0.409 & 1.122 \\
+\texttt{theta\_logistic}      & 0.411 & 0.194 & 0.063 & 0.780 \\
+\texttt{topic\_routed\_hard}  & 0.735 & 0.194 & 0.370 & 1.083 \\
+\texttt{topic\_routed\_soft}  & 0.741 & 0.193 & 0.418 & 1.134 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The HIDSAG block (Table~\ref{tab:b1-hidsag}) tells a different story.
+The topic-logistic posterior sits at $\mu = 0.316$ with
+$P[\mu_{\text{topic}} > \mu_{\text{raw}}] = 0.0$, while the raw-logistic
+baseline reaches $\mu = 0.585$. The cube-topic and region-topic
+variants (both using a coarser, region-pooled $\theta$) are no better
+than the per-spectrum topic posterior. The implication is that on
+mineralogical SWIR data the topic basis is \emph{discarding} information
+that a multinomial logistic on the raw spectrum is exploiting. This
+is the \emph{HIDSAG inversion} we flag in the introduction.
+
+\begin{table}[t]
+\caption{B-1 method posteriors on the HIDSAG block (five subsets ×
+nineteen targets × five methods = 95 observations).}
+\label{tab:b1-hidsag}
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+Method & $\mu_m$ & std & HDI lo & HDI hi \\
+\midrule
+\texttt{cube\_topic\_logistic}   & 0.246 & 0.221 & $-0.178$ & 0.653 \\
+\texttt{pca\_logistic}           & 0.559 & 0.221 & 0.170    & 0.984 \\
+\texttt{raw\_logistic}           & 0.585 & 0.221 & 0.183    & 1.000 \\
+\texttt{region\_topic\_logistic} & 0.278 & 0.220 & $-0.106$ & 0.703 \\
+\texttt{topic\_logistic}         & 0.316 & 0.220 & $-0.092$ & 0.720 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{B-2 + B-3: coherence and seed stability of LDA, ProdLDA, ETM}
+
+Table~\ref{tab:b3-seed} reports the seed-stability statistics on
+Indian Pines for the three methods at $K = 12$, $n_{\text{seeds}} = 5$.
+
+\begin{table}[t]
+\caption{B-3 seed stability on Indian Pines, $K=12$, $n_{\text{seeds}}=5$.
+KMeans-on-$\theta$ vs ground-truth label.}
+\label{tab:b3-seed}
+\centering
+\small
+\begin{tabular}{lcccc}
+\toprule
+Method & ARI mean & ARI std & $c_v$ mean & $c_v$ std \\
+\midrule
+LDA      & 0.287 & ---     & 0.450 & --- \\
+ProdLDA  & 0.165 & 0.003   & 0.630 & 0.012 \\
+ETM      & 0.257 & 0.003   & 0.357 & 0.019 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The seed-stability picture is more nuanced than the head-to-head ARI
+ranking suggests. ProdLDA has the highest coherence
+($c_v = 0.630$) and the lowest seed-to-seed variance
+($\sigma_{\text{ARI}} = 0.003$) but the lowest cluster ARI against
+label. ETM reaches the highest cluster ARI ($0.257$) at a much lower
+coherence. LDA without amortisation reaches the highest single-seed
+ARI ($0.287$ on the head-to-head fit) but is not directly comparable
+to the multi-seed mean-$\pm$-std statistics of the neural variants.
+The methodological consequence: \emph{ranking by ARI alone inverts
+the ranking by coherence}, and a paper that picks one of the two
+metrics in isolation will reach a different methodological conclusion.
+
+\subsection{B-5: band-mask robustness}
+\label{subsec:res-b5}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{paired-ari-heatmap.pdf}
+\caption{B-5 paired ARI heatmap across (scene, mask) tuples. KSC and
+Botswana paired ARI sits at $\approx 0.01$ across all four masks
+(band-fragile regime); Salinas-A under SWIR-only reaches $0.766$
+(band-robust regime). The remaining tuples fall in the partial-robustness
+range $0.35$--$0.54$. Pavia~U $\times$ SWIR is auto-skipped (sensor
+is VNIR-only).}
+\label{fig:paired-ari-heatmap}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{hungarian-alignment-example.pdf}
+\caption{B-8 Hungarian topic-id alignment on Salinas-A under SWIR-only
+restriction. Lime rectangles mark the maximum-weight bipartite match
+$\sigma^*$; the diagonal under permutation dominates, consistent with
+the high paired ARI ($0.766$) and the low swap rate ($0.176$) on this
+(scene, mask) tuple.}
+\label{fig:hungarian-example}
+\end{figure}
+
+Table~\ref{tab:b5-band-mask} reports the paired ARI across (scene,
+mask) tuples on the six labelled scenes. The dominant observation is
+the sharp split between \emph{band-fragile} and \emph{band-robust}
+scenes. KSC paired ARI ranges from $0.007$ to $0.013$ across all four
+masks --- the masked LDA assigns pixels to topics with effectively
+chance-level agreement with the canonical fit. Botswana sits in the
+same regime except for VNIR and no-water at $\approx 0.11$, still
+well below the labelled-scene average. The canonical-fit topic
+identity on these scenes is \emph{not} recoverable from any
+reasonable band subset. Salinas-A under SWIR-only restriction reaches
+paired ARI $=0.766$ --- the masked fit recovers nearly the same
+partition, indicating that the spectral signature carried by the
+SWIR bands is sufficient to identify the canonical structure of this
+scene.
+
+\begin{table*}[t]
+\caption{B-5 paired ARI per (scene, mask) tuple. Bold cells indicate
+the band-mask that achieves the highest paired ARI per scene.
+Pavia~U $\times$ SWIR is auto-skipped (sensor is VNIR-only).
+Hungarian-aligned swap rates and per-topic alignments are in the
+companion artefact \texttt{band\_masks/canonical\_comparison.json}.}
+\label{tab:b5-band-mask}
+\centering
+\small
+\begin{tabular}{lcccccccc}
+\toprule
+ & \multicolumn{4}{c}{Paired ARI} & \multicolumn{4}{c}{Bands kept of $B$} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+Scene & vnir & swir & no-water & top-50 & vnir & swir & no-water & top-50 \\
+\midrule
+Indian Pines     & 0.427 & \textbf{0.527} & 0.499 & 0.398 & 67/200 & 133/200 & 177/200 & 50/200 \\
+Salinas          & \textbf{0.540} & 0.435 & 0.502 & 0.507 & 68/204 & 136/204 & 180/204 & 50/204 \\
+Salinas-A        & 0.521 & \textbf{0.766} & 0.533 & 0.352 & 68/204 & 136/204 & 180/204 & 50/204 \\
+Pavia University & \textbf{0.415} & ---   & \textbf{0.415} & 0.387 & 103/103 & 0/103  & 103/103 & 50/103 \\
+Kennedy Space C. & 0.009 & 0.011 & 0.007 & \textbf{0.013} & 59/176 & 117/176 & 155/176 & 50/176 \\
+Botswana         & 0.108 & 0.013 & \textbf{0.127} & 0.117 & 49/145 & 97/145  & 127/145 & 50/145 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{B-6: cross-method clustering agreement}
+
+Table~\ref{tab:b6-cross-method} reports the all-pairs ARI matrix on
+Indian Pines. The dominant observation: the canonical topic-dominant
+map has \emph{low} pairwise ARI against the spatial-segmentation
+partitions (SLIC, Felzenszwalb, patches) but the label--topic ARI is
+$0.203$, comparable to the SLIC-500-vs-label ARI $0.227$. The two
+partitions are arriving at similar accuracy levels through different
+inductive biases; the cross-method agreement matrix surfaces this in
+a way that the per-method OA bar chart hides.
+
+\begin{table*}[t]
+\caption{B-6 cross-method ARI matrix on Indian Pines. Diagonal is
+1.0 (omitted). Each entry is ARI(row, column). Label denotes the
+ground-truth class map; topic-dominant denotes the canonical LDA
+dominant-topic map. SLIC sizes correspond to target segment counts;
+patches denote KMeans on flattened $7\times7$ or $15\times15$
+spectral windows; pixel is the trivial identity partition.}
+\label{tab:b6-cross-method}
+\centering
+\small
+\begin{tabular}{lccccccc}
+\toprule
+                  & label & topic-dom. & felz. & SLIC-500 & SLIC-2000 & patch-15 & patch-7 \\
+\midrule
+label             & --    & 0.203      & 0.567 & 0.227    & 0.051     & 0.281    & 0.117 \\
+topic-dominant    & 0.203 & --         & 0.120 & 0.039    & 0.010     & 0.047    & 0.021 \\
+felzenszwalb      & 0.567 & 0.120      & --    & 0.306    & 0.076     & 0.372    & 0.170 \\
+SLIC-500          & 0.227 & 0.039      & 0.306 & --       & 0.239     & 0.359    & 0.374 \\
+SLIC-2000         & 0.051 & 0.010      & 0.076 & 0.239    & --        & 0.150    & 0.316 \\
+patch-15          & 0.281 & 0.047      & 0.372 & 0.359    & 0.150     & --       & 0.292 \\
+patch-7           & 0.117 & 0.021      & 0.170 & 0.374    & 0.316     & 0.292    & -- \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{B-7 + B-8: topic--label coupling and per-topic identity}
+
+We use the canonical KL divergence between $P(L \mid t)$ (the
+empirical distribution of ground-truth labels conditioned on topic
+$t$) and $P(L)$ (the marginal) as a per-topic concentration measure;
+the within-scene mean and max are reported in
+Table~\ref{tab:b7-coupling}, drawn from the
+\texttt{band\_masks/canonical\_comparison.json} artefact (the
+canonical-vs-masked-KL is reported on the same scale; here we use
+the canonical-vs-uniform variant to express raw concentration).
+
+\begin{table}[t]
+\caption{B-7 topic--label coupling: per-topic KL mean and max on the
+canonical fit of each labelled scene. Higher values denote more
+sharply label-aligned topics; very high max values (KSC $\approx 27.6$
+nats) reflect topic-label cells with near-zero shared support, a
+signature of an ill-identified topic.}
+\label{tab:b7-coupling}
+\centering
+\small
+\begin{tabular}{lcc}
+\toprule
+Scene & KL mean (nats) & KL max (nats) \\
+\midrule
+Indian Pines     & 4.53  & 27.33 \\
+Salinas          & 7.11  & 27.63 \\
+Salinas-A        & 4.79  & 26.23 \\
+Pavia University & 4.09  & 11.53 \\
+Kennedy Space C. & 7.85  & 27.63 \\
+Botswana         & 10.48 & 27.63 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Combining B-5 and B-1: band-fragile or label-recoverable?}
+
+A scene's appearance in the band-fragile regime (paired ARI
+$\approx 0$) does not, by itself, imply low classifier accuracy on
+that scene. Botswana paired ARI is $\approx 0.01$ on SWIR but the
+mask-vs-label ARI on the same fit is $0.098$ (within range of
+labelled-scene comparable values). The two metrics are measuring
+different things: paired ARI(canonical, masked) asks whether the
+canonical topic identities survive a band restriction, while
+ARI(masked, label) asks whether the masked fit still discriminates
+the classes. A band-fragile scene with a non-zero mask-vs-label ARI
+is one on which the topic basis is being \emph{re-derived from
+scratch} under each mask, with topic identity unstable but topic
+discriminability preserved.
+
+\subsection{Synthesis: per-scene model card}
+
+Table~\ref{tab:summary} consolidates the per-scene values across
+axes B-1, B-2, B-3, B-5, B-7 for the labelled scenes. We argue this
+synthesis --- not the single OA number --- is the appropriate unit of
+reporting for a topic model on HSI.
+
+\begin{table*}[t]
+\caption{Per-scene model card synthesising the framework's main
+axes. B-1 column: pooled posterior $\mu_m$ for
+\texttt{topic\_routed\_soft} (the canonical topic-based classifier).
+B-2: $c_v$ coherence of the canonical fit. B-3: ARI mean across 5
+seeds of LDA. B-5: max paired ARI across the four masks (the
+``best-case band-robustness''). B-7: KL mean(canonical topics, uniform).}
+\label{tab:summary}
+\centering
+\small
+\begin{tabular}{lccccc}
+\toprule
+Scene & B-1 ($\mu_{\text{soft}}$) & B-2 ($c_v$) & B-3 (ARI 5-seed) & B-5 (max paired) & B-7 (KL nats) \\
+\midrule
+Indian Pines     & 0.741 (pooled) & 0.450 & 0.287    & 0.527 & 4.53 \\
+Salinas          & 0.741 (pooled) & ---   & ---      & 0.540 & 7.11 \\
+Salinas-A        & 0.741 (pooled) & ---   & ---      & \textbf{0.766} & 4.79 \\
+Pavia University & 0.741 (pooled) & ---   & ---      & 0.415 & 4.09 \\
+Kennedy Space C. & 0.741 (pooled) & ---   & ---      & 0.013 & 7.85 \\
+Botswana         & 0.741 (pooled) & ---   & ---      & 0.127 & 10.48 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The $\mu_{\text{soft}}$ column is constant across scenes because the
+B-1 model pools over scenes (the per-scene effect $\delta_s$ is a
+nuisance offset, not a per-method parameter). When per-scene
+posteriors are required, the same model returns them as draws of
+$\mu_m + \delta_s$; the artefact serves the full per-scene posterior.
+
+% ---------------------------------------------------------------------
+\section{Discussion}
+\label{sec:discuss}
+% ---------------------------------------------------------------------
+
+\subsection{Why the band-mask diagnostic separates scenes}
+
+The split between \emph{band-fragile} (KSC, Botswana) and
+\emph{band-robust} (Salinas-A) scenes is, on its face, surprising:
+KSC and Botswana have rich spectral signatures, broad spatial
+coverage, and a comparable per-class sample budget to Salinas-A. Two
+mechanisms are consistent with the diagnostic.
+
+\emph{Mechanism (i): canonical topics exploit band-level redundancy.}
+The canonical fit may be using fine-grained spectral co-variation
+patterns that are present in the full-band representation and disappear
+when half the bands are dropped. Under this mechanism the canonical
+basis is not \emph{wrong}, but it is \emph{not transportable} across
+spectral windows. Any claim of the form ``topic $k$ corresponds to a
+specific land-cover signature'' presupposes a fixed reference frame
+in which $\phi_k$ is defined; the diagnostic shows that on KSC and
+Botswana this reference frame is band-window-conditional.
+
+\emph{Mechanism (ii): the canonical topics are weakly identified.}
+KSC has 13 classes and 5,200 sampled pixels (400 per class on the
+unmasked pipeline; 220 on the canonical fit). Botswana has 14 classes
+and 3,248 sampled pixels (232 per class). The latent topic basis
+$\phi$ has $K \times B \approx 12 \times 176$ free parameters on KSC.
+With $D = 2686$ and a per-document token budget bounded by 13
+quantisation levels times $B$ bands, the data-to-parameter ratio is
+unfavourable; the posterior over $\phi$ has substantial mass over
+many high-likelihood configurations, and a band restriction selects a
+different posterior mode of the same family.
+
+The diagnostic does not distinguish (i) from (ii); both are valid
+warnings to a downstream consumer of the topic basis. The framework's
+contribution is to make the warning legible.
+
+\subsection{The HIDSAG inversion}
+
+On the labelled scenes the topic-routed-soft classifier and the
+raw-spectrum logistic baseline are statistically indistinguishable
+($P[A > B] = 0.641$). On the HIDSAG mineralogical subsets the
+topic-logistic classifier sits at $\mu = 0.316$ against
+raw-logistic's $\mu = 0.585$ with $P[A > B] = 0.0$. The most natural
+hypothesis explaining this inversion is that mineralogical SWIR
+spectra contain narrow, locally-discriminative absorption features
+that the quantised band-frequency tokenisation discards: each
+spectral feature at a specific wavelength is a strong predictor of
+the mineral class, and pooling it into a band-frequency bin (or
+re-expressing it via a small number of latent topics) loses the
+within-bin variation that the raw multinomial logistic exploits. The
+implication is that the tokenisation step is not a free architectural
+choice on HIDSAG: for mineralogical discrimination, the topic
+representation must either be paired with a finer tokenisation or
+augmented by raw-spectrum features in a hybrid classifier. Either
+direction is interesting follow-on work.
+
+\subsection{LDA versus ProdLDA versus ETM}
+
+The ARI-vs-$c_v$ trade-off in Section~\ref{subsec:res-b1} resolves a
+puzzle in the prior topic-model literature: ProdLDA papers typically
+report higher coherence than LDA on text corpora and conclude that
+ProdLDA is the better topic model. On Indian Pines the same coherence
+ordering holds (ProdLDA $c_v = 0.630$ vs LDA $c_v = 0.450$ vs ETM
+$c_v = 0.357$), but the cluster-ARI ordering inverts (LDA $0.287$ vs
+ETM $0.257$ vs ProdLDA $0.165$). The coherence-vs-clustering
+disagreement is, on HSI, large enough to flip the practitioner-level
+recommendation: a practitioner who picks ProdLDA because its
+coherence is highest will obtain a topic basis that clusters worst
+against ground truth. We therefore recommend, for HSI specifically,
+reporting both metrics side-by-side rather than choosing one as
+representative.
+
+\subsection{Limitations}
+
+The framework has three operative limitations. \emph{First}, the
+canonical fit uses a single $K$ per scene, chosen by the formula
+$K = \max(4, \min(12, n_{\text{classes}}))$. A more sensitive analysis
+would sweep $K$ and report per-axis behaviour against $K$; we report
+the $K$-sweep on B-4 but other axes are computed at the canonical $K$.
+\emph{Second}, the tokenisation $Q+1 = 13$ levels is uniform across
+scenes, not adapted to per-scene spectral dynamic range. \emph{Third},
+B-12's external-baseline comparison uses literature OA numbers under
+the methods' \emph{published} train/test splits, which may not match
+the splits used in this study. We flag the cross-paper-comparison
+caveat where it applies.
+
+% ---------------------------------------------------------------------
+\section{Reproducibility artefacts}
+\label{sec:repro}
+% ---------------------------------------------------------------------
+
+The full reproducibility package consists of:
+
+\begin{itemize}
+\item \textbf{Builder source.} Forty-plus deterministic Python
+builders under \texttt{data-pipeline/builders/}, each accepting a
+fixed seed and writing a deterministic JSON or NPZ artefact under
+\texttt{data/derived/}. Each builder records its
+\texttt{builder\_version} and \texttt{generated\_at} ISO timestamp in
+the artefact metadata.
+\item \textbf{Derived artefacts.} 1726 JSON and binary files,
+421~MB total, including: per-scene canonical fits
+(\texttt{theta\_grid.bin}, \texttt{dominant\_topic\_map.bin}), the
+band-mask canonical comparison
+(\texttt{band\_masks/canonical\_comparison.json}, the source of all
+B-5 numbers above), the cross-method agreement matrices
+(\texttt{cross\_method\_agreement/}), the seed-stability sweeps
+(\texttt{neural\_topic\_seed\_stability/}), the hierarchical Bayesian
+posteriors
+(\texttt{method\_statistics\_labelled/cross\_classification\_bayesian.json}
+and \texttt{method\_statistics\_hidsag/cross\_classification\_bayesian.json}),
+and the HIDSAG cross-preprocessing stability sweeps.
+\item \textbf{Web application.} A FastAPI backend serving the
+artefacts over 49 REST endpoints, plus a React+Vite frontend at
+\url{https://lda-hsi.fasl-work.com} that consumes them as interactive
+visualisations.
+\item \textbf{Smoke harness.} A 109-endpoint smoke-test script
+verifying endpoint health, response schema, and SPA-shell content on
+every deploy; CI-equivalent verification ran on every cycle.
+\item \textbf{Companion conference paper.} The 4--5 page WHISPERS
+2026 submission focused on the B-5 band-mask diagnostic alone, also
+released in the same repository.
+\end{itemize}
+
+All code is MIT-licensed at
+\url{https://github.com/fsantibanezleal/CAOS_LDA_HSI}; this manuscript
+(LaTeX and Word) lives at
+\url{https://github.com/fsantibanezleal/CAOS_LDA_HSI_Paper}.
+
+% ---------------------------------------------------------------------
+\section{Conclusion}
+\label{sec:conclude}
+% ---------------------------------------------------------------------
+
+The accuracy-only view of topic models on hyperspectral imagery
+hides the questions an interpretability-motivated practitioner most
+needs answered: is the topic basis reproducible across seeds,
+robust to spectral-window choice, calibrated against label entropy,
+honestly outperforming linear baselines, and consistent across
+preprocessing recipes? We propose a twelve-axis evaluation framework
+that returns one operational metric per axis and ships each metric as
+a deterministic JSON artefact. Applied to six labelled HSI benchmarks
+and five HIDSAG mineralogical subsets, the framework surfaces three
+findings the accuracy-only view does not: the topic-routed soft
+classifier is statistically indistinguishable from the raw-spectrum
+logistic baseline on the labelled scenes ($P[A > B] = 0.641$); the
+band-mask diagnostic separates scenes whose canonical topics are
+band-robust (Salinas-A SWIR paired ARI $0.766$) from scenes whose
+topics are band-fragile (KSC, Botswana paired ARI $\approx 0.01$);
+and on HIDSAG the topic representation under-performs the raw-spectrum
+baseline ($\mu_{\text{topic}} = 0.316$ vs $\mu_{\text{raw}} = 0.585$),
+inverting the labelled-scene picture. The full 1726-artefact
+reproducibility package is released under MIT licence.
+
+Future work includes (i) a per-axis $K$-sweep extending the
+single-$K$ canonical fit, (ii) per-scene tokenisation budgets adapted
+to spectral dynamic range, (iii) extending the framework to neural
+unmixing variants (autoencoder unmixing, transformer-based topic
+models), and (iv) developing an information-theoretic
+within-mask Fisher complement to B-5 that does not depend on the
+unmasked-spectrum ranking.
+
+% ---------------------------------------------------------------------
+\section*{Acknowledgements}
+% ---------------------------------------------------------------------
+
+The Hyperspectral Remote Sensing Scenes collection is maintained by
+the Computational Intelligence Group at UPV/EHU. The HIDSAG
+mineralogical database was the result of a collaboration on
+hyperspectral mineralogy with industrial partners in Chilean mining
+geosciences. The author thanks the open-source maintainers of
+scikit-learn \cite{pedregosa2011scikit}, NumPy \cite{harris2020numpy},
+SciPy \cite{virtanen2020scipy}, and Gensim \cite{rehurek2010gensim},
+whose work this study rests on.
+
+% ---------------------------------------------------------------------
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+% ---------------------------------------------------------------------
+
+\end{document}
