@@ -27,7 +27,7 @@ Companion to `journal/tex/main.tex` (IEEE TGRS target, ~20-25 pages):
 | A | §I  Introduction | The accuracy-only view and why it fails | `build/journal_suppl_A_introduction.pdf` |
 | B | §II Related Work | Full related-work taxonomy | `build/journal_suppl_B_related_work.pdf` |
 | C | §III Twelve-axis framework | Per-axis motivation + alternatives considered | `build/journal_suppl_C_axis_motivation.pdf` |
-| D | §IV Method | Full mathematical derivations (B-1..B-12) | `build/journal_suppl_D_mathematical_derivations.pdf` |
+| D | §IV Method | Full mathematical derivations (F-1..F-12) | `build/journal_suppl_D_mathematical_derivations.pdf` |
 | E | §V Experimental setup | Full dataset descriptors incl. HIDSAG depth | `build/journal_suppl_E_datasets.pdf` |
 | F | §VI Results | Extended per-axis results across 6 scenes + 5 HIDSAG subsets | `build/journal_suppl_F_extended_results.pdf` |
 | G | §VII Discussion | Limitations + threats to validity + 2nd-paper redesign notes | `build/journal_suppl_G_limitations.pdf` |

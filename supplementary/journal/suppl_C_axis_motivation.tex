@@ -13,13 +13,13 @@
 \maketitle
 
 \section{Scope}
-This supplement documents, per axis B-1 through B-12, the question
+This supplement documents, per axis F-1 through F-12, the question
 the axis answers, the metric chosen, the alternatives considered,
 and the design rationale for the final selection. The intent is
 that a reader could substitute an alternative metric within an axis
 without re-architecting the framework.
 
-\section{B-1: Hierarchical Bayesian classification}
+\section{F-1: Hierarchical Bayesian classification}
 
 \paragraph{Question.} ``Does the topic representation outperform
 non-topic baselines after pooling across scenes and folds?''
@@ -41,7 +41,7 @@ interpretable as a graded ordering. The NUTS sampler with 1000
 draws + 1000 tune + 2 chains is the default PyMC configuration; no
 divergences are observed.
 
-\section{B-2: Topic-word coherence}
+\section{F-2: Topic-word coherence}
 
 \paragraph{Question.} ``Are the top-$N$ words per topic semantically
 coherent under the corpus's own co-occurrence statistics?''
@@ -62,7 +62,7 @@ check; U-Mass is the historical reference. The three-way report
 also enables the coherence-vs-ARI scatter that surfaces the
 LDA-vs-ProdLDA tradeoff.
 
-\section{B-3: Seed stability}
+\section{F-3: Seed stability}
 
 \paragraph{Question.} ``Does refitting under a different random
 seed yield the same topics?''
@@ -84,7 +84,7 @@ std reliably for a unimodal posterior; multi-modal posteriors (which
 we suspect on KSC and Botswana) would benefit from larger $N$ and
 are flagged for follow-up.
 
-\section{B-4: Capacity sensitivity}
+\section{F-4: Capacity sensitivity}
 
 \paragraph{Question.} ``How does the topic representation change
 when one allows $K$ to vary?''
@@ -106,7 +106,7 @@ high, ARI low), overfitting on tokenisation noise (perplexity low,
 diversity collapses), and topic splitting/merging without ARI gain
 (matched-cosine high but ARI flat).
 
-\section{B-5: Band-mask robustness}
+\section{F-5: Band-mask robustness}
 
 \paragraph{Question.} ``Does the topic basis survive a class of
 spectral-window restrictions?''
@@ -130,7 +130,7 @@ swap-rate is the un-corrected fraction and the Hungarian alignment
 is the per-topic correspondence; the three together constitute the
 axis output.
 
-\section{B-6: Cross-method clustering agreement}
+\section{F-6: Cross-method clustering agreement}
 
 \paragraph{Question.} ``How does the canonical topic-dominant map
 relate to other partitions of the same scene?''
@@ -151,7 +151,7 @@ inductive biases (e.g.\ SLIC-500 and patch-15 are spatially smooth
 and agree highly even though they disagree with the ground-truth
 label) that a single-row reference cannot show.
 
-\section{B-7: Topic--label coupling}
+\section{F-7: Topic--label coupling}
 
 \paragraph{Question.} ``How concentrated is the support of each
 canonical topic on the ground-truth label?''
@@ -161,7 +161,7 @@ $H(L \mid t) = -\sum_\ell P(\ell \mid t) \log P(\ell \mid t)$ and
 the corresponding KL divergence $\KL{P(L \mid t)}{P(L)}$.
 
 \paragraph{Alternatives considered.} (a)~Topic-to-label hard
-mapping via Hungarian (a special case of B-8 applied to the label
+mapping via Hungarian (a special case of F-8 applied to the label
 side); (b)~Mutual information $I(L; T)$ (a corpus-level summary,
 useful as a single-number companion); (c)~Topic precision/recall on
 the dominant-label hypothesis (per-(topic, label) but multiplies
@@ -172,7 +172,7 @@ interpretation as concentration / divergence from the marginal,
 and integrate cleanly with the dominant-topic-map raster that the
 framework already produces.
 
-\section{B-8: Per-topic identity tracking under masks}
+\section{F-8: Per-topic identity tracking under masks}
 
 \paragraph{Question.} ``Which masked topic corresponds to which
 canonical topic, and how much disagreement survives the
@@ -194,7 +194,7 @@ $K$).
 in $O(K^3)$ on $K \le 12$ in milliseconds and is the standard
 benchmark in the cluster-comparison literature.
 
-\section{B-9: Preprocessing stability (HIDSAG)}
+\section{F-9: Preprocessing stability (HIDSAG)}
 
 \paragraph{Question.} ``Does the topic basis survive a change in
 the preprocessing pipeline (continuum removal, smoothing,
@@ -205,7 +205,7 @@ recipe B) per pair, summarised as the mean ARI across the
 $\binom{R}{2} = 3$ pairs for $R = 3$ recipes.
 
 \paragraph{Alternatives considered.} (a)~Phi-cosine pairwise
-(basis-level, parallel to B-5's alternative); (b)~Recipe-conditioned
+(basis-level, parallel to F-5's alternative); (b)~Recipe-conditioned
 classification accuracy (drops the topic-level question);
 (c)~Procrustes alignment of $\phi$ matrices (returns a continuous
 similarity but does not produce a discrete per-pair scalar).
@@ -213,7 +213,7 @@ similarity but does not produce a discrete per-pair scalar).
 \paragraph{Rationale.} Mean pairwise ARI is the simplest summary
 that yields a per-subset scalar comparable across HIDSAG subsets.
 
-\section{B-10: Cross-scene topic transfer}
+\section{F-10: Cross-scene topic transfer}
 
 \paragraph{Question.} ``Does the canonical topic basis on scene $s$
 generate a useful topic representation on scene $t$?''
@@ -232,7 +232,7 @@ transfer is useful downstream).
 interpretable transfer score and is symmetric in the sense of
 producing both $s \to t$ and $t \to s$ numbers.
 
-\section{B-11: Rate--distortion of $\theta$}
+\section{F-11: Rate--distortion of $\theta$}
 
 \paragraph{Question.} ``How aggressively does the topic
 representation compress the spectrum while remaining useful?''
@@ -246,7 +246,7 @@ tokenisation-loss component into the rate--distortion curve. We
 flag this as a limitation in journal §VII and as a candidate for
 follow-up axis design.
 
-\section{B-12: External baseline comparison}
+\section{F-12: External baseline comparison}
 
 \paragraph{Question.} ``How does the canonical topic-routed-soft OA
 compare to the literature on the same scene?''

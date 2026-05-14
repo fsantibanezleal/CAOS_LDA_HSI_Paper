@@ -95,7 +95,7 @@ def main() -> int:
                             fontsize=9)
     axes[0].legend(loc="upper right", fontsize=9, frameon=False)
 
-    fig.suptitle("Seed-stability swarm (axis B-3): 5 seeds per (scene, method)",
+    fig.suptitle("Seed-stability swarm (axis F-3): 5 seeds per (scene, method)",
                  fontsize=11, y=0.995)
     fig.tight_layout()
 

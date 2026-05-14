@@ -1,4 +1,4 @@
-"""Cross-method ARI agreement matrix grid (axis B-6) — one panel per
+"""Cross-method ARI agreement matrix grid (axis F-6) — one panel per
 scene, full 8x8 ARI matrix.
 
 Reads `cross_method_agreement/<scene>.json` whose `ari_matrix` field
@@ -96,7 +96,7 @@ def main() -> int:
                             location="right")
         cbar.set_label("ARI", fontsize=9)
 
-    fig.suptitle("Cross-method ARI agreement (axis B-6) — "
+    fig.suptitle("Cross-method ARI agreement (axis F-6) — "
                  "8 methods × 6 scenes",
                  fontsize=11, y=1.00)
     fig.tight_layout(rect=[0, 0, 0.92, 0.97])

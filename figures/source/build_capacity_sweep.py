@@ -1,4 +1,4 @@
-"""Capacity-K sweep (axis B-4) — perplexity, topic diversity, and
+"""Capacity-K sweep (axis F-4) — perplexity, topic diversity, and
 matched-cosine vs K for the six labelled scenes.
 
 Reads `lda_sweep/<scene>.json` whose `grid` field carries per-K
@@ -78,7 +78,7 @@ def main() -> int:
                  transform=axes[0].transAxes, fontsize=7.5,
                  ha="right", va="bottom", color="#666")
 
-    fig.suptitle("LDA capacity sweep (axis B-4) — perplexity, diversity, "
+    fig.suptitle("LDA capacity sweep (axis F-4) — perplexity, diversity, "
                  "cross-seed basis cosine", fontsize=11, y=0.995)
     fig.tight_layout()
 

@@ -5,7 +5,7 @@
 The two manuscripts:
 
 - **Conference paper** (4-8 pages): band-mask robustness diagnostic on 6 labelled scenes + 5 HIDSAG mineral subsets, paired ARI under 4 spectral restriction policies, Hungarian topic-id alignment. Headline finding is honest reporting of a partial-negative result (KSC + Botswana paired ARI ≈ 0.01; Salinas-A SWIR-only paired ARI = 0.77).
-- **Journal article** (20-30 pages): full multi-axis (B-1..B-12) reproducibility framework, online-VB LDA as canonical, neural-topic comparison (ProdLDA / ETM), deep encoder baselines (CAE-1D/2D/3D, β-VAE), HIDSAG mineral case study, public artefacts (1726+ JSON / binary), FastAPI backend, 109-endpoint smoke harness.
+- **Journal article** (20-30 pages): full multi-axis (F-1..F-12) reproducibility framework, online-VB LDA as canonical, neural-topic comparison (ProdLDA / ETM), deep encoder baselines (CAE-1D/2D/3D, β-VAE), HIDSAG mineral case study, public artefacts (1726+ JSON / binary), FastAPI backend, 109-endpoint smoke harness.
 
 The work sits at the **intersection of remote sensing, image processing, and reproducible-ML methodology** with a clear remote-sensing application surface. That dual identity broadens the venue space but also means scope alignment varies sharply by venue.
 

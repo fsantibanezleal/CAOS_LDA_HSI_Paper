@@ -142,7 +142,7 @@ def main() -> int:
                    "(d) HIDSAG — P[A > B]")
 
     fig.suptitle(
-        "Hierarchical-Bayesian method comparison (axis B-1) — "
+        "Hierarchical-Bayesian method comparison (axis F-1) — "
         "NUTS, 1000 draws, 2 chains",
         fontsize=11, y=1.00,
     )

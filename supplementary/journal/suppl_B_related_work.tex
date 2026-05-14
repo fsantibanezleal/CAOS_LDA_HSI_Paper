@@ -50,7 +50,7 @@ the relevance score $\lambda \phi_{k,b} + (1-\lambda) \log
 \phi_{k,b}/p_b$. We use $\lambda = 0.5$ for the per-topic top-word
 extraction. Taddy~\cite{taddy2012estimation} provided the formal
 relationship between topic-word and word-topic probabilities used
-in the journal's B-7 axis.
+in the journal's F-7 axis.
 
 \section{Neural topic models}
 
@@ -80,7 +80,7 @@ literature for HSI is thin. ProdLDA and ETM have been applied to
 text corpora extensively but to HSI rarely; the small body of HSI
 papers that cite either method typically applies them on a single
 scene with a single seed. The seed-stability swarms we report
-(axis B-3, journal Figure 4) are, to our knowledge, the first
+(axis F-3, journal Figure 4) are, to our knowledge, the first
 multi-seed ProdLDA and ETM evaluations on the six labelled
 benchmarks.
 
@@ -126,7 +126,7 @@ recommends.
 \cite{roder2015exploring} surveyed coherence measures and showed
 that the sliding-window $c_v$ measure tracks human judgements of
 interpretability more reliably than perplexity. We use $c_v$,
-$c_{\text{NPMI}}$, and U-Mass for axis B-2.
+$c_{\text{NPMI}}$, and U-Mass for axis F-2.
 
 \paragraph{Clustering comparison.} Hubert and Arabie
 \cite{hubert1985ari} formalised the adjusted Rand index. Vinh,
@@ -136,7 +136,7 @@ discussed when each is preferable.
 
 \paragraph{Bipartite matching.} Kuhn~\cite{kuhn1955hungarian}
 introduced the Hungarian algorithm for the maximum-weight bipartite
-matching problem that the topic-id permutation step (axis B-8)
+matching problem that the topic-id permutation step (axis F-8)
 solves. The numerical implementation we use is in
 SciPy~\cite{virtanen2020scipy,scipy_assignment}.
 
@@ -150,7 +150,7 @@ instantiation of that checklist.
 \cite{koltchinskii2000empirical} provides the empirical-process
 foundation for the stability bounds used in seed-stability
 analysis. Achanta et al.~\cite{achanta2012slic} introduced SLIC,
-which we use as a cross-method-agreement baseline in axis B-6;
+which we use as a cross-method-agreement baseline in axis F-6;
 Felzenszwalb and Huttenlocher~\cite{felzenszwalb2004efficient}
 provided the spatial-graph segmentation we use as the
 non-spectral counterpart.

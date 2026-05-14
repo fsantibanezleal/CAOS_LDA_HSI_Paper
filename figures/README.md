@@ -9,15 +9,15 @@ from a single Python script under `figures/source/`.
 
 | Figure file | Built by | Primary source artefact(s) | Used in |
 |---|---|---|---|
-| `paired-ari-heatmap.{svg,pdf}` | `source/build_paired_ari_heatmap.py` | `band_masks/canonical_comparison.json` | Conf §IV, Journal B-5 |
-| `hungarian-alignment-example.{svg,pdf}` | `source/build_hungarian_alignment.py` | `topic_to_data/salinas-a-corrected_dominant_topic_map.bin` + `band_masks/salinas-a-corrected/swir/dominant_topic_map.bin` + canonical_comparison.json (for σ\*) | Conf §IV, Journal B-8 |
-| `bayesian-method-comparison.{svg,pdf}` | `source/build_bayesian_method_comparison.py` | `method_statistics_{labelled,hidsag}/cross_classification_bayesian.json` | Journal B-1 |
+| `paired-ari-heatmap.{svg,pdf}` | `source/build_paired_ari_heatmap.py` | `band_masks/canonical_comparison.json` | Conf §IV, Journal F-5 |
+| `hungarian-alignment-example.{svg,pdf}` | `source/build_hungarian_alignment.py` | `topic_to_data/salinas-a-corrected_dominant_topic_map.bin` + `band_masks/salinas-a-corrected/swir/dominant_topic_map.bin` + canonical_comparison.json (for σ\*) | Conf §IV, Journal F-8 |
+| `bayesian-method-comparison.{svg,pdf}` | `source/build_bayesian_method_comparison.py` | `method_statistics_{labelled,hidsag}/cross_classification_bayesian.json` | Journal F-1 |
 | `coherence-vs-ari.{svg,pdf}` | `source/build_coherence_vs_ari.py` | `neural_topic_comparison/<scene>.json` × 6 | Journal V.C, Suppl F |
-| `seed-stability-swarm.{svg,pdf}` | `source/build_seed_stability_swarm.py` | `neural_topic_seed_stability/<scene>.json` × 6 | Journal B-3, Suppl F |
-| `capacity-sweep.{svg,pdf}` | `source/build_capacity_sweep.py` | `lda_sweep/<scene>.json` × 6 | Journal B-4, Suppl F |
-| `cross-method-ari-grid.{svg,pdf}` | `source/build_cross_method_grid.py` | `cross_method_agreement/<scene>.json` × 6 | Journal B-6, Suppl F |
+| `seed-stability-swarm.{svg,pdf}` | `source/build_seed_stability_swarm.py` | `neural_topic_seed_stability/<scene>.json` × 6 | Journal F-3, Suppl F |
+| `capacity-sweep.{svg,pdf}` | `source/build_capacity_sweep.py` | `lda_sweep/<scene>.json` × 6 | Journal F-4, Suppl F |
+| `cross-method-ari-grid.{svg,pdf}` | `source/build_cross_method_grid.py` | `cross_method_agreement/<scene>.json` × 6 | Journal F-6, Suppl F |
 | `basis-spectra-grid.{svg,pdf}` | `source/build_basis_spectra_grid.py` | `topic_views/<scene>.json` × 6 (`topic_band_profiles`, `wavelengths_nm`) | Journal III, Suppl D |
-| `hidsag-band-mask.{svg,pdf}` | `source/build_hidsag_band_mask.py` | `band_masks_hidsag/index.json` | Journal B-5 (HIDSAG side), Suppl F |
+| `hidsag-band-mask.{svg,pdf}` | `source/build_hidsag_band_mask.py` | `band_masks_hidsag/index.json` | Journal F-5 (HIDSAG side), Suppl F |
 | `topic-profile-cards-salinas-a.{svg,pdf}` | `source/build_topic_profile_cards.py` | `topic_views/salinas-a-corrected.json` + `topic_to_data/salinas-a-corrected.json` | Suppl H |
 | `topic-profile-cards-indian-pines.{svg,pdf}` | same | `topic_views/indian-pines-corrected.json` + `topic_to_data/indian-pines-corrected.json` | Suppl H |
 | `topic-spectra-contrast.{svg,pdf}` | `source/build_topic_spectra_contrast.py` | `topic_views/{salinas-a-corrected,kennedy-space-center}.json` | Suppl H |

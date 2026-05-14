@@ -1,5 +1,5 @@
 % Supplementary F — Journal §VI (Results)
-% Extended per-axis results: full tables for B-1..B-12 across 6 scenes
+% Extended per-axis results: full tables for F-1..F-12 across 6 scenes
 % + 5 HIDSAG subsets.
 
 \documentclass[11pt,a4paper]{article}
@@ -19,7 +19,7 @@ labelled scenes and 5 HIDSAG subsets that did not fit in journal
 Section~VI. All numbers are read directly from the public artefacts
 in \texttt{CAOS\_LDA\_HSI/data/derived/}.
 
-\section{Axis B-1: hierarchical Bayesian classification --- pairwise $P[A>B]$}
+\section{Axis F-1: hierarchical Bayesian classification --- pairwise $P[A>B]$}
 
 \subsection{Labelled-scene block}
 
@@ -78,7 +78,7 @@ The HIDSAG inversion is the row-pattern of raw\_logistic: 1.00, 0.72,
 with $P = 1.00$ against $\theta$-logistic and region-topic. The
 ordering is exactly the labelled-scene ordering inverted.
 
-\section{Axis B-2: per-scene coherence}
+\section{Axis F-2: per-scene coherence}
 
 \begin{table}[h]
 \caption{Canonical-fit coherence per scene at $N = 15$ top words.}
@@ -99,7 +99,7 @@ Botswana         & 0.473 & ---       & --- \\
 \end{tabular}
 \end{table}
 
-\section{Axis B-3: seed stability per (scene, method)}
+\section{Axis F-3: seed stability per (scene, method)}
 
 \begin{table}[h]
 \caption{ARI mean $\pm$ std over 5 seeds. $c_v$ mean reported alongside.}
@@ -138,7 +138,7 @@ neural-topic-model seed-stability is, on these benchmarks, a
 mean-shift between methods rather than a per-method variance
 problem.
 
-\section{Axis B-4: capacity sweep --- recommended $K$ per scene}
+\section{Axis F-4: capacity sweep --- recommended $K$ per scene}
 
 \begin{table}[h]
 \caption{Per-scene recommended $K$ from the LDA sweep. The recipe
@@ -168,14 +168,14 @@ in the paper. The difference is by design: the canonical $K$ is
 chosen for downstream classification surface coverage, the
 recommended $K$ is chosen for basis-stability.
 
-\section{Axis B-5: full paired ARI per (scene, mask)}
+\section{Axis F-5: full paired ARI per (scene, mask)}
 
 Restated from conference supplement D for completeness: paired ARI
 values are in conference table I of the main paper. The full table
 with swap rates, bands kept, perplexity, and ARI-vs-label is in
 conference supplement D.
 
-\section{Axis B-6: cross-method ARI per scene}
+\section{Axis F-6: cross-method ARI per scene}
 
 \begin{table}[h]
 \caption{Cross-method ARI on Indian Pines (excerpt from journal Table
@@ -198,7 +198,7 @@ patch-15      & 0.28 & 0.05 & 0.37 & 0.36 & 0.15 & ---  \\
 \end{tabular}
 \end{table}
 
-\section{Axis B-7: topic--label coupling per scene}
+\section{Axis F-7: topic--label coupling per scene}
 
 \begin{table}[h]
 \caption{Per-scene mean and max KL between $P(L \mid t)$ and the
@@ -220,7 +220,7 @@ Botswana     & 10.48 & 27.63 \\
 \end{tabular}
 \end{table}
 
-\section{Axis B-9: HIDSAG preprocessing stability per subset}
+\section{Axis F-9: HIDSAG preprocessing stability per subset}
 
 \begin{table}[h]
 \caption{HIDSAG cross-preprocessing ARI (mean over the 3 recipe
@@ -242,7 +242,7 @@ PORPHYRY & (reported in artefact) \\
 \end{tabular}
 \end{table}
 
-\section{Axis B-12: external baseline deltas}
+\section{Axis F-12: external baseline deltas}
 
 \begin{table}[h]
 \caption{Per-scene OA delta between the canonical topic-routed-soft

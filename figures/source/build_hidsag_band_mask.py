@@ -1,4 +1,4 @@
-"""HIDSAG band-mask sweep figure (axis B-5 complement on the
+"""HIDSAG band-mask sweep figure (axis F-5 complement on the
 mineralogical side).
 
 HIDSAG has no per-pixel ground-truth label, so the paired-ARI metric
@@ -94,7 +94,7 @@ def main() -> int:
         fig.colorbar(im, ax=ax, fraction=0.04, pad=0.03)
 
     fig.suptitle("HIDSAG mineral subsets — band-mask sweep "
-                 "(axis B-5 complement, no per-pixel ground truth)",
+                 "(axis F-5 complement, no per-pixel ground truth)",
                  fontsize=11, y=1.02)
     fig.tight_layout()
 

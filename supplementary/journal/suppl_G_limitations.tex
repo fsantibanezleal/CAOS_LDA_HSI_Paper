@@ -24,7 +24,7 @@ benchmark set, (c)~statistical caveats around the inference, and
 
 \subsection{Canonical $K$ is held fixed within an axis}
 Every axis is computed at the canonical $K = \max(4, \min(12,
-n_{\text{classes}}))$ except for B-4 (capacity sweep). This is by
+n_{\text{classes}}))$ except for F-4 (capacity sweep). This is by
 design: changing $K$ between axes would introduce a second degree of
 freedom that mixes with the axis-specific perturbation
 (seed / band / preprocessing / scene). The trade-off is that the
@@ -94,7 +94,7 @@ not resolvable from the present data; we flag the open question.
 \section{Statistical caveats}
 
 \subsection{Hierarchical Bayesian model assumes Gaussian residuals}
-The B-1 likelihood
+The F-1 likelihood
 $\epsilon_{m,s,f} \sim \mathcal{N}(0, \sigma^2)$ is a standard
 working assumption for OA-scaled residuals on $[0, 1]$. On the
 present benchmarks the residuals are not visibly non-Gaussian (no
@@ -159,11 +159,11 @@ If we were to redesign the framework from scratch given everything
 we now know:
 
 \begin{enumerate}
-\item Move per-axis $K$-sweep from a separate axis (B-4) to a layer
-that wraps every other axis: report (B-1, B-2, ..., B-12) at
+\item Move per-axis $K$-sweep from a separate axis (F-4) to a layer
+that wraps every other axis: report (F-1, F-2, ..., F-12) at
 $K \in \{4, 6, 8, 10, 12, 16\}$ rather than at the canonical $K$
 only.
-\item Replace B-12 (external baseline OA delta) with an
+\item Replace F-12 (external baseline OA delta) with an
 internal-comparison axis: compare the canonical topic-routed-soft
 against a fixed deep baseline trained inside the framework on the
 same train/test splits. The current external baseline carries the

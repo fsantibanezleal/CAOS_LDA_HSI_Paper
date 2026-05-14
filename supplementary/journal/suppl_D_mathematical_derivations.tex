@@ -1,5 +1,5 @@
 % Supplementary D — Journal §IV (Method)
-% Full mathematical derivations for each axis B-1 through B-12.
+% Full mathematical derivations for each axis F-1 through F-12.
 
 \documentclass[11pt,a4paper]{article}
 \input{../preamble.tex}
@@ -61,7 +61,7 @@ $\phi_{k,b} = \beta_{k,b} / \sum_v \beta_{k,v}$;
 $\theta_{d,k} = \gamma_{d,k} / \sum_{k'} \gamma_{d,k'}$;
 $z_d = \arg\max_k \theta_{d,k}$.
 
-\section{Axis B-1: hierarchical Bayesian model}
+\section{Axis F-1: hierarchical Bayesian model}
 
 \subsection{Likelihood}
 For $M$ methods, $S$ scenes, $F$ folds, observed fold-OA scores
@@ -86,7 +86,7 @@ P[\mu_A > \mu_B] \approx \frac{1}{T} \sum_{t=1}^{T}
 \end{equation}
 with $T = 2000$ draws across two chains.
 
-\section{Axis B-2: coherence measures}
+\section{Axis F-2: coherence measures}
 
 \subsection{$c_v$ coherence}
 For a topic $t$ with top-$N$ words $W_t = (w_1, \ldots, w_N)$, the
@@ -113,13 +113,13 @@ w_j)$.
 $\mathrm{U\!-\!Mass}(t) = \binom{N}{2}^{-1} \sum_{i<j} \log
 \frac{N(w_i, w_j) + 1}{N(w_j)}$.
 
-\section{Axis B-3: seed stability}
+\section{Axis F-3: seed stability}
 For each (scene, method): refit five LDA / ProdLDA / ETM under seeds
 $\{0, \ldots, 4\}$. For each refit compute KMeans clustering of
 $\theta$ into $K$ clusters; report ARI($z_{\text{KMeans}}$, label),
 $c_v$. Aggregate across seeds as mean $\pm$ std.
 
-\section{Axis B-4: capacity sensitivity}
+\section{Axis F-4: capacity sensitivity}
 Refit LDA at $K \in \{4, 6, 8, 10, 12, 16, 20, 24\}$ with the
 canonical hyperparameters, $N = 5$ seeds per $K$. Per-$K$ aggregates:
 \begin{itemize}
@@ -131,12 +131,12 @@ with $W_k^{(K)}$ the top-$N$ words per topic at capacity $K$,
 $\cos(\phi^{(s_1)}_k, \phi^{(s_2)}_{\sigma^*(k)})$.
 \end{itemize}
 
-\section{Axis B-5: paired ARI under masks}
+\section{Axis F-5: paired ARI under masks}
 Detailed in conference supplement B; restated here for cross-reference.
 $\ari_{\text{paired}}(m) = \ari(\{z_d\}_\mathcal{S},
 \{z^{(m)}_d\}_\mathcal{S})$.
 
-\section{Axis B-6: cross-method ARI}
+\section{Axis F-6: cross-method ARI}
 For each scene compute the partition set $\mathcal{P} = \{\text{label},
 \text{topic-dom}, \text{Felz}, \text{SLIC-500}, \text{SLIC-2000},
 \text{p-15}, \text{p-7}, \text{px}\}$. The reported matrix is
@@ -146,7 +146,7 @@ M_{ij} = \ari(\mathcal{P}_i, \mathcal{P}_j),
 restricted to pixels with a valid (non-sentinel) value in both
 partitions. NMI matrix is computed analogously.
 
-\section{Axis B-7: topic--label coupling}
+\section{Axis F-7: topic--label coupling}
 For each (canonical topic $t$, label $\ell$),
 $P(\ell \mid t) = N_{t,\ell} / \sum_{\ell'} N_{t,\ell'}$ with
 $N_{t,\ell}$ the count of pixels with dominant topic $t$ and ground
@@ -156,7 +156,7 @@ Per-topic KL divergence from the marginal:
 $\KL{P(L \mid t)}{P(L)} = \sum_\ell P(\ell \mid t)
 \log [P(\ell \mid t) / P(\ell)]$.
 
-\section{Axis B-8: per-topic Hungarian alignment}
+\section{Axis F-8: per-topic Hungarian alignment}
 Confusion matrix
 $C \in \mathbb{Z}^{K \times K^{(m)}}_{\ge 0}$,
 $C_{k, j} = |\{d \in \mathcal{S} : z_d = k \wedge z^{(m)}_d = j\}|$.
@@ -166,14 +166,14 @@ Swap rate:
 $\mathrm{swap} = |\mathcal{S}|^{-1} \sum_d \mathbf{1}[z^{(m)}_d \ne
 \sigma^*(z_d)]$.
 
-\section{Axis B-9: HIDSAG preprocessing stability}
+\section{Axis F-9: HIDSAG preprocessing stability}
 For each HIDSAG subset, $R = 3$ preprocessing recipes $\{\text{cont-rem},
 \text{deriv}, \text{smooth}\}$. For each recipe pair $(r_a, r_b)$
 compute $\ari(\text{dom-top}_{r_a}, \text{dom-top}_{r_b})$ on the
 documents present in both recipes. Per-subset aggregate is the mean
 over the $\binom{3}{2} = 3$ pairs.
 
-\section{Axis B-10: cross-scene transfer}
+\section{Axis F-10: cross-scene transfer}
 Given scene $s$ with canonical basis $\phi^{(s)}$, project the
 documents of scene $t$ through one E-step
 \begin{equation}
@@ -184,7 +184,7 @@ with $\lambda$ computed from $\phi^{(s)}$ frozen. The transfer
 report is
 $\ari(\text{label}_t, \arg\max_k \theta^{(t \leftarrow s)})$.
 
-\section{Axis B-11: rate--distortion}
+\section{Axis F-11: rate--distortion}
 Reconstruct
 $\hat{\mathbf{x}}_d = \sum_k \theta_{d,k} \phi_k^\top$ in the
 band-frequency-count space, then de-quantise to a continuous
@@ -193,14 +193,14 @@ $\hat{x}_{d,b} = c_{d,b}^{\text{recon}} / Q$. Distortion is
 $\mathrm{MSE} = D^{-1} \sum_d \|\hat{\mathbf{x}}_d
 - \mathbf{x}_d\|^2$ at rate $\log_2 K$ bits.
 
-\section{Axis B-12: external baseline}
+\section{Axis F-12: external baseline}
 For each labelled scene, collect three reference OA values from
 prior published work. Report
 $\Delta_s = \text{OA}_s^{\text{topic-routed-soft}}
 - \max_{r \in \text{refs}(s)} \text{OA}_s^{(r)}$
 with the per-paper split caveat.
 
-\section{Inverse Hungarian (used in B-8 swap-rate computation)}
+\section{Inverse Hungarian (used in F-8 swap-rate computation)}
 The post-permutation confusion matrix $\tilde{C}$ used for the
 journal Figure 3(b) panel is
 \begin{equation}
