@@ -1,0 +1,184 @@
+% Supplementary G — Journal §VII (Discussion)
+% Limitations and threats to validity at depth.
+
+\documentclass[11pt,a4paper]{article}
+\input{../preamble.tex}
+
+\title{Journal Supplementary G --- Limitations and threats to validity\\
+{\large Companion to: \emph{Beyond Accuracy} (Section VII)}}
+\author{Felipe Santib\'a\~nez-Leal}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope}
+This supplement enumerates the limitations and threats to validity
+of the twelve-axis framework at greater depth than journal Section
+VII admits. We organise them as (a)~design-time constraints baked
+into the framework, (b)~empirical caveats specific to the present
+benchmark set, (c)~statistical caveats around the inference, and
+(d)~reporting choices that may need revision in follow-up work.
+
+\section{Design-time constraints}
+
+\subsection{Canonical $K$ is held fixed within an axis}
+Every axis is computed at the canonical $K = \max(4, \min(12,
+n_{\text{classes}}))$ except for B-4 (capacity sweep). This is by
+design: changing $K$ between axes would introduce a second degree of
+freedom that mixes with the axis-specific perturbation
+(seed / band / preprocessing / scene). The trade-off is that the
+per-axis numbers depend on a non-trivially chosen $K$ that a future
+paper may want to vary; the framework admits per-axis $K$-sweeps as
+a forward-compatible extension without redesign.
+
+\subsection{Uniform tokenisation across scenes}
+$Q + 1 = 13$ quantisation levels is fixed across scenes. Scenes with
+narrow spectral dynamic range (Pavia U, ROSIS, 8-bit per band) and
+wide dynamic range (AVIRIS, 12-bit) are tokenised at the same
+resolution, which may waste resolution on the narrow-range scenes.
+A future paper exploring per-scene adaptive $Q$ should re-run all
+axes; the framework will automatically pick up the new $Q$ from the
+canonical-fit hyperparameter slate.
+
+\subsection{Hyperparameters $(\alpha, \eta)$ held fixed}
+$\alpha = 0.45, \eta = 0.20$ across all fits. These are scikit-learn
+LDA defaults that we have not tuned per scene. The companion code
+repository runs a hyperparameter grid in
+\texttt{lda\_hyperparam\_search/} for reference but the framework's
+canonical fit deliberately fixes the slate to keep cross-axis
+comparisons clean.
+
+\subsection{Stratified 220-per-class sampling}
+The canonical fit samples 220 pixels per admissible class without
+replacement. This caps the per-class effective budget regardless of
+how many labelled pixels a class actually has. Classes with very few
+labelled pixels (alfalfa on Indian Pines, oats) are dropped from the
+canonical fit on the standard $\ge 100$-pixel admissibility test.
+The framework reports the admissibility decisions in the per-scene
+JSON metadata.
+
+\section{Empirical caveats specific to the benchmark set}
+
+\subsection{Indian Pines is small and class-imbalanced}
+At $145 \times 145$ with 16 classes and a long tail (some classes have
+< 100 labelled pixels), Indian Pines is the smallest of the six
+labelled scenes. The per-axis numbers on Indian Pines should be
+treated with proportionate caution.
+
+\subsection{Salinas-A is a subset of Salinas}
+Salinas-A's six classes are a strict subset of Salinas's sixteen,
+and the spatial footprint of Salinas-A is a contiguous rectangle
+within Salinas. Numbers across these two ``scenes'' are
+\emph{not} independent. A future paper may report only one of the
+two; we report both because the band-mask diagnostic surfaces a
+qualitatively different finding on Salinas-A (SWIR-only paired ARI
+$= 0.766$) than on Salinas (SWIR-only paired ARI $= 0.435$), and
+the contrast is itself a finding.
+
+\subsection{Pavia U is VNIR-only by sensor design}
+The ROSIS-03 sensor on Pavia U covers 430--860~nm, which is entirely
+VNIR. The SWIR mask consequently retains 0 bands and is
+auto-skipped. The no-water mask is a no-op on Pavia U (no bands
+fall in the water-vapour ranges) and produces the same paired ARI as
+the VNIR mask. These artefacts are recorded transparently in the
+per-(scene, mask) JSON outputs.
+
+\subsection{Botswana and KSC have wetland-dominant land cover}
+The two scenes that consistently appear in the band-fragile regime
+share a wetland-dominant land cover. Whether band-fragility is a
+property of the LDA fit on these scenes, of the canonical
+hyperparameter slate, or of the wetland-spectral-signature itself is
+not resolvable from the present data; we flag the open question.
+
+\section{Statistical caveats}
+
+\subsection{Hierarchical Bayesian model assumes Gaussian residuals}
+The B-1 likelihood
+$\epsilon_{m,s,f} \sim \mathcal{N}(0, \sigma^2)$ is a standard
+working assumption for OA-scaled residuals on $[0, 1]$. On the
+present benchmarks the residuals are not visibly non-Gaussian (no
+heavy tails, no bimodality observed in the posterior predictive)
+but a Student-$t$ alternative may be appropriate on a benchmark set
+with a strong outlier.
+
+\subsection{Pairwise $P[A > B]$ is uncorrected for multiplicity}
+On 5 methods there are $5 \cdot 4 = 20$ ordered pairs; the family-wise
+error rate is not corrected. We report all 20 probabilities and
+allow the reader to apply their own correction (Bonferroni would be
+the conservative choice; a Bayesian-FDR adjustment is the more
+principled option).
+
+\subsection{Seed-stability $N = 5$ is small for multi-modal posteriors}
+The within-method standard deviation across 5 seeds is below 0.03 on
+all reported cells, suggesting a unimodal posterior on the present
+benchmarks. KSC and Botswana, on which the canonical basis appears
+weakly identified, may have multi-modal posteriors that the 5-seed
+budget would not reveal. The companion code repository's
+\texttt{deep\_seed\_stability/} block runs $N = 30$ seeds; the
+framework's $N = 5$ choice is for parsimony with an explicit upgrade
+path.
+
+\subsection{$c_v$ co-occurrence statistics are computed on the same
+corpus}
+The $c_v$ reference corpus for the co-occurrence count is the
+canonical document-term matrix of the same scene. Computing $c_v$ on
+an external reference corpus (a published HSI library, for example)
+would yield a different number and is a worthwhile follow-up.
+
+\section{Reporting choices}
+
+\subsection{Per-axis JSON over a single combined CSV}
+The framework ships one JSON per axis per scene rather than a single
+combined CSV. This is by design (clean separation of provenance) but
+creates a slight friction for follow-up analysis that wants to
+join across axes. The companion code repository provides a
+\texttt{manifests/} index that lists every artefact path and its
+schema, intended for join-on-load workflows.
+
+\subsection{Figure choices in the main paper}
+The journal main paper carries 4 figures (paired ARI heatmap,
+Hungarian alignment, Bayesian forest plot, basis spectra grid). The
+supplement carries the remaining 5 (coherence-vs-ARI, seed-stability
+swarm, capacity sweep, cross-method 8x8 grid, HIDSAG band-mask). The
+split reflects journal-section relevance, not figure quality
+ordering.
+
+\subsection{No statistical significance test for paired ARI}
+Paired ARI does not carry a built-in significance threshold. We do
+not compute permutation-test $p$-values per (scene, mask) tuple
+because the test is computationally expensive on $D \sim 3000$
+pixels and the framework's per-(scene, mask) values are already
+extreme (paired ARI $\approx 0.01$ on KSC vs $0.77$ on Salinas-A
+SWIR). A future paper applying the framework on a marginal-effect
+benchmark would benefit from a permutation companion.
+
+\section{What we would change in a 2nd-paper redesign}
+
+If we were to redesign the framework from scratch given everything
+we now know:
+
+\begin{enumerate}
+\item Move per-axis $K$-sweep from a separate axis (B-4) to a layer
+that wraps every other axis: report (B-1, B-2, ..., B-12) at
+$K \in \{4, 6, 8, 10, 12, 16\}$ rather than at the canonical $K$
+only.
+\item Replace B-12 (external baseline OA delta) with an
+internal-comparison axis: compare the canonical topic-routed-soft
+against a fixed deep baseline trained inside the framework on the
+same train/test splits. The current external baseline carries the
+cross-paper-comparison caveat that the deltas are not interpretable
+without the per-paper split.
+\item Add a per-pixel-confidence axis: report
+$\mathrm{Pr}[\text{argmax}_k \theta_d = z_d^* \mid \theta_d]$
+calibrated against a held-out validation fold. This would expose
+the calibration of the topic representation directly.
+\end{enumerate}
+
+None of these changes invalidate the present framework; they
+identify directions for forward-compatible extensions.
+
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+
+\end{document}
