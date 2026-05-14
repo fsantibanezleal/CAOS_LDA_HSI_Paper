@@ -1,0 +1,172 @@
+% Supplementary B — Journal §II (Related Work)
+% Full literature taxonomy with thematic clustering.
+
+\documentclass[11pt,a4paper]{article}
+\input{../preamble.tex}
+
+\title{Journal Supplementary B --- Full related-work taxonomy\\
+{\large Companion to: \emph{Beyond Accuracy} (Section II)}}
+\author{Felipe Santib\'a\~nez-Leal}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope}
+This supplement expands the related-work review of journal Section II
+with thematic clustering and direct method-level comparison. We
+organise the literature into four bands: (i)~foundational topic
+modelling, (ii)~neural topic models, (iii)~HSI classification and
+unmixing including topic-flavoured work, and (iv)~the evaluation
+methodology literature this paper draws on.
+
+\section{Foundational topic modelling}
+
+\paragraph{LDA and its inference variants.} Blei, Ng, and
+Jordan~\cite{blei2003lda} introduced the canonical Dirichlet
+prior-over-topic-mixtures generative model with variational EM for
+inference. Griffiths and Steyvers~\cite{griffiths2004finding}
+developed the collapsed Gibbs alternative which avoids the
+variational distribution but has higher per-iteration cost.
+Hoffman, Blei, and Bach~\cite{hoffman2010online} introduced
+online variational Bayes with natural-gradient ascent on the global
+Dirichlet pseudo-counts, enabling LDA fits on corpora that do not
+fit in memory; the scikit-learn implementation
+\cite{pedregosa2011scikit} we use in this paper follows the
+Hoffman 2010 recipe.
+
+\paragraph{Non-parametric extensions.} Teh, Jordan, Beal, and
+Blei~\cite{teh2006hdp} introduced the Hierarchical Dirichlet
+Process as a non-parametric prior that lets the data choose the
+topic count. We do not use HDP here because the band-frequency
+tokenisation produces relatively short documents on which the HDP's
+truncation-level estimate is unstable, and the experimental
+budget would have multiplied without proportional information gain.
+
+\paragraph{Topic interpretability tooling.} Sievert and Shirley
+\cite{sievert2014ldavis} introduced LDAvis, the canonical
+interactive interpretation tool for topic-word distributions, with
+the relevance score $\lambda \phi_{k,b} + (1-\lambda) \log
+\phi_{k,b}/p_b$. We use $\lambda = 0.5$ for the per-topic top-word
+extraction. Taddy~\cite{taddy2012estimation} provided the formal
+relationship between topic-word and word-topic probabilities used
+in the journal's B-7 axis.
+
+\section{Neural topic models}
+
+\paragraph{ProdLDA.} Srivastava and Sutton~\cite{srivastava2017autoencoding}
+introduced ProdLDA by reformulating LDA in a product-of-experts
+form and combining it with the auto-encoding variational Bayes
+framework of Kingma and Welling~\cite{kingma2014auto}. The Laplace
+approximation to the Dirichlet prior is the technical core that
+makes amortised inference tractable.
+
+\paragraph{ETM.} Dieng, Ruiz, and Blei~\cite{dieng2020topic}
+introduced the Embedded Topic Model, which decomposes the topic-word
+distribution into an $V \times E$ word-embedding matrix and a
+$K \times E$ topic-embedding matrix and softmax-normalises their
+inner product. The low-rank decomposition lets rare words inherit
+the topic associations of their semantic neighbours.
+
+\paragraph{Neural variational topic models.} Miao, Yu, and Blunsom
+\cite{miao2016neural} introduced the broader family of neural
+variational document models (NVDM) of which ProdLDA can be seen as
+a constrained variant; Higgins et al.~\cite{higgins2017betavae}
+provided the $\beta$-VAE perspective that the deep-baseline ladder
+in the companion code repository draws on.
+
+\paragraph{What is missing.} The published neural-topic-model
+literature for HSI is thin. ProdLDA and ETM have been applied to
+text corpora extensively but to HSI rarely; the small body of HSI
+papers that cite either method typically applies them on a single
+scene with a single seed. The seed-stability swarms we report
+(axis B-3, journal Figure 4) are, to our knowledge, the first
+multi-seed ProdLDA and ETM evaluations on the six labelled
+benchmarks.
+
+\section{HSI classification, unmixing, and topic-flavoured work}
+
+\paragraph{Linear unmixing.} Nascimento and Bioucas-Dias
+\cite{nascimento2005vca} introduced the VCA endmember extraction
+algorithm. The broader unmixing literature is reviewed by
+Bioucas-Dias et al.~\cite{bioucasdias2012unmixing}. Linear unmixing
+shares with LDA the non-negative basis structure but differs in two
+operative ways: (a)~unmixing assumes a fixed endmember count
+determined by physical reasoning, LDA admits $K$ as a free
+hyperparameter; (b)~unmixing produces a per-pixel abundance vector
+that is constrained to sum to one across endmembers, LDA produces a
+per-document Dirichlet posterior whose mean satisfies the same sum
+constraint asymptotically but admits a richer family of finite-data
+shapes.
+
+\paragraph{Deep spectral--spatial classification.} Plaza et al.
+\cite{plaza2009recent} reviewed the first decade of HSI
+classification, Camps-Valls et al.~\cite{camps2014advances} the
+following half-decade with explicit attention to manifold and
+kernel methods. Chen et al.~\cite{chen2014deep} introduced the
+first systematic deep architectures for HSI classification and
+Paoletti et al.~\cite{paoletti2019deep} surveyed the
+subsequent five years. The OA-as-summary discipline in this
+literature is well-developed and our journal paper does not
+challenge it; the challenge is that topic-model adaptations
+inherited the discipline without inheriting the inductive bias that
+makes it well-suited to the supervised classification task.
+
+\paragraph{Topic models on HSI.} Zou and Zare~\cite{zou2017pmlda}
+introduced partial-membership LDA on a small set of HSI benchmarks.
+Liu et al.~\cite{liu2019hsilda} explored a spectral-derivative
+tokenisation. Both papers focus on improving the classification OA
+of the topic representation; neither reports the cross-axis
+diagnostics that the journal paper's twelve-axis framework
+recommends.
+
+\section{Evaluation methodology}
+
+\paragraph{Topic-model coherence.} Röder, Both, and Hinneburg
+\cite{roder2015exploring} surveyed coherence measures and showed
+that the sliding-window $c_v$ measure tracks human judgements of
+interpretability more reliably than perplexity. We use $c_v$,
+$c_{\text{NPMI}}$, and U-Mass for axis B-2.
+
+\paragraph{Clustering comparison.} Hubert and Arabie
+\cite{hubert1985ari} formalised the adjusted Rand index. Vinh,
+Epps, and Bailey~\cite{vinh2010information} extended the ARI
+toolbox with the AMI and normalised information variants and
+discussed when each is preferable.
+
+\paragraph{Bipartite matching.} Kuhn~\cite{kuhn1955hungarian}
+introduced the Hungarian algorithm for the maximum-weight bipartite
+matching problem that the topic-id permutation step (axis B-8)
+solves. The numerical implementation we use is in
+SciPy~\cite{virtanen2020scipy,scipy_assignment}.
+
+\paragraph{Reproducibility discipline.} Pineau et al.
+\cite{pineau2021nature} argued for ML reproducibility checklists.
+The journal paper's commitment to a single canonical fit + per-axis
+deterministic builder + JSON artefact + smoke test is one
+instantiation of that checklist.
+
+\paragraph{Information-theoretic complements.} Koltchinskii
+\cite{koltchinskii2000empirical} provides the empirical-process
+foundation for the stability bounds used in seed-stability
+analysis. Achanta et al.~\cite{achanta2012slic} introduced SLIC,
+which we use as a cross-method-agreement baseline in axis B-6;
+Felzenszwalb and Huttenlocher~\cite{felzenszwalb2004efficient}
+provided the spatial-graph segmentation we use as the
+non-spectral counterpart.
+
+\section{Where this paper sits in the taxonomy}
+
+The journal paper does not introduce a new topic model, a new
+tokenisation, or a new inference procedure. It contributes a
+\emph{multi-axis evaluation framework} that subsumes the
+above-cited evaluation tools (Röder coherence, Hubert--Arabie ARI,
+Kuhn matching, scikit-learn LDA, SciPy hypothesis tests) into a
+single artefact pipeline that yields a per-axis numeric per
+benchmark scene plus a hierarchical-Bayesian summary across scenes.
+The contribution is methodological rather than algorithmic.
+
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+
+\end{document}
