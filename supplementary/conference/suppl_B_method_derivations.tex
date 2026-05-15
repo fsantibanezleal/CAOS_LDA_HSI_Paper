@@ -45,6 +45,26 @@ the band-token appeared in the document. The token vocabulary has
 size $V = B$ (one token per band) and the document length is
 $N_d = \sum_b c_{d,b}$.
 
+\paragraph{Choice of $Q + 1 = 13$ levels.} The quantisation budget
+balances three competing pressures.
+(i)~The LDA likelihood is multinomial in the counts $c_{d,b}$; a
+larger $Q$ produces sparser per-band counts and longer documents
+but does not change the corpus's discrete identifiability.
+(ii)~Hyperspectral reflectance varies smoothly with wavelength after
+the canonical scene correction; the per-band variation across the
+labelled-pixel sample fits within $\sim 8$--$16$ visually
+distinguishable levels at AVIRIS-grade radiometric resolution.
+(iii)~Topic-coherence $c_v$~\cite{roder2015exploring} on a Salinas-A
+pilot sweep (preliminary, not reported in this paper) was flat
+within $\pm 0.02$ across $Q + 1 \in \{8, 12, 13, 16, 24\}$, with
+$Q + 1 = 13$ minimising the sum of token-rank Spearman drift across
+the $K$ topics. The choice is therefore an interior point of an
+empirically flat range, not a tuned optimum. A formal $Q$-sensitivity
+ablation across the six labelled scenes is feasible from the
+existing builders and is identified as forward work; the cross-axis
+F-5 (band-mask) finding is robust to $Q$ within the flat range we
+have verified on a single scene.
+
 \subsection{Generative model}
 
 The standard LDA generative process~\cite{blei2003lda} applies

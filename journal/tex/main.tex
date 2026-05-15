@@ -1111,6 +1111,41 @@ SciPy \cite{virtanen2020scipy}, and Gensim \cite{rehurek2010gensim},
 whose work this study rests on.
 
 % ---------------------------------------------------------------------
+\section*{Conflict of Interest}
+% ---------------------------------------------------------------------
+
+The author is a co-author of the HIDSAG dataset descriptor
+publication~\cite{hidsag2023} and the accompanying data
+release~\cite{hidsag2023figshare}. The present manuscript is
+methodologically distinct: it proposes a twelve-axis evaluation
+framework for topic models on hyperspectral imagery and applies
+the framework, among other benchmarks, to the HIDSAG mineralogical
+subsets. HIDSAG is cited as a data source, not as a methodological
+contribution of this work. The author declares no other conflict
+of interest.
+
+% ---------------------------------------------------------------------
+\section*{Data Availability Statement}
+% ---------------------------------------------------------------------
+
+All numerical results in this manuscript derive from deterministic
+artefacts under \texttt{data/derived/} in the companion code
+repository at \url{https://github.com/fsantibanezleal/caos_lda_hsi}.
+The HIDSAG database is available from
+\cite{hidsag2023figshare}; the labelled hyperspectral benchmark
+scenes (Indian Pines, Salinas, Salinas-A, Pavia U, KSC, Botswana)
+are available from the UPV/EHU Hyperspectral Remote Sensing Scenes
+collection \cite{baumgardner1992indianpines,aviris_salinas,rosis_pavia,aviris_ksc,eo1_botswana}.
+The 1726-artefact derived bundle, the
+\texttt{build\_*.py} pipeline source, the FastAPI backend, and the
+React frontend ship under the MIT licence. A versioned snapshot
+will be archived to Zenodo at the time of acceptance and the DOI
+referenced here in the accepted version. The interactive
+demonstration is hosted at
+\url{https://lda-hsi.fasl-work.com}; readers running into a 404 at
+year +2 should fall back to the Zenodo snapshot.
+
+% ---------------------------------------------------------------------
 \bibliographystyle{IEEEtran}
 \bibliography{../../bibliography/refs}
 % ---------------------------------------------------------------------
