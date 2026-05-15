@@ -259,8 +259,9 @@ The Pavia U scene is VNIR-only by sensor design and therefore
 auto-skips the SWIR mask (zero bands kept after restriction); all
 remaining 23 (scene, mask) tuples produce a valid refit.
 
-We additionally evaluate on five HIDSAG mineral subsets (GEOMET,
-MINERAL1, MINERAL2, GEOCHEM, PORPHYRY) under the same four masks.
+We additionally evaluate on five HIDSAG mineral subsets
+\cite{hidsag2023,hidsag2023figshare} (GEOMET, MINERAL1, MINERAL2,
+GEOCHEM, PORPHYRY) under the same four masks.
 HIDSAG documents are mean spectra per (sample, measurement, cube)
 on the \texttt{swir\_low} modality. Where the labelled-scene Fisher
 mask uses per-pixel label, the HIDSAG variant uses

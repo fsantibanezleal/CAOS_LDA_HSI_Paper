@@ -119,18 +119,29 @@ Fisher discriminant.
 
 \section{Citation status}
 
-The HIDSAG citation \texttt{hidsag\_database} in
-\texttt{bibliography/refs.bib} is a \texttt{@misc} dataset-descriptor
-entry that cites the database itself rather than a specific
-publication, pending verification of the canonical dataset
-descriptor. The dataset is referenced in the companion code
-repository at
-\texttt{data/derived/core/hidsag\_curated\_subset.json}; if a
-published dataset descriptor exists it will replace this entry
-with the verified DOI / URL before the journal submission. The
-present manuscript does not rely on any specific HIDSAG publication
-for its findings --- all HIDSAG numerical results are read directly
-from the public derived artefacts.
+HIDSAG is cited via two complementary bibliographic entries:
+
+\begin{itemize}
+\item \textbf{\texttt{hidsag2023}} --- Ehrenfeld, Egaña,
+Santibáñez-Leal, Garrido, Ojeda, Townley, and Navarro,
+``HIDSAG: Hyperspectral Image Database for Supervised Analysis in
+Geometallurgy'', \emph{Scientific Data} 10:164 (2023),
+doi:10.1038/s41597-023-02061-x. The canonical paper introducing the
+database, its acquisition protocol, and the five thematic subsets.
+\item \textbf{\texttt{hidsag2023figshare}} --- Ehrenfeld (2023),
+HIDSAG figshare Collection,
+doi:10.6084/m9.figshare.c.5983921.v1. The data release accompanying
+the paper.
+\end{itemize}
+
+The reference implementation is at \url{https://github.com/alges/hidsag}.
+The companion code repository for this manuscript consumes a curated
+subset documented at
+\texttt{data/derived/core/hidsag\_curated\_subset.json}. Felipe
+Santibáñez-Leal is a co-author of \texttt{hidsag2023}; the present
+manuscript is methodologically distinct (multi-axis evaluation
+framework for topic models applied to HIDSAG) and cites HIDSAG as a
+data source rather than re-publishing its content.
 
 \bibliographystyle{IEEEtran}
 \bibliography{../../bibliography/refs}

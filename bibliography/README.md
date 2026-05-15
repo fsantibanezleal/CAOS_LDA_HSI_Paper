@@ -34,16 +34,12 @@ Total: **37 entries**.
 
 ## Open verification tasks before submission
 
-- `hidsag_database` (previously `escalante2018hidsag`) is now a
-  `@misc` dataset-descriptor entry that cites the HIDSAG database
-  as a resource rather than a specific publication. If a canonical
-  published descriptor exists (DOI / journal article / conference
-  proceedings), replace this entry with the verified citation
-  before the journal submission. The HIDSAG curated subset that
-  the project actually consumes is documented in
-  `data/derived/core/hidsag_curated_subset.json` of the companion
-  code repository; all numerical HIDSAG results in the manuscripts
-  are read directly from public derived artefacts and do not
-  depend on the specific bibliographic form of this entry.
+- ✅ **HIDSAG citations resolved 2026-05-15.** Two entries now ship:
+  `hidsag2023` (the canonical Scientific Data paper, Ehrenfeld et al.
+  2023, doi:10.1038/s41597-023-02061-x) and `hidsag2023figshare`
+  (the figshare Collection at doi:10.6084/m9.figshare.c.5983921.v1).
+  Felipe Santibáñez-Leal is a co-author of the Scientific Data paper.
+  Both manuscripts (conference + journal) and supplement E cite the
+  paper; supplement E additionally cites the figshare data release.
 - Cross-check IF figures cited in `venues/venue-research.md`
   against the latest JCR.
