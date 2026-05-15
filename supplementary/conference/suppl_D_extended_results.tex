@@ -1,0 +1,221 @@
+% Supplementary D — Conference paper §IV (Results)
+% Extended tables, swap rates, perplexities, HIDSAG companion results.
+
+\documentclass[11pt,a4paper]{article}
+\input{../preamble.tex}
+
+\title{Supplementary D --- Extended results\\
+{\large Companion to: \emph{A Band-Mask Robustness Diagnostic for LDA on HSI}}}
+\author{Felipe Santib\'a\~nez-Leal}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope}
+This supplement reports the full per-(scene, mask) outputs of the
+diagnostic that did not fit in the 4-page conference paper. All
+numbers below are read directly from the public artefact
+\texttt{data/derived/band\_masks/canonical\_comparison.json} for the
+labelled-scene side, and from \texttt{data/derived/band\_masks\_hidsag/index.json}
+plus the per-(subset, mask) \texttt{summary.json} for HIDSAG.
+
+\section{Full labelled-scene table}
+
+Table~\ref{tab:full-labelled} reports all five reportable quantities
+per (scene, mask) tuple, in addition to the paired ARI already shown
+in Table I of the main paper.
+
+\begin{table*}[t]
+\caption{Extended per-(scene, mask) outputs. Columns: paired ARI of
+canonical vs masked dominant-topic maps (P-ARI); swap rate under
+Hungarian alignment of canonical $\sigma^*$ (Swap); number of bands
+kept after the mask, with sensor floor $B$ in parentheses; train
+perplexity of the masked LDA refit (Perp); ARI of the masked
+dominant-topic map against the ground-truth label (ARI-lbl). Pavia~U
+$\times$ SWIR is auto-skipped (sensor is VNIR-only, $V^{(m)} = 0$).}
+\label{tab:full-labelled}
+\centering
+\small
+\begin{tabular}{ll c c c c c}
+\toprule
+Scene & Mask & P-ARI & Swap & Bands kept & Perp & ARI-lbl \\
+\midrule
+\multirow{4}{*}{Indian Pines}
+  & VNIR        & 0.427 & 0.525 & 67/200  & 64.34  & 0.131 \\
+  & SWIR        & 0.527 & 0.446 & 133/200 & 131.21 & 0.165 \\
+  & no-water    & 0.499 & 0.484 & 177/200 & 167.45 & 0.198 \\
+  & top-50 F.   & 0.398 & 0.505 & 50/200  & 54.28  & 0.144 \\
+\addlinespace
+\multirow{4}{*}{Salinas}
+  & VNIR        & 0.540 & 0.348 & 68/204  & 64.25  & 0.136 \\
+  & SWIR        & 0.435 & 0.443 & 136/204 & 127.73 & 0.094 \\
+  & no-water    & 0.502 & 0.345 & 180/204 & 162.94 & 0.135 \\
+  & top-50 F.   & 0.507 & 0.371 & 50/204  & 48.03  & 0.125 \\
+\addlinespace
+\multirow{4}{*}{Salinas-A}
+  & VNIR        & 0.521 & 0.357 & 68/204  & 66.78  & 0.293 \\
+  & SWIR        & \textbf{0.766} & \textbf{0.176} & 136/204 & 95.22 & 0.432 \\
+  & no-water    & 0.533 & 0.368 & 180/204 & 148.26 & 0.268 \\
+  & top-50 F.   & 0.352 & 0.388 & 50/204  & 51.39  & 0.174 \\
+\addlinespace
+\multirow{4}{*}{Pavia U}
+  & VNIR        & 0.415 & 0.414 & 103/103 & 100.57 & 0.316 \\
+  & SWIR        & ---   & ---   & 0/103   & ---    & ---    \\
+  & no-water    & 0.415 & 0.414 & 103/103 & 100.57 & 0.316 \\
+  & top-50 F.   & 0.387 & 0.471 & 50/103  & 51.38  & 0.318 \\
+\addlinespace
+\multirow{4}{*}{KSC}
+  & VNIR        & 0.009 & 0.636 & 59/176  & 56.61  & 0.220 \\
+  & SWIR        & 0.011 & 0.547 & 117/176 & 103.21 & 0.124 \\
+  & no-water    & 0.007 & 0.637 & 155/176 & 136.42 & 0.270 \\
+  & top-50 F.   & 0.013 & 0.527 & 50/176  & 53.68  & 0.098 \\
+\addlinespace
+\multirow{4}{*}{Botswana}
+  & VNIR        & 0.108 & 0.654 & 49/145  & 50.98  & 0.125 \\
+  & SWIR        & 0.013 & 0.749 & 97/145  & 100.62 & 0.098 \\
+  & no-water    & 0.127 & 0.640 & 127/145 & 127.06 & 0.200 \\
+  & top-50 F.   & 0.117 & 0.636 & 50/145  & 54.16  & 0.127 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\section{Hungarian alignments (canonical $\to$ masked)}
+
+Table~\ref{tab:hungarian} reports the full Hungarian topic-id
+permutation $\sigma^*$ per (scene, mask). Each row gives the mapping
+$\sigma^*(0), \sigma^*(1), \ldots, \sigma^*(K-1)$, i.e.\ for each
+canonical topic id the masked-topic id it is matched to.
+
+\begin{table*}[t]
+\caption{Hungarian permutation $\sigma^*$ per (scene, mask). Row
+$(s, m)$ lists the matched masked-topic id for each canonical-topic
+id in turn (entries separated by commas). Identity rows (canonical
+topic $k$ matches masked topic $k$) indicate a stable column.}
+\label{tab:hungarian}
+\centering
+\small
+\begin{tabular}{ll p{8cm}}
+\toprule
+Scene & Mask & $\sigma^*(0), \sigma^*(1), \ldots$ \\
+\midrule
+Indian Pines & VNIR        & 8, 10, 1, 3, 4, 9, 11, 7, 6, 2, 0, 5 \\
+Indian Pines & SWIR        & 6, 7, 2, 0, 4, 11, 3, 5, 9, 1, 8, 10 \\
+Indian Pines & no-water    & 3, 1, 8, 0, 2, 9, 6, 11, 5, 4, 10, 7 \\
+Indian Pines & top-50 F.   & 0, 7, 11, 2, 1, 8, 4, 3, 5, 6, 9, 10 \\
+\addlinespace
+Salinas & VNIR        & 1, 5, 6, 7, 2, 0, 9, 8, 3, 4, 10, 11 \\
+Salinas & SWIR        & 5, 11, 1, 2, 7, 0, 3, 9, 4, 8, 6, 10 \\
+Salinas & no-water    & 3, 1, 8, 6, 5, 0, 2, 10, 4, 9, 7, 11 \\
+Salinas & top-50 F.   & 7, 3, 1, 6, 2, 0, 10, 4, 9, 5, 8, 11 \\
+\addlinespace
+Salinas-A & VNIR        & 4, 1, 5, 3, 2, 0 \\
+Salinas-A & SWIR        & 2, 5, 0, 4, 1, 3 \\
+Salinas-A & no-water    & 3, 4, 5, 0, 1, 2 \\
+Salinas-A & top-50 F.   & 2, 0, 1, 5, 3, 4 \\
+\addlinespace
+Pavia U & VNIR        & 0, 1, 6, 3, 5, 7, 8, 4, 2 \\
+Pavia U & SWIR        & --- (skipped) \\
+Pavia U & no-water    & 0, 1, 6, 3, 5, 7, 8, 4, 2 \\
+Pavia U & top-50 F.   & 0, 1, 2, 3, 4, 5, 6, 8, 7 \\
+\addlinespace
+KSC & VNIR        & 7, 5, 1, 6, 0, 2, 3, 4, 11, 8, 9, 10 \\
+KSC & SWIR        & 3, 2, 7, 6, 0, 1, 4, 5, 11, 8, 9, 10 \\
+KSC & no-water    & 7, 0, 2, 8, 1, 3, 10, 5, 4, 9, 6, 11 \\
+KSC & top-50 F.   & 4, 11, 2, 10, 6, 1, 8, 5, 0, 7, 3, 9 \\
+\addlinespace
+Botswana & VNIR        & 0, 10, 1, 11, 9, 3, 7, 8, 6, 4, 2, 5 \\
+Botswana & SWIR        & 1, 2, 5, 8, 6, 3, 4, 0, 11, 9, 10, 7 \\
+Botswana & no-water    & 11, 3, 5, 7, 8, 1, 4, 0, 2, 9, 10, 6 \\
+Botswana & top-50 F.   & 1, 4, 2, 3, 9, 0, 6, 7, 8, 11, 10, 5 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\section{HIDSAG companion results}
+
+HIDSAG has no per-pixel ground truth, so the paired ARI metric does
+not apply directly. The diagnostic on HIDSAG reports per-(subset, mask)
+the train perplexity, the mean per-document max-$\theta$ (a
+confidence proxy), and the bands kept; Table~\ref{tab:hidsag-full}
+reports the full 5$\times$4 grid. The two extreme subsets are MINERAL2
+(very high confidence, $0.85$--$1.00$ across masks, signalling sharp
+topic identities) and GEOCHEM (low confidence, $0.29$--$0.39$,
+signalling diffuse topic identities).
+
+\begin{table}[t]
+\caption{HIDSAG band-mask sweep --- perplexity, mean confidence
+(per-doc max-$\theta$), and bands kept. Sensor floor $B = 268$
+on the \texttt{swir\_low} modality.}
+\label{tab:hidsag-full}
+\centering
+\small
+\begin{tabular}{ll c c c}
+\toprule
+Subset & Mask & Perp & Conf & Bands \\
+\midrule
+\multirow{4}{*}{GEOMET}
+  & VNIR        & 20.46 & 0.354 & 18  \\
+  & SWIR        & 259.62 & 0.298 & 250 \\
+  & no-water    & 228.77 & 0.384 & 222 \\
+  & top-50 var. & 276.92 & 0.355 & 268 \\
+\addlinespace
+\multirow{4}{*}{MINERAL1}
+  & VNIR        & 20.02 & 0.365 & 18  \\
+  & SWIR        & 257.92 & 0.416 & 250 \\
+  & no-water    & 229.03 & 0.409 & 222 \\
+  & top-50 var. & 53.14 & 0.298 & 50  \\
+\addlinespace
+\multirow{4}{*}{MINERAL2}
+  & VNIR        & 19.52 & \textbf{0.946} & 18  \\
+  & SWIR        & 260.68 & 0.845 & 250 \\
+  & no-water    & 228.27 & \textbf{0.997} & 222 \\
+  & top-50 var. & 278.34 & 0.994 & 268 \\
+\addlinespace
+\multirow{4}{*}{GEOCHEM}
+  & VNIR        & 19.95 & 0.289 & 18  \\
+  & SWIR        & 258.57 & 0.374 & 250 \\
+  & no-water    & 228.72 & 0.391 & 222 \\
+  & top-50 var. & 53.20 & 0.385 & 50  \\
+\addlinespace
+\multirow{4}{*}{PORPHYRY}
+  & VNIR        & 19.72 & 0.487 & 18  \\
+  & SWIR        & 257.90 & 0.397 & 250 \\
+  & no-water    & 229.19 & 0.405 & 222 \\
+  & top-50 var. & 52.93 & 0.437 & 50  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Reading the swap-rate column}
+
+The swap rate under Hungarian alignment is, by definition,
+$\ge 0$ and $\le 1 - 1/K$ (a perfectly random permutation under $K$
+balanced clusters reaches a swap rate of $1 - 1/K$). On the labelled
+$K=12$ scenes the upper bound is $\sim 0.917$. The values observed:
+
+\begin{itemize}
+\item Indian Pines: swap rates $0.45$--$0.53$ across masks; the
+canonical basis is partially robust.
+\item Salinas: swap rates $0.35$--$0.44$; similar to Indian Pines.
+\item Salinas-A: swap rate as low as $0.18$ under SWIR; this is the
+strongest single recovery in the entire diagnostic.
+\item KSC: swap rates $0.53$--$0.64$; band-fragile across masks.
+\item Botswana: swap rates $0.64$--$0.75$; the most extreme
+band-fragile scene in the diagnostic.
+\end{itemize}
+
+Note that the swap rate and the paired ARI agree on the
+band-fragile/band-robust split: scenes with low paired ARI also have
+high swap rate. The two metrics are complementary, however:
+ARI corrects for chance given the marginal sizes, swap rate is a
+direct fraction of mis-assigned pixels, and the two diverge when one
+fit's marginal is strongly imbalanced (e.g.\ Salinas-A SWIR's
+prevalence $[0.188, 0.124, 0.094, 0.365, 0.187, 0.043]$ is closer
+to balanced than KSC's, so the chance correction is smaller, so the
+ARI value is closer to the swap-rate complement).
+
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+
+\end{document}

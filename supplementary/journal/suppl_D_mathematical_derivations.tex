@@ -1,0 +1,215 @@
+% Supplementary D — Journal §IV (Method)
+% Full mathematical derivations for each axis F-1 through F-12.
+
+\documentclass[11pt,a4paper]{article}
+\input{../preamble.tex}
+
+\title{Journal Supplementary D --- Full mathematical derivations\\
+{\large Companion to: \emph{Beyond Accuracy} (Section IV)}}
+\author{Felipe Santib\'a\~nez-Leal}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope}
+This supplement provides the complete mathematical content for the
+twelve-axis framework: generative models, variational inference,
+hierarchical Bayesian likelihood, coherence formulae, ARI and
+Hungarian definitions, and the algorithmic pseudocode for each axis.
+
+\section{Canonical generative model}
+
+\subsection{LDA on band-frequency documents}
+For $K$ topics, vocabulary $V = B$ band indices, $D$ documents and
+hyperparameters $\alpha, \eta > 0$:
+\begin{align}
+\phi_k    & \sim \mathrm{Dir}(\eta\mathbf{1}_V), \quad k=1,\ldots,K, \\
+\theta_d  & \sim \mathrm{Dir}(\alpha\mathbf{1}_K), \quad d=1,\ldots,D, \\
+z_{d,n}   & \sim \mathrm{Cat}(\theta_d), \quad n=1,\ldots,N_d, \\
+w_{d,n}   & \sim \mathrm{Cat}(\phi_{z_{d,n}}).
+\end{align}
+
+\subsection{Online VB lower bound}
+The mean-field variational family is
+$q(\theta_d, z_d, \phi) = q(\theta_d \mid \gamma_d)
+\big(\prod_n q(z_{d,n} \mid \lambda_{d,n})\big) \prod_k q(\phi_k \mid
+\beta_k)$. The per-document ELBO is
+\begin{align}
+\mathcal{L}_d
+&= \sum_n \sum_k \lambda_{d,n,k}
+\big[
+   \psi(\gamma_{d,k}) - \psi(\textstyle\sum_{k'} \gamma_{d,k'})
+   \nonumber\\
+&\quad + \psi(\beta_{k, w_{d,n}}) - \psi(\textstyle\sum_v \beta_{k,v})
+   - \log \lambda_{d,n,k}
+\big]
+\nonumber\\
+&\quad + (\alpha-1) \sum_k\!\big[
+   \psi(\gamma_{d,k}) - \psi(\textstyle\sum_{k'}\gamma_{d,k'})\big]
+\nonumber\\
+&\quad + \log \Gamma(\textstyle\sum_{k'} \gamma_{d,k'})
+       - \sum_k \log \Gamma(\gamma_{d,k}) + \mathrm{const}.
+\end{align}
+Updates are Eq.~(8) and Eq.~(9) of the conference supplement B.
+Online VB applies the natural-gradient ascent
+$\beta \leftarrow (1 - \rho_t) \beta + \rho_t \tilde{\beta}_t$
+with $\rho_t = (\tau_0 + t)^{-\kappa}$, $\tau_0 = 10$, $\kappa = 0.7$.
+
+\subsection{Posterior summaries}
+$\phi_{k,b} = \beta_{k,b} / \sum_v \beta_{k,v}$;
+$\theta_{d,k} = \gamma_{d,k} / \sum_{k'} \gamma_{d,k'}$;
+$z_d = \arg\max_k \theta_{d,k}$.
+
+\section{Axis F-1: hierarchical Bayesian model}
+
+\subsection{Likelihood}
+For $M$ methods, $S$ scenes, $F$ folds, observed fold-OA scores
+$y_{m,s,f}$:
+\begin{align}
+y_{m,s,f}      & = \mu_m + \delta_s + \rho_f + \epsilon_{m,s,f}, \\
+\mu_m          & \sim \mathcal{N}(0, 1), \\
+\delta_s       & \sim \mathcal{N}(0, 0.5^2), \\
+\rho_f         & \sim \mathcal{N}(0, 0.2^2), \\
+\epsilon_{m,s,f} & \sim \mathcal{N}(0, \sigma^2), \\
+\sigma         & \sim \mathrm{HalfNormal}(0.5).
+\end{align}
+
+\subsection{Inference}
+NUTS with 1000 draws + 1000 tune, 2 chains, $\hat{R} < 1.01$ on
+all parameters in all reported runs. Posterior mean and 94\% HDI of
+$\mu_m$ are reported; pairwise $P[\mu_A > \mu_B]$ are estimated from
+the joint posterior draws as
+\begin{equation}
+P[\mu_A > \mu_B] \approx \frac{1}{T} \sum_{t=1}^{T}
+\mathbf{1}[\mu_A^{(t)} > \mu_B^{(t)}],
+\end{equation}
+with $T = 2000$ draws across two chains.
+
+\section{Axis F-2: coherence measures}
+
+\subsection{$c_v$ coherence}
+For a topic $t$ with top-$N$ words $W_t = (w_1, \ldots, w_N)$, the
+NPMI between words $w_i, w_j$ on a sliding window of size $s$ is
+\begin{equation}
+\mathrm{NPMI}(w_i, w_j) = \frac{\log
+   \frac{P(w_i, w_j) + \epsilon}{P(w_i) P(w_j)}
+}{- \log (P(w_i, w_j) + \epsilon)}.
+\end{equation}
+The topic context vector is
+$\mathbf{v}_t = \sum_{i=1}^{N} \mathbf{u}_i$ with
+$u_{i,j} = \mathrm{NPMI}(w_i, w_j)$. The $c_v$ score is
+\begin{equation}
+c_v(t) = \frac{1}{N} \sum_{i=1}^{N}
+\cos(\mathbf{v}_t, \mathbf{u}_i),
+\end{equation}
+the average cosine similarity between the topic context vector and
+each word's individual context vector. We use $N = 15$ and the
+default Röder sliding window of size $s = 110$.
+
+\subsection{NPMI and U-Mass}
+$c_{\text{NPMI}}(t) = \binom{N}{2}^{-1} \sum_{i<j} \mathrm{NPMI}(w_i,
+w_j)$.
+$\mathrm{U\!-\!Mass}(t) = \binom{N}{2}^{-1} \sum_{i<j} \log
+\frac{N(w_i, w_j) + 1}{N(w_j)}$.
+
+\section{Axis F-3: seed stability}
+For each (scene, method): refit five LDA / ProdLDA / ETM under seeds
+$\{0, \ldots, 4\}$. For each refit compute KMeans clustering of
+$\theta$ into $K$ clusters; report ARI($z_{\text{KMeans}}$, label),
+$c_v$. Aggregate across seeds as mean $\pm$ std.
+
+\section{Axis F-4: capacity sensitivity}
+Refit LDA at $K \in \{4, 6, 8, 10, 12, 16, 20, 24\}$ with the
+canonical hyperparameters, $N = 5$ seeds per $K$. Per-$K$ aggregates:
+\begin{itemize}
+\item perplexity$_K^{\text{test}} = \exp(-\frac{1}{|\mathcal{D}_{\text{test}}|}
+\sum_{d \in \mathcal{D}_{\text{test}}} \log p(\mathbf{w}_d \mid \phi_K, \alpha))$,
+\item topic-diversity$_K = \frac{|\bigcup_k W_k^{(K)}|}{N \cdot K}$
+with $W_k^{(K)}$ the top-$N$ words per topic at capacity $K$,
+\item matched-cosine$_K = $ mean over (seed pair, topic) of
+$\cos(\phi^{(s_1)}_k, \phi^{(s_2)}_{\sigma^*(k)})$.
+\end{itemize}
+
+\section{Axis F-5: paired ARI under masks}
+Detailed in conference supplement B; restated here for cross-reference.
+$\ari_{\text{paired}}(m) = \ari(\{z_d\}_\mathcal{S},
+\{z^{(m)}_d\}_\mathcal{S})$.
+
+\section{Axis F-6: cross-method ARI}
+For each scene compute the partition set $\mathcal{P} = \{\text{label},
+\text{topic-dom}, \text{Felz}, \text{SLIC-500}, \text{SLIC-2000},
+\text{p-15}, \text{p-7}, \text{px}\}$. The reported matrix is
+\begin{equation}
+M_{ij} = \ari(\mathcal{P}_i, \mathcal{P}_j),
+\end{equation}
+restricted to pixels with a valid (non-sentinel) value in both
+partitions. NMI matrix is computed analogously.
+
+\section{Axis F-7: topic--label coupling}
+For each (canonical topic $t$, label $\ell$),
+$P(\ell \mid t) = N_{t,\ell} / \sum_{\ell'} N_{t,\ell'}$ with
+$N_{t,\ell}$ the count of pixels with dominant topic $t$ and ground
+truth $\ell$. Per-topic Shannon entropy:
+$H(L \mid t) = - \sum_\ell P(\ell \mid t) \log P(\ell \mid t)$.
+Per-topic KL divergence from the marginal:
+$\KL{P(L \mid t)}{P(L)} = \sum_\ell P(\ell \mid t)
+\log [P(\ell \mid t) / P(\ell)]$.
+
+\section{Axis F-8: per-topic Hungarian alignment}
+Confusion matrix
+$C \in \mathbb{Z}^{K \times K^{(m)}}_{\ge 0}$,
+$C_{k, j} = |\{d \in \mathcal{S} : z_d = k \wedge z^{(m)}_d = j\}|$.
+Hungarian: $\sigma^* = \arg\max_\sigma \sum_k C_{k, \sigma(k)}$,
+solved by \texttt{scipy.optimize.linear\_sum\_assignment} on $-C$.
+Swap rate:
+$\mathrm{swap} = |\mathcal{S}|^{-1} \sum_d \mathbf{1}[z^{(m)}_d \ne
+\sigma^*(z_d)]$.
+
+\section{Axis F-9: HIDSAG preprocessing stability}
+For each HIDSAG subset, $R = 3$ preprocessing recipes $\{\text{cont-rem},
+\text{deriv}, \text{smooth}\}$. For each recipe pair $(r_a, r_b)$
+compute $\ari(\text{dom-top}_{r_a}, \text{dom-top}_{r_b})$ on the
+documents present in both recipes. Per-subset aggregate is the mean
+over the $\binom{3}{2} = 3$ pairs.
+
+\section{Axis F-10: cross-scene transfer}
+Given scene $s$ with canonical basis $\phi^{(s)}$, project the
+documents of scene $t$ through one E-step
+\begin{equation}
+\gamma_{d, k}^{(t \leftarrow s)} = \alpha + \sum_n
+\lambda_{d, n, k}^{(t \leftarrow s)},
+\end{equation}
+with $\lambda$ computed from $\phi^{(s)}$ frozen. The transfer
+report is
+$\ari(\text{label}_t, \arg\max_k \theta^{(t \leftarrow s)})$.
+
+\section{Axis F-11: rate--distortion}
+Reconstruct
+$\hat{\mathbf{x}}_d = \sum_k \theta_{d,k} \phi_k^\top$ in the
+band-frequency-count space, then de-quantise to a continuous
+reflectance via the inverse of the canonical tokenisation
+$\hat{x}_{d,b} = c_{d,b}^{\text{recon}} / Q$. Distortion is
+$\mathrm{MSE} = D^{-1} \sum_d \|\hat{\mathbf{x}}_d
+- \mathbf{x}_d\|^2$ at rate $\log_2 K$ bits.
+
+\section{Axis F-12: external baseline}
+For each labelled scene, collect three reference OA values from
+prior published work. Report
+$\Delta_s = \text{OA}_s^{\text{topic-routed-soft}}
+- \max_{r \in \text{refs}(s)} \text{OA}_s^{(r)}$
+with the per-paper split caveat.
+
+\section{Inverse Hungarian (used in F-8 swap-rate computation)}
+The post-permutation confusion matrix $\tilde{C}$ used for the
+journal Figure 3(b) panel is
+\begin{equation}
+\tilde{C}_{k, j} = C_{k, \sigma^{*-1}(j)},
+\end{equation}
+which moves the matched diagonal to the main diagonal. The right
+panel of journal Figure 3 visualises $\tilde{C}$ directly.
+
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+
+\end{document}

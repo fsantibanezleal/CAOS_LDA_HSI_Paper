@@ -1,0 +1,136 @@
+% Supplementary E — Conference paper §V (Discussion)
+% Extended interpretation, limitations, and threats to validity that
+% did not fit in the conference manuscript.
+
+\documentclass[11pt,a4paper]{article}
+\input{../preamble.tex}
+
+\title{Supplementary E --- Extended discussion\\
+{\large Companion to: \emph{A Band-Mask Robustness Diagnostic for LDA on HSI}}}
+\author{Felipe Santib\'a\~nez-Leal}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope}
+This supplement expands Section~V of the conference paper.
+
+\section{Why Salinas-A under SWIR-only reaches paired ARI 0.766}
+
+Salinas-A is a 6-class subset of Salinas covering five lettuce
+varieties (4-, 5-, 6-, 7-week) plus a single soil class on an
+$83 \times 86$ window. The SWIR window (1100--2500~nm) carries the
+cellulose, lignin, and water-absorption features that historically
+dominate vegetation--soil discrimination on AVIRIS. Two specific
+observations support the high paired ARI on this tuple:
+
+\paragraph{(i) Cellulose feature density.} The SWIR window contains
+the canonical cellulose absorption near 2100~nm and the
+lignin/glucose absorption near 2300~nm; together these are
+sufficient to discriminate vegetation life stage on the
+lettuce-romaine sequence at the centre of Salinas-A. The unmasked
+canonical fit picks up the same features (it has access to them) and
+the SWIR-only fit picks up exactly those features again --- the
+topic identities are conserved because the discriminative signal
+literally lives in the retained spectral range.
+
+\paragraph{(ii) Spatial-class smoothness.} Salinas-A is, by design,
+the spatially smoothest of the six labelled scenes. Each class
+occupies a contiguous rectangular field with sharp boundaries; the
+canonical and masked dominant-topic maps agree on the field
+interiors and disagree mostly at the field boundaries, which
+contribute a bounded swap-rate floor independent of band restriction.
+
+The SWIR-only paired ARI on Salinas (the parent scene) does
+\emph{not} reach 0.766 --- it is $0.435$, lower than the VNIR and
+no-water masks. This is consistent with mechanism (i) operating on
+Salinas-A's narrower class set but failing on the parent's broader
+vinyard and brocoli classes whose discriminative signal lives
+partly in VNIR.
+
+\section{Why KSC and Botswana reach paired ARI \texorpdfstring{$\approx 0.01$}{~0.01}}
+
+KSC paired ARI $\approx 0.01$ across all four masks; Botswana
+$\approx 0.01$--$0.13$. Two non-exclusive mechanisms are consistent
+with this finding:
+
+\paragraph{Mechanism (i): canonical fit exploits band-level
+redundancy.} The unmasked LDA fit on KSC may be using fine-grained
+spectral co-variation that is present in the full $176$-band
+representation and disappears under restriction. Under this
+mechanism the canonical basis is correct in the unmasked reference
+frame but is \emph{not} transportable across spectral windows. Any
+claim of the form ``topic~$k$ corresponds to a wetland-vegetation
+type'' must be qualified: it presupposes the unmasked spectrum.
+
+\paragraph{Mechanism (ii): weak identification.} KSC has 13 classes,
+$D = 2686$ in the canonical sample, and $B = 176$, giving a
+posterior over $\phi$ with $\sim 2100$ parameters and $\sim 2700$
+documents. The posterior has substantial mass over many
+high-likelihood configurations, and a band restriction selects a
+different posterior mode of the same family. The masked fit is not
+\emph{wrong}, it is merely a different sample from a weakly
+informative posterior.
+
+\textbf{Discriminating between (i) and (ii) is out of scope of the
+diagnostic.} A natural follow-up is a posterior-mode-counting
+diagnostic (refit under many seeds and cluster the resulting
+$\{\phi^{(s)}\}$ for $s = 1, \ldots, N$ seeds; count distinct
+clusters above a cosine-similarity threshold). The companion code
+repository already ships such a diagnostic under \texttt{topic\_stability/}
+and \texttt{deep\_seed\_stability/} but its interpretation is outside
+this conference paper's scope.
+
+\section{Reading the ARI-vs-label column}
+
+A subtle but important point. The ARI-vs-label column in
+Suppl D Table I reports
+$\ari(\text{masked dominant topic}, \text{ground-truth label})$. A
+high value means the masked fit is still discriminating the
+ground-truth classes even though its topic identities have changed.
+The clearest example is Pavia~U $\times$ VNIR with paired ARI
+$=0.415$ and ARI-vs-label $=0.316$: the masked fit is still useful
+for downstream classification (it preserves about as much label
+discrimination as the canonical fit, $\ari \approx 0.32$) even
+though the topic identities have shifted. Conversely, Botswana
+$\times$ SWIR has paired ARI $=0.013$ \emph{and} ARI-vs-label
+$=0.098$: the masked fit is both topically unstable and operationally
+weaker.
+
+\section{What the diagnostic does NOT claim}
+
+We close with four explicit non-claims:
+
+\paragraph{It does not claim a single best band selection.} The
+top-50 Fisher mask achieves the lowest paired-ARI on Indian Pines
+($0.398$) and the highest on Pavia~U ($0.387$), so the same
+``50-band-budget'' mask is interpretable differently on different
+scenes. Selecting a band budget for a downstream product is a
+separate optimisation that should marginalise over the per-scene
+diagnostic.
+
+\paragraph{It does not claim a chance-baseline threshold.}
+Statistical significance of paired ARI under a permutation null is
+not reported here; the threshold for ``meaningful agreement'' is a
+matter of judgement on the present sample sizes ($D = 1320$--$3520$).
+A formal permutation test is in the companion code repository under
+\texttt{validation\_blocks/}.
+
+\paragraph{It does not claim that band-fragility implies model
+inadequacy.} A scene whose canonical topics are band-fragile may
+still admit a useful interpretation under a different inductive bias
+(e.g.\ deep autoencoder embedding); the diagnostic asks specifically
+whether the \emph{LDA} basis is band-robust, not whether the data
+admits any band-robust representation.
+
+\paragraph{It does not claim transferability to non-AVIRIS sensors
+without recalibration.} The band-mask wavelengths are read from the
+per-scene \texttt{wavelengths\_nm} metadata; running the diagnostic
+on a sensor with different band centres requires recomputing the
+mask membership functions but no algorithmic change.
+
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+
+\end{document}

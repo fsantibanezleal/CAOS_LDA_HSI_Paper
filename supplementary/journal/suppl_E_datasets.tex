@@ -1,0 +1,178 @@
+% Supplementary E — Journal §V (Experimental setup)
+% Full dataset descriptors including HIDSAG mineralogical subsets.
+
+\documentclass[11pt,a4paper]{article}
+\input{../preamble.tex}
+
+\title{Journal Supplementary E --- Full dataset descriptors\\
+{\large Companion to: \emph{Beyond Accuracy} (Section V)}}
+\author{Felipe Santib\'a\~nez-Leal}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope}
+This supplement expands Section~V with the complete provenance and
+per-subset technical inventory of the eleven evaluation entities:
+six labelled HSI scenes (treated in conference supplement C and
+summarised below for cross-reference) plus five HIDSAG mineralogical
+subsets (treated here at full depth).
+
+\section{Labelled HSI scenes}
+Six standard labelled benchmarks from the UPV/EHU Hyperspectral
+Remote Sensing Scenes collection: Indian Pines (AVIRIS, 200 bands,
+2812 documents in the canonical fit, 12 topics), Salinas (AVIRIS,
+204, 3520, 12), Salinas-A (subset of Salinas, 204, 1320, 6), Pavia
+University (ROSIS-03, 103, 1980, 9; VNIR-only sensor), Kennedy Space
+Center (AVIRIS-Old, 176, 2686, 12), Botswana (EO-1 Hyperion, 145,
+2775, 12). See conference supplement C for per-scene sensor and
+class-catalogue details.
+
+\section{HIDSAG mineralogical subsets}
+
+\paragraph{Source.} HIDSAG is a curated industrial database of
+hyperspectral point-spectrum measurements over mineralogical
+samples acquired with a SWIR sensor (the
+\texttt{swir\_low} modality consumed in this paper covers
+$\sim 1100$--$2500$~nm in 268 contiguous narrow bands). The database
+exposes five thematic subsets distributed as zip archives.
+
+\subsection{GEOCHEM}
+\textbf{Content.} 28 samples, 106 crop ROIs, 318 hyperspectral
+cubes, 18 geochemical target variables: Al, As, Ca, Cu, Fe, K, Mo,
+Nb, P, Pb, Rb, S, Si, Sr, Ti, Y, Zn, Zr (in ppm or wt-\%, depending
+on element). Each sample carries a per-ROI cube and per-ROI
+geochemistry vector; the document construction averages cube pixels
+within each ROI to produce one document per (sample, crop,
+measurement).
+
+\subsection{GEOMET}
+\textbf{Content.} 146 samples (the largest by sample count), 146
+crops, 438 cubes, 5 geometallurgical target variables: Cu rec
+(\% copper recovery), Lime cons (kg/t lime consumption), Mo rec
+(\% molybdenum recovery), PH (pulp pH), WI (Bond work index in
+kWh/t). The targets are continuous regression labels rather than
+classification labels; the band-mask diagnostic on GEOMET uses
+between-covariate-variance band ranking against these continuous
+targets.
+
+\subsection{MINERAL1}
+\textbf{Content.} 99 samples, 99 crops, 297 cubes, 33 mineral
+abundance target variables: Actinolite, Albite, Andesina (An40),
+Anhydrite/Gypsum, Anorthite, Apatite, Biotite, Bornite, Bytownite
+(An80), Calcite, Chalcopyrite, Chalcosite/Digenite, Chlorite,
+Covelite, Epidote, Fe Oxides, Fe-Clays, K-Feldspar, Kaolinite,
+Labradorite (An60), Molybdenite, Muscovite/Sericite, Oligoclasa
+(An20), Other Amphibole, Others, Others Carbonates, Others Ti
+Minerals, Pyrite, Pyroxene, Quartz, Rutile, Siderite, Tourmaline.
+The list mixes feldspars (An20/40/60/80), sulfides
+(Bornite/Chalcopyrite/Chalcosite/Covelite/Pyrite/Molybdenite),
+carbonates (Calcite/Siderite), and hydrothermal indicators
+(Tourmaline/Muscovite/Kaolinite) at $\sim$~\% mineralogy per ROI.
+
+\subsection{MINERAL2}
+\textbf{Content.} 20 samples (smallest), 20 crops, 60 cubes, 25
+mineral abundance target variables: Alunite, Ankerite, Apatite,
+Bornite, Calcite, Chalcocite, Chalcopyrite, Clinochlore, Enargite,
+Gypsum, Hematite, Illite, Kaolin group, Molybdenite, Muscovite,
+Orthoclase, Phengite, Pirit, Plagioclase, Pyrophyllite, Quartz,
+Siderite, Sphalerite, Tenantite, Tetrahedrite. MINERAL2 covers a
+slightly different mineralogical regime from MINERAL1, emphasising
+high-sulfidation epithermal mineralogy (Alunite, Pyrophyllite,
+Enargite). The very high topic-confidence MINERAL2 reports under the
+band-mask diagnostic ($> 0.94$ across all four masks) is consistent
+with the sharper mineralogical signatures in this subset.
+
+\subsection{PORPHYRY}
+\textbf{Content.} 28 samples, 56 crops, 168 cubes, 11 target
+variables: Bt (\% biotite), Cal (\% calcite), Esp (\% specularite),
+Hem (\% hematite), Kao (\% kaolinite), Mb (\% molybdenite), Mgt
+(\% magnetite), Py (\% pyrite), Qz (\% quartz), [Cpy + Py + Bo]
+(\% combined sulfides), group (categorical lithology). PORPHYRY is
+the most operational-decision-relevant of the five subsets:
+porphyry-copper deposits are the primary global Cu source and the
+target variables track the alteration and sulfide-distribution
+characteristics that drive resource estimation.
+
+\section{Document construction on HIDSAG}
+
+For each subset the corpus consists of one spectrum per (sample,
+crop, cube) tuple, computed as the per-band mean over labelled
+pixels within the crop ROI. The tokenisation follows the same
+min-max + quantisation pipeline used on the labelled scenes
+($Q + 1 = 13$ levels). The document count entering the canonical
+fit on each subset is the cube count: GEOCHEM 318, GEOMET 438,
+MINERAL1 297, MINERAL2 60, PORPHYRY 168.
+
+\section{Sensor differences from labelled scenes}
+
+HIDSAG is acquired with a point spectrometer rather than an imaging
+array, so the spatial-coherence assumptions that motivate
+Felzenszwalb / SLIC on the labelled scenes do not apply. The
+framework axes F-6 (cross-method spatial agreement) and F-7
+(spatial topic-label coupling on the H~$\times$~W raster) are
+therefore not run on HIDSAG; axes F-1, F-2, F-3, F-4, F-5, F-8,
+F-9, F-10, F-11, F-12 are all run, with F-5 using
+between-covariate-variance band ranking instead of the labelled
+Fisher discriminant.
+
+\section{Continuous-measurement layer}
+
+A complementary derived layer at
+\texttt{data/derived/hidsag\_topic\_measurements/<subset>.json}
+joins the per-document $\theta$ matrix shipped by the band-mask
+builder with the continuous mineralogical / geometallurgical assay
+values extracted from each sample's \texttt{metadata.json} (per the
+HIDSAG figshare data release~\cite{hidsag2023figshare}). The layer
+ships 427 records across the five subsets, exposing 5--33 continuous
+variables per subset:
+
+\begin{itemize}
+\item GEOMET: Cu rec, Mo rec, PH, Lime cons, WI (5 vars, 146 records)
+\item MINERAL1: 33 mineral abundance \% (99 records)
+\item MINERAL2: 25 mineral abundance \% (20 records)
+\item GEOCHEM: 18 elemental wt\%/ppm (106 records)
+\item PORPHYRY: 11 mineral abundance \% incl.\ biotite / molybdenite
+/ chalcopyrite (56 records)
+\end{itemize}
+
+This layer feeds the topic-conditional ridges, the GEOMET corner
+plot, and the HIDSAG mosaic of supplement I. Figure
+\ref{fig:hidsag-ridges} of Suppl I reports the most striking signal:
+on PORPHYRY, per-topic mean \% biotite ranges $1.1$--$39.6$,
+indicating that the canonical-fit topic basis on PORPHYRY captures
+the porphyry-alteration mineralogy at high fidelity. The extraction
+builder is documented at
+\texttt{data-pipeline/build\_hidsag\_topic\_measurements.py}.
+
+\section{Citation status}
+
+HIDSAG is cited via two complementary bibliographic entries:
+
+\begin{itemize}
+\item \textbf{\texttt{hidsag2023}} --- Ehrenfeld, Egaña,
+Santibáñez-Leal, Garrido, Ojeda, Townley, and Navarro,
+``HIDSAG: Hyperspectral Image Database for Supervised Analysis in
+Geometallurgy'', \emph{Scientific Data} 10:164 (2023),
+doi:10.1038/s41597-023-02061-x. The canonical paper introducing the
+database, its acquisition protocol, and the five thematic subsets.
+\item \textbf{\texttt{hidsag2023figshare}} --- Ehrenfeld (2023),
+HIDSAG figshare Collection,
+doi:10.6084/m9.figshare.c.5983921.v1. The data release accompanying
+the paper.
+\end{itemize}
+
+The reference implementation is at \url{https://github.com/alges/hidsag}.
+The companion code repository for this manuscript consumes a curated
+subset documented at
+\texttt{data/derived/core/hidsag\_curated\_subset.json}. Felipe
+Santibáñez-Leal is a co-author of \texttt{hidsag2023}; the present
+manuscript is methodologically distinct (multi-axis evaluation
+framework for topic models applied to HIDSAG) and cites HIDSAG as a
+data source rather than re-publishing its content.
+
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+
+\end{document}

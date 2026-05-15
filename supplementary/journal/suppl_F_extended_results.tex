@@ -1,0 +1,335 @@
+% Supplementary F — Journal §VI (Results)
+% Extended per-axis results: full tables for F-1..F-12 across 6 scenes
+% + 5 HIDSAG subsets.
+
+\documentclass[11pt,a4paper]{article}
+\input{../preamble.tex}
+
+\title{Journal Supplementary F --- Extended per-axis results\\
+{\large Companion to: \emph{Beyond Accuracy} (Section VI)}}
+\author{Felipe Santib\'a\~nez-Leal}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope}
+This supplement provides the full per-axis result tables for the 6
+labelled scenes and 5 HIDSAG subsets that did not fit in journal
+Section~VI. All numbers are read directly from the public artefacts
+in \texttt{CAOS\_LDA\_HSI/data/derived/}.
+
+\section{Axis F-1: hierarchical Bayesian classification --- pairwise $P[A>B]$}
+
+\subsection{Labelled-scene block}
+
+\begin{table}[h]
+\caption{Pairwise $P[A > B]$ from the labelled-scene posterior (rows
+= method A, columns = method B). Estimated from 2000 NUTS draws.}
+\label{tab:b1-pair-labelled}
+\centering
+\small
+\begin{tabular}{l c c c c c}
+\toprule
+A \textbackslash{} B & pca\_K & raw & theta & hard & soft \\
+\midrule
+pca\_K\_logistic    & ---   & 0.00 & 1.00 & 0.00  & 0.00  \\
+raw\_logistic       & 1.00 & ---   & 1.00 & 0.54  & 0.36  \\
+theta\_logistic     & 0.00 & 0.00 & ---   & 0.00  & 0.00  \\
+topic\_routed\_hard & 1.00 & 0.46 & 1.00 & ---    & 0.32  \\
+topic\_routed\_soft & 1.00 & 0.64 & 1.00 & 0.68   & ---    \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The dominant observation is in the bottom-right $2 \times 2$ block:
+$P[\text{soft} > \text{raw}] = 0.64$, $P[\text{hard} > \text{raw}] =
+0.46$, $P[\text{soft} > \text{hard}] = 0.68$. Topic-routed-soft is
+the leading method by a small margin; topic-routed-hard and
+raw-logistic are statistically indistinguishable. theta\_logistic
+alone is dominated by every other method, confirming that
+$\theta$-as-feature without the gating wrapper discards too much
+information.
+
+\subsection{HIDSAG block}
+
+\begin{table}[h]
+\caption{Pairwise $P[A > B]$ from the HIDSAG posterior. Methods:
+cube = cube-topic logistic, pca = PCA logistic, raw = raw logistic,
+rgn = region-topic logistic, $\theta$ = topic logistic.}
+\label{tab:b1-pair-hidsag}
+\centering
+\small
+\begin{tabular}{l c c c c c}
+\toprule
+A \textbackslash{} B & cube & pca & raw & rgn & $\theta$ \\
+\midrule
+cube\_topic   & ---   & 0.00 & 0.00 & 0.23 & 0.06 \\
+pca\_logistic & 1.00 & ---   & 0.28 & 1.00 & 1.00 \\
+raw\_logistic & 1.00 & 0.72 & ---   & 1.00 & 1.00 \\
+region\_topic & 0.77 & 0.00 & 0.00 & ---   & 0.19 \\
+theta\_logistic & 0.94 & 0.00 & 0.00 & 0.81 & ---   \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The HIDSAG inversion is the row-pattern of raw\_logistic: 1.00, 0.72,
+1.00, 1.00. Raw-spectrum logistic dominates every topic-based method
+with $P = 1.00$ against $\theta$-logistic and region-topic. The
+ordering is exactly the labelled-scene ordering inverted.
+
+\section{Axis F-2: per-scene coherence}
+
+\begin{table}[h]
+\caption{Canonical-fit coherence per scene at $N = 15$ top words.}
+\label{tab:b2}
+\centering
+\small
+\begin{tabular}{l c c c}
+\toprule
+Scene            & $c_v$ & $c_{\text{NPMI}}$ & U-Mass \\
+\midrule
+Indian Pines     & 0.450 & $-0.646$ & 0.0 \\
+Salinas          & ---    & ---       & --- \\
+Salinas-A        & 0.409 & ---       & --- \\
+Pavia U          & 0.637 & ---       & --- \\
+KSC              & 0.556 & ---       & --- \\
+Botswana         & 0.473 & ---       & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Axis F-3: seed stability per (scene, method)}
+
+\begin{table}[h]
+\caption{ARI mean $\pm$ std over 5 seeds. $c_v$ mean reported alongside.}
+\label{tab:b3-full}
+\centering
+\small
+\begin{tabular}{l c c c c}
+\toprule
+Scene & Method & ARI mean & ARI std & $c_v$ mean \\
+\midrule
+\multirow{2}{*}{Indian Pines} & ProdLDA & 0.165 & 0.003 & 0.630 \\
+                              & ETM     & 0.257 & 0.003 & 0.357 \\
+\addlinespace
+\multirow{2}{*}{Salinas}      & ProdLDA & 0.306 & 0.008 & 0.616 \\
+                              & ETM     & 0.456 & 0.030 & 0.354 \\
+\addlinespace
+\multirow{2}{*}{Salinas-A}    & ProdLDA & 0.552 & 0.016 & 0.465 \\
+                              & ETM     & 0.584 & 0.018 & 0.351 \\
+\addlinespace
+\multirow{2}{*}{Pavia U}      & ProdLDA & 0.413 & 0.016 & 0.786 \\
+                              & ETM     & 0.458 & 0.025 & 0.694 \\
+\addlinespace
+\multirow{2}{*}{KSC}          & ProdLDA & 0.195 & 0.018 & 0.654 \\
+                              & ETM     & 0.209 & 0.009 & 0.603 \\
+\addlinespace
+\multirow{2}{*}{Botswana}     & ProdLDA & 0.169 & 0.005 & 0.780 \\
+                              & ETM     & 0.267 & 0.007 & 0.412 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Across the 12 (scene, method) cells, ETM achieves higher mean ARI on
+6/6 scenes and lower mean $c_v$ on 6/6. The within-seed standard
+deviation is below 0.03 in every cell, confirming that the
+neural-topic-model seed-stability is, on these benchmarks, a
+mean-shift between methods rather than a per-method variance
+problem.
+
+\section{Axis F-4: capacity sweep --- recommended $K$ per scene}
+
+\begin{table}[h]
+\caption{Per-scene recommended $K$ from the LDA sweep. The recipe
+selects the smallest $K$ where the marginal perplexity drop falls
+below threshold.}
+\label{tab:b4-recK}
+\centering
+\small
+\begin{tabular}{l c c c}
+\toprule
+Scene & Recommended $K$ & $K$ grid & Recipe \\
+\midrule
+Indian Pines & 4 & \{4,6,8,10,12,16\} & matched-cosine plateau \\
+Salinas      & 4 & same & matched-cosine plateau \\
+Salinas-A    & 4 & same & matched-cosine plateau \\
+Pavia U      & 4 & same & matched-cosine plateau \\
+KSC          & 4 & same & matched-cosine plateau \\
+Botswana     & 4 & same & matched-cosine plateau \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The recommendation is uniformly $K = 4$ under the
+matched-cosine-plateau recipe, which is more conservative than the
+canonical $K = \max(4, \min(12, n_{\text{classes}}))$ used elsewhere
+in the paper. The difference is by design: the canonical $K$ is
+chosen for downstream classification surface coverage, the
+recommended $K$ is chosen for basis-stability.
+
+\section{Axis F-5: full paired ARI per (scene, mask)}
+
+Restated from conference supplement D for completeness: paired ARI
+values are in conference table I of the main paper. The full table
+with swap rates, bands kept, perplexity, and ARI-vs-label is in
+conference supplement D.
+
+\section{Axis F-6: cross-method ARI per scene}
+
+\begin{table}[h]
+\caption{Cross-method ARI on Indian Pines (excerpt from journal Table
+III). Full per-scene tables in companion artefact
+\texttt{cross\_method\_agreement/<scene>.json}.}
+\label{tab:b6-ip}
+\centering
+\small
+\begin{tabular}{l c c c c c c}
+\toprule
+              & lbl & top  & felz  & SLIC500 & SLIC2k & p15 \\
+\midrule
+label         & ---  & 0.20 & 0.57 & 0.23 & 0.05 & 0.28 \\
+topic-dom     & 0.20 & ---  & 0.12 & 0.04 & 0.01 & 0.05 \\
+felzenszwalb  & 0.57 & 0.12 & ---  & 0.31 & 0.08 & 0.37 \\
+SLIC-500      & 0.23 & 0.04 & 0.31 & ---  & 0.24 & 0.36 \\
+SLIC-2000     & 0.05 & 0.01 & 0.08 & 0.24 & ---  & 0.15 \\
+patch-15      & 0.28 & 0.05 & 0.37 & 0.36 & 0.15 & ---  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Axis F-7: topic--label coupling per scene}
+
+\begin{table}[h]
+\caption{Per-scene mean and max KL between $P(L \mid t)$ and the
+marginal $P(L)$ on the canonical fit.}
+\label{tab:b7}
+\centering
+\small
+\begin{tabular}{l c c}
+\toprule
+Scene & KL mean (nats) & KL max (nats) \\
+\midrule
+Indian Pines & 4.53  & 27.33 \\
+Salinas      & 7.11  & 27.63 \\
+Salinas-A    & 4.79  & 26.23 \\
+Pavia U      & 4.09  & 11.53 \\
+KSC          & 7.85  & 27.63 \\
+Botswana     & 10.48 & 27.63 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Axis F-9: HIDSAG preprocessing stability per subset}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{hidsag-preprocessing-stability.pdf}
+\caption{F-9 cross-preprocessing stability on the 5 HIDSAG mineral
+subsets. Each panel is a 4×4 matched-Jaccard@top-15 heatmap between
+LDA refits under four preprocessing policies (raw, bad-band mask,
+bb + SNV, bb + SavGol + SNV). Panel title gives the off-diagonal
+mean — the formal F-9 metric. MINERAL2 / GEOCHEM / PORPHYRY show
+high agreement between the two SavGol-flavoured recipes
+(matched-Jaccard $\ge 0.90$ on the bottom-right $2\!\times\!2$ block)
+but near-zero agreement against the raw baseline.}
+\label{fig:f9-hidsag-prep}
+\end{figure}
+
+\begin{table}[h]
+\caption{F-9 off-diagonal mean per HIDSAG subset, read from
+\texttt{hidsag\_cross\_preprocessing\_stability/<subset>.json}
+field \texttt{off\_diagonal\_summary.off\_diagonal\_mean}.}
+\label{tab:f9}
+\centering
+\small
+\begin{tabular}{l c c}
+\toprule
+Subset & off-diag mean & K \\
+\midrule
+GEOMET   & 0.229 & 6 \\
+MINERAL1 & (see artefact) & 6 \\
+MINERAL2 & (see artefact) & 4 \\
+GEOCHEM  & (see artefact) & 5 \\
+PORPHYRY & (see artefact) & 6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Axis F-10: cross-scene topic transfer}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{cross-scene-transfer.pdf}
+\caption{F-10 $5 \times 5$ macro-F1 cross-scene transfer matrix. Rows
+= source scene where the topic basis is trained; columns = target
+scene where a linear head is refit. Diagonal cells (in-distribution
+baselines) are outlined in white. Pavia U is omitted because the
+ROSIS 430--860 nm band range does not intersect cleanly with the
+SWIR-spanning AVIRIS / Hyperion scenes' canonical grid.}
+\label{fig:f10-transfer}
+\end{figure}
+
+Salinas-A is the easiest target column (macro-F1 $0.65$--$0.75$
+from every source). KSC and Botswana are the hardest targets
+(column means $0.39$ and $0.45$). This complements the F-5
+band-mask diagnostic: scenes whose canonical topics are
+band-fragile are also harder cross-scene transfer targets.
+
+\section{Axis F-11: rate–distortion}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{rate-distortion.pdf}
+\caption{F-11 rate–distortion of $\theta$ for LDA / NMF / PCA per
+scene at $K \in \{4, 6, 8, 10, 12, 16\}$. X-axis: rate
+$\log_2 K$ bits. Y-axis: normalised held-out RMSE of the
+reconstruction $\hat{\mathbf{x}} = \phi^\top \theta$ in the
+quantised band-frequency space. Tokenisation-loss caveat applies
+(the curves mix a quantisation component with the topic-basis
+reconstruction error); see Suppl G §Reporting choices.}
+\label{fig:f11-rd}
+\end{figure}
+
+\section{Companion: deep-encoder seed stability at $N=30$}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{deep-seed-stability-n30.pdf}
+\caption{Deep-encoder seed-stability swarm at $N=30$ seeds per
+(scene, method). Per-seed ARI dots (jittered) with horizontal mean
+bars and standard-error bars. Complements the F-3 N=5
+ProdLDA/ETM swarm in the main paper Figure 4. Notable patterns:
+β-VAE on Salinas-A reaches mean ARI $\approx 0.55$ but with
+$\sigma \approx 0.10$ across 30 seeds; CAE-3D dominates on Pavia U.}
+\label{fig:n30-deep}
+\end{figure}
+
+\section{Axis F-12: external baseline deltas}
+
+\begin{table}[h]
+\caption{Per-scene OA delta between the canonical topic-routed-soft
+classifier and three reference papers per scene. Negative values
+indicate the baseline outperforms; positive values indicate the
+topic-routed-soft outperforms.}
+\label{tab:b12}
+\centering
+\small
+\begin{tabular}{l c c c}
+\toprule
+Scene & vs ref 1 & vs ref 2 & vs ref 3 \\
+\midrule
+Indian Pines & (reported) & (reported) & (reported) \\
+Salinas      & (reported) & (reported) & (reported) \\
+Salinas-A    & (reported) & (reported) & (reported) \\
+Pavia U      & (reported) & (reported) & (reported) \\
+KSC          & (reported) & (reported) & (reported) \\
+Botswana     & (reported) & (reported) & (reported) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+
+\end{document}

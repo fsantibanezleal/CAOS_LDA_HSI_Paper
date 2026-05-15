@@ -1,0 +1,240 @@
+% Supplementary I — Journal cross-section visual annex
+% Topic ↔ category / measurement relational visualisations.
+
+\documentclass[11pt,a4paper]{article}
+\input{../preamble.tex}
+
+\title{Journal Supplementary I --- Relating topics to labels and
+covariates: a visual annex\\
+{\large Companion to: \emph{Beyond Accuracy} (cross-section relational
+visualisations)}}
+\author{Felipe Santib\'a\~nez-Leal}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope and motivation}
+
+The journal main paper and its earlier supplements (A--H) defend the
+twelve-axis evaluation framework F-1..F-12 with figures that are
+either \emph{per-axis scalars} (paired ARI, coherence, seed
+stability, etc.) or \emph{per-topic intrinsic} (basis spectra,
+pairwise distances). What is left under-visualised is the
+\textbf{relational} question that motivates topic modelling in the
+first place: \emph{do the topics actually relate to the labels and
+covariates we already have?} This supplement fills that gap with six
+figures, each chosen for a distinct cognitive question, with
+references to the underlying visualisation tradition.
+
+\section{F-7 viewed relationally: topic × class soft heatmap}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{topic-class-heatmap.pdf}
+\caption{Topic × class soft heatmap per labelled scene. Rows =
+canonical topics (with document count); columns = ground-truth
+labels; cell intensity = $P(\ell \mid t)$, the conditional label
+distribution given dominant topic. Top strip = label marginal weighted
+by topic prevalence. Truncated class names appear on the x-axis.}
+\label{fig:tc-heatmap}
+\end{figure}
+
+This is the probabilistic generalisation of the confusion matrix.
+Each cell exposes \emph{conditional label support}: a class-pure
+topic has one tall cell, a mixed topic spreads across columns. The
+top strip lets the reader gauge whether topic-weighted marginals
+match the unconditional class prior. Following the mosaic-display
+tradition of Friendly~\cite{friendly1994mosaic} and the
+single-cell-LDA precedent of TITAN's \texttt{HeatmapTopic}.
+
+\section{F-7 again: per-topic class-distribution bars}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{per-topic-class-bars.pdf}
+\caption{Per-topic class distribution. Each row inside a panel is
+one canonical topic; bar height $=P(\ell \mid t)$, coloured with the
+canonical class palette so the same class is visually identifiable
+across topics. A topic that resolves one or two classes shows as a
+single tall bar; a topic that mixes classes shows as a spread. The
+categorical analogue of the \texttt{ggridges} joy-plot
+pattern~\cite{wilke2017ggridges,hintze1998violin}.}
+\label{fig:tc-bars}
+\end{figure}
+
+The bars and the heatmap are duals; the heatmap optimises for
+finding outlier cells, the bars optimise for reading the within-topic
+distribution shape. Both ship.
+
+\section{Topic → class Sankey / alluvial flow}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{topic-class-sankey.pdf}
+\caption{Topic → class Sankey/alluvial flow on Salinas-A (left) and
+Botswana (right). Left axis nodes = topics; right axis nodes =
+classes; ribbon width = pixel count. Salinas-A (K=6, L=6,
+band-robust) shows clean alignment with thin cross-flow. Botswana
+(K=12, L=14, band-fragile) shows the diffuse coupling that the
+F-5 paired ARI ${\approx}\,0.01$ predicts.}
+\label{fig:tc-sankey}
+\end{figure}
+
+References: Sankey diagram tradition; Data-to-Viz Sankey-vs-alluvial
+distinction~\cite{datatovizSankey}; modern \texttt{d3-sankey} and
+\texttt{ggsankeyfier} implementations.
+
+\section{$\theta$-PCA scatter coloured by topic / by label}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{theta-embedding-scatter.pdf}
+\caption{PCA-2D embedding of the per-document topic posterior
+$\theta_d$ on three scenes: top row coloured by dominant topic,
+bottom row coloured by ground-truth label with 2-$\sigma$ Gaussian
+confidence ellipses per class. Salinas-A (band-robust): topic and
+label clusters align tightly. Indian Pines (partial): topic clusters
+visible but ellipses overlap. Botswana (band-fragile): topic
+clusters are visible but ground-truth-label ellipses span the
+whole embedding, exposing the topic--label decoupling.}
+\label{fig:theta-scatter}
+\end{figure}
+
+Two-row design follows the \texttt{corner.py} scatterplot-matrix
+convention of Foreman-Mackey~\cite{foremanmackey2016corner};
+$2\sigma$ ellipses computed via the standard
+matplotlib gallery
+recipe~\cite{matplotlibConfidenceEllipse}.
+
+\section{Per-topic confidence ridge}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{confidence-ridge.pdf}
+\caption{Per-topic KDE of the per-document confidence
+$\max_k \theta_{d,k}$ over documents with dominant topic $k$. Each
+topic gets one ridge curve on a shared $x$-axis $[0, 1]$; vertical
+dashed line at $1/K$ = uniform-$\theta$ baseline. Right-shifted
+curves = sharp topics; left-shifted = diffuse / collapsed topics.}
+\label{fig:conf-ridge}
+\end{figure}
+
+The ridge plot is the appropriate idiom for ``one continuous
+distribution per category''. We follow Wilke's \texttt{ggridges}
+naming~\cite{wilke2017ggridges}; the precursor violin-plot family
+is Hintze and Nelson~\cite{hintze1998violin}.
+
+\section{HIDSAG: topic × covariate tag}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{hidsag-topic-covariate.pdf}
+\caption{HIDSAG~\cite{hidsag2023,hidsag2023figshare} topic ×
+covariate-tag heatmap on three subsets with non-degenerate
+covariates (MINERAL1 with P1/P2/P3; GEOCHEM and PORPHYRY with
+coarse/fine). Cell = $P(\text{tag} \mid \text{dominant topic})$.
+GEOMET and MINERAL2 are omitted because their available covariates
+collapse to a single \texttt{unknown} value at the band-mask
+builder's granularity (fall-back behaviour).}
+\label{fig:hidsag-cov}
+\end{figure}
+
+The continuous mineralogical measurements (Cu rec, Lime cons,
+mineral abundances per subset) live in the raw HDF5 source files of
+the figshare collection~\cite{hidsag2023figshare} rather than in the
+derived JSON exposed by our companion code repository. A future
+extension could plug those into the same topic--covariate frame
+using ridge plots per topic on the continuous variable, following
+the same idiom as Figure~\ref{fig:conf-ridge}.
+
+\section{HIDSAG continuous-measurement ridges, corner plot, mosaic}
+
+After the initial release of this supplement, the HIDSAG continuous
+mineralogical / geometallurgical measurements were extracted from
+the per-sample \texttt{metadata.json} files in the figshare
+collection~\cite{hidsag2023figshare} (closing issue
+\texttt{CAOS\_LDA\_HSI\_Paper\#2}). A new derived layer at
+\texttt{data/derived/hidsag\_topic\_measurements/<subset>.json}
+joins the per-document $\theta$ matrix with the assay values; 427
+records across the five subsets with 5--33 continuous variables per
+subset.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{hidsag-measurement-ridges.pdf}
+\caption{HIDSAG topic-conditional continuous-measurement ridges per
+subset. For each subset the variable with the largest normalised
+per-topic-mean range is selected; one KDE ridge per dominant topic
+on a shared $x$-axis (the variable). Per-row $n$ and mean annotated.
+Rug marks at the actual observations. The most striking ridge is
+\emph{PORPHYRY \% biotite}: per-topic means range $1.1\to 39.6$,
+indicating that the canonical-fit topic basis on PORPHYRY captures
+the porphyry-alteration mineralogy at a high level of fidelity.}
+\label{fig:hidsag-ridges}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{hidsag-corner-geomet.pdf}
+\caption{GEOMET corner-plot matrix coloured by dominant topic
+(K\,$=\,6$). Diagonal: per-variable KDE per topic. Lower triangle:
+scatter of variable pairs coloured by topic with 2-$\sigma$
+Gaussian confidence ellipses per topic. Idiom from
+Foreman-Mackey~\cite{foremanmackey2016corner}; ellipses via the
+canonical matplotlib gallery
+recipe~\cite{matplotlibConfidenceEllipse}.}
+\label{fig:hidsag-corner}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{hidsag-measurement-mosaic.pdf}
+\caption{HIDSAG mosaic / fluctuation heatmap of $P(\text{quartile} \mid
+\text{dominant topic})$ on three subsets and the variable picked per
+subset (PORPHYRY: \% biotite; GEOMET: Cu recovery; MINERAL1:
+albite). Bins are scene-wide quartiles; rows normalised. Captures
+non-monotone topic-vs-quartile patterns that the smooth ridge KDE
+can hide. Idiom: Hofmann~\cite{hofmann2008mosaic};
+Friendly~\cite{friendly1994mosaic}.}
+\label{fig:hidsag-mosaic}
+\end{figure}
+
+\section{Why these nine figures}
+
+The nine figures answer nine distinct cognitive questions about the
+topic--label and topic--measurement relationships:
+
+\begin{enumerate}
+\item Heatmap (Fig.~\ref{fig:tc-heatmap}) --- ``which topic--class
+cells carry mass?''
+\item Per-topic bars (Fig.~\ref{fig:tc-bars}) --- ``what is the
+within-topic class distribution shape?''
+\item Sankey (Fig.~\ref{fig:tc-sankey}) --- ``where does mass flow
+between topic and class?''
+\item $\theta$ scatter (Fig.~\ref{fig:theta-scatter}) --- ``do
+topics and labels align in the $\theta$-PCA manifold?''
+\item Confidence ridge (Fig.~\ref{fig:conf-ridge}) --- ``how sharp
+is each topic's posterior?''
+\item HIDSAG covariate (Fig.~\ref{fig:hidsag-cov}) --- ``do topics
+carry information about the HIDSAG covariate tags?''
+\item HIDSAG ridges (Fig.~\ref{fig:hidsag-ridges}) --- ``does the
+dominant-topic assignment separate the continuous mineralogical
+assays?''
+\item HIDSAG corner plot (Fig.~\ref{fig:hidsag-corner}) --- ``do
+topics occupy distinct manifolds in the GEOMET assay space?''
+\item HIDSAG mosaic (Fig.~\ref{fig:hidsag-mosaic}) --- ``does the
+topic membership stochastically order each continuous variable?''
+\end{enumerate}
+
+Each chosen idiom dominates its question on the cognitive-ergonomic
+trade-off between density (information per pixel) and decoding
+effort (steps the reader must take to extract a claim). See the
+research note in the repository
+\texttt{supplementary/journal/research-notes/topic-relational-viz.md}
+for the full literature survey that informed the selection.
+
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+
+\end{document}

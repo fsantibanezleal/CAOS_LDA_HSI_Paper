@@ -1,0 +1,144 @@
+% Supplementary A — Journal paper §I (Introduction)
+% Extended motivation, historical context, problem framing.
+
+\documentclass[11pt,a4paper]{article}
+\input{../preamble.tex}
+
+\title{Journal Supplementary A --- The accuracy-only view and why it fails\\
+{\large Companion to: \emph{Beyond Accuracy: A Multi-Axis Evaluation
+Framework for Interpretable Topic Models on HSI}}}
+\author{Felipe Santib\'a\~nez-Leal}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope}
+This supplement expands Section~I of the journal paper. We provide
+(a)~a longer historical account of how the HSI community arrived at
+the accuracy-only evaluation discipline, (b)~five concrete examples
+in which a single OA number hides materially different model
+behaviours, (c)~the philosophical commitment that distinguishes
+\emph{interpretability} from \emph{post-hoc explanation}, and
+(d)~the framing that motivates a twelve-axis framework rather than
+a smaller or larger one.
+
+\section{How the field arrived at OA-as-summary}
+
+The earliest HSI classification papers
+\cite{plaza2009recent,camps2014advances} settled on overall accuracy
+(OA) and kappa as the canonical summary because the underlying task
+was assumed to be \emph{closed-set supervised classification}: given
+a labelled benchmark with $L$ classes, predict the class of each
+unlabelled pixel; report the fraction correct. Under this
+assumption OA is monotone in the quantity the practitioner cares
+about (predictive accuracy) and the kappa adjustment handles class
+imbalance. Subsequent work imported the OA discipline wholesale into
+\emph{unsupervised} and \emph{interpretability-motivated} settings
+where the quantity the practitioner cares about is different.
+
+Linear unmixing~\cite{nascimento2005vca,bioucasdias2012unmixing}
+imported OA-style reporting via downstream classification of
+predicted abundance vectors. Deep classification papers
+\cite{chen2014deep,paoletti2019deep} continued the OA tradition.
+Topic-model adaptations to HSI~\cite{zou2017pmlda,liu2019hsilda}
+inherited OA from both ancestors. The price of this inheritance is
+that the OA number cannot itself answer the question
+\emph{``why is this topic basis interpretable?''} --- because the
+question is not what OA measures.
+
+\section{Five concrete examples of OA hiding bad behaviour}
+
+\paragraph{Example 1: seed-collapsed ProdLDA.} ProdLDA fits on
+Indian Pines under five seeds yield ARI standard deviation $0.003$
+across seeds (extremely stable) and per-seed ARI \emph{below} 0.17
+(weak class discrimination). A single ProdLDA OA number averaged
+over seeds would be honest but uninformative; the practitioner needs
+to see both the stability and the level.
+
+\paragraph{Example 2: high-OA on weakly identified topics.}
+KSC under a 13-class supervised baseline reaches OA $> 0.9$ on the
+canonical fold; the same KSC under our band-mask diagnostic returns
+paired ARI $\approx 0.01$. A KSC paper that reports only OA would
+\emph{look} like a strong contribution; the topic basis driving the
+classification is, however, band-fragile.
+
+\paragraph{Example 3: HIDSAG inversion.} On the labelled scenes the
+topic-routed-soft classifier is statistically indistinguishable from
+the raw-spectrum logistic baseline. On HIDSAG the topic-logistic
+classifier sits at posterior $\mu = 0.316$ vs raw $\mu = 0.585$ with
+$P[\mu_{\text{topic}} > \mu_{\text{raw}}] = 0.0$. The labelled-scene
+OA number would lead a practitioner to deploy the topic
+representation on HIDSAG; the hierarchical model says that decision
+is wrong.
+
+\paragraph{Example 4: coherence-vs-ARI flip.} ProdLDA's
+top-$15$-word coherence is the highest on Indian Pines
+($c_v = 0.630$), but its cluster-vs-label ARI is the lowest
+($0.165$). A practitioner who picks ProdLDA on the basis of
+coherence gets a different downstream behaviour than one who picks
+on the basis of clustering quality.
+
+\paragraph{Example 5: SLIC vs topic-dominant cross-method
+disagreement.} On Indian Pines SLIC-500 and the canonical topic
+dominant map have pairwise ARI of $0.039$ --- i.e.\ the two
+``unsupervised partitions'' of the same scene disagree almost
+completely on which pixels belong to which segment. The OA of
+either method against ground truth does not surface this
+disagreement; the cross-method ARI matrix does.
+
+\section{Interpretability versus post-hoc explanation}
+
+There is a methodological distinction we want to preserve.
+\emph{Interpretability} is a property of the model itself: a topic
+basis $\phi$ is interpretable if every element of the
+parameterisation has a meaning the practitioner can read off the
+parameter. \emph{Post-hoc explanation} is a property of an attached
+diagnostic: a feature-attribution map or an inverse-classification
+view that approximates the model's behaviour on a sample. Topic
+models on HSI are advertised as belonging to the first category, but
+in practice the published evaluations support only the second:
+a high-OA topic model with a band-fragile basis is providing
+post-hoc explanation, not interpretability.
+
+The twelve-axis framework defended in the journal paper restores the
+first-category claim or denies it explicitly. A topic basis whose
+twelve-axis card has stable, coherence-meaningful, band-robust, and
+sample-stable rows admits the
+\emph{``$\phi_k$ has a material-level meaning''} reading. A topic
+basis whose card has any of those rows degenerate admits only the
+\emph{``$\theta$ is a useful feature for a downstream classifier''}
+reading --- which is the post-hoc reading and is allowed, but should
+be advertised as such.
+
+\section{Why twelve axes, not five or fifty}
+
+The number twelve is not magic. It reflects the orthogonalisation
+of all the evaluation questions the present project has needed to
+ask over $\sim 150$ iterative cycles of working with the artefact
+set. We checked four alternative counts:
+
+\begin{itemize}
+\item \textbf{Five axes (the OA + four corollaries view).}
+Insufficient. Drops cross-method agreement, topic--label coupling,
+preprocessing robustness, cross-scene transfer.
+\item \textbf{Seven axes.} Drops preprocessing robustness (essential
+on HIDSAG) and cross-scene transfer (essential when sensor families
+overlap, e.g.\ AVIRIS Salinas / Salinas-A).
+\item \textbf{Twelve axes (selected).} The smallest set that yields a
+distinct numeric per axis on the present benchmarks and admits a
+deterministic builder per axis without overlapping builders.
+\item \textbf{Twenty-plus axes.} We considered splitting F-3 into
+inferential-stability + estimation-stability, F-5 into mask-set vs
+band-budget, F-12 into intra-paper vs inter-paper baselines. Doing so
+multiplies the artefact footprint without adding qualitatively new
+information.
+\end{itemize}
+
+The twelve-axis count is therefore the minimum that surfaces every
+distinct failure mode we have observed.
+
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+
+\end{document}

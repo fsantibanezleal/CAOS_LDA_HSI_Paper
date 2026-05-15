@@ -1,0 +1,173 @@
+% Supplementary A — Conference paper §I (Introduction)
+% Extended motivation, historical context, and exhaustive prior-work
+% citations that did not fit in the 4-page conference manuscript.
+
+\documentclass[11pt,a4paper]{article}
+\input{../preamble.tex}
+
+\title{Supplementary A --- Extended motivation for the band-mask
+robustness diagnostic\\
+{\large Companion to: \emph{A Band-Mask Robustness Diagnostic for LDA on HSI}
+(WHISPERS 2026)}}
+\author{Felipe Santib\'a\~nez-Leal}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope}
+This supplement expands Section~I of the conference manuscript. The
+main paper limits itself to a single contribution --- a band-mask
+robustness diagnostic for LDA on HSI --- presented in four printed
+pages. Here we provide (a)~the historical context that motivated the
+diagnostic, (b)~a complete enumeration of the failure modes the
+diagnostic intends to surface, (c)~a contrast with adjacent
+diagnostics in the literature, and (d)~the threats to validity we
+acknowledge upfront.
+
+\section{Historical context}
+
+Latent Dirichlet Allocation~\cite{blei2003lda} introduced the
+generative-topic-model framing of a discrete-token corpus over a
+decade before its first reported application to hyperspectral
+imagery. The application to HSI~\cite{zou2017pmlda,liu2019hsilda} was
+preceded by two adjacent paradigms whose evaluation methodology
+shaped the field's expectations:
+linear spectral unmixing~\cite{nascimento2005vca,bioucasdias2012unmixing}
+and deep spectral--spatial
+classification~\cite{chen2014deep,paoletti2019deep}. Both paradigms
+matured under an \emph{accuracy-first} evaluation discipline: the
+canonical figure of merit is overall accuracy (OA) of a downstream
+classifier on a held-out fold of one of the standard labelled
+benchmarks (Indian Pines, Salinas, Pavia~U; later KSC and Botswana),
+and methodological progress is measured as a delta against the best
+prior OA on the same scene.
+
+This discipline served unmixing and deep classification well: the
+inductive bias of each paradigm is sufficiently strong that
+post-hoc interpretability claims (endmember spectra; feature
+visualisations) carry low risk of being a freak of a particular
+training run. Topic models do not enjoy that protection. The basis
+$\phi \in \R_+^{K \times B}$ inferred by LDA is identifiable only up
+to a label permutation, and the inference procedure (online
+variational Bayes~\cite{hoffman2010online}, collapsed Gibbs
+sampling~\cite{griffiths2004finding}, or amortised variational
+autoencoders in the neural variants~\cite{srivastava2017autoencoding,
+dieng2020topic}) has multiple posterior modes for any finite-data
+problem. The interpretability of a single trained model is therefore
+contingent on a chain of stability properties:
+
+\begin{enumerate}
+\item \textbf{Seed stability}: refitting under a different random
+initialisation should yield the same basis up to permutation.
+\item \textbf{Capacity stability}: increasing $K$ by one should split
+one canonical topic into two, not reshuffle every topic.
+\item \textbf{Sample stability}: subsampling the corpus should not
+relabel topics.
+\item \textbf{Hyperparameter stability}: nudging $\alpha$ or $\eta$
+should not alter topic identity at the same $K$.
+\item \textbf{Spectral-window stability}: dropping the
+atmospheric-water bands, or restricting to VNIR or SWIR only, should
+not relabel topics (modulo the bands that the mask actually removes).
+\end{enumerate}
+
+Failure of any one of these properties weakens any claim of the form
+``topic~$k$ is a mineral signature'' or ``topic~$k$ corresponds to
+healthy canopy''. The first four properties are reported (sparingly)
+in the existing literature; the fifth --- spectral-window stability
+--- is, to our knowledge, not reported anywhere as a per-scene
+diagnostic. The band-mask diagnostic of the main paper fills exactly
+this gap.
+
+\section{Failure modes the diagnostic surfaces}
+
+The band-mask diagnostic is a hypothesis test under the null:
+\textsc{H$_0$}: \emph{The canonical topic basis is a property of the
+scene's underlying material distribution and is therefore robust to
+the choice of spectral window.}
+
+The diagnostic returns a per-(scene, mask) paired ARI; values close
+to 1 fail to reject \textsc{H$_0$}, values close to 0 reject. There
+are three substantively different ways to reject:
+
+\begin{itemize}
+\item \textbf{Mode (i): canonical-fit redundancy.} The canonical
+basis exploits fine-grained correlations that are present in the
+full-band representation and disappear under restriction. The
+canonical topics are correct in the canonical reference frame but
+not transportable across spectral windows.
+\item \textbf{Mode (ii): weak identification.} The latent basis is
+under-determined by the available data (small per-class sample, large
+class count, narrow bands). Different posterior modes are equally
+plausible under different band subsets.
+\item \textbf{Mode (iii): mask-induced collinearity.} The mask
+removes the bands that were carrying the discriminative signal, so
+the masked LDA fits a different basis on the residual spectrum that
+is correct for the residual but incomparable to the canonical.
+\end{itemize}
+
+The diagnostic does not separate (i)--(iii) by design --- doing so
+would require additional information (e.g.\ band-wise Fisher ratios,
+sample-size posterior bounds) and would inflate the diagnostic's
+artefact footprint without changing the per-scene yes/no judgement
+that motivates it. The conference paper's discussion explicitly flags
+that the diagnostic is a \emph{flag-raising} tool, not a
+\emph{root-cause-isolating} tool.
+
+\section{Contrast with adjacent diagnostics}
+
+We briefly contrast the band-mask diagnostic with three related
+diagnostics in the wider topic-model and clustering literature.
+
+\paragraph{Seed-stability swarms.} Plotting per-seed ARI to ground
+truth across $N$ refits~\cite{koltchinskii2000empirical,
+vinh2010information} answers ``does the same model on the same data
+yield the same topics'', a different and weaker question than ``does
+the same model on related data yield the same topics''. Seed
+stability is, in our framework, axis F-3; the band-mask diagnostic is
+axis F-5.
+
+\paragraph{Cross-fold ARI.} K-fold CV on $\theta$ followed by ARI
+comparison is sensitive to the held-out fold's class proportion; it
+does not surface whether the topic basis itself is stable.
+
+\paragraph{Coherence measures.} $c_v$ and $c_{\text{NPMI}}$
+\cite{roder2015exploring} score the top-$N$ words per topic against
+a reference corpus; they capture intra-topic compactness but say
+nothing about cross-fit identity preservation.
+
+The band-mask diagnostic occupies a different methodological niche
+from each of the above: it asks whether the inferred topic
+\emph{identities} survive a specific class of data restriction, with
+the answer interpretable directly as a chance-corrected proportion.
+
+\section{Threats to validity acknowledged upfront}
+
+\paragraph{Top-50 Fisher ranking is computed on the unmasked
+spectrum.} The Fisher ratio per band is computed against the
+ground-truth label on the full-band spectrum; the mask then selects
+the top-50 bands by that ranking. This is a deliberate choice ---
+recomputing the Fisher ranking on each masked subset would conflate
+the within-mask discriminability with the between-mask comparison
+the diagnostic is trying to surface. The trade-off is that the
+top-50 Fisher mask is a \emph{post-hoc} selector and its paired-ARI
+value should be interpreted accordingly.
+
+\paragraph{Canonical $K$ is held fixed.} The mask-refit uses the
+canonical $K$ rather than a per-mask $K^*$. We argue this is the
+right comparison because changing $K$ between fits introduces a
+second degree of freedom that mixes with the band-restriction we are
+isolating. The cost is that on a scene where the canonical $K$ is too
+large for the masked spectrum, the masked fit will under-utilise its
+capacity.
+
+\paragraph{Sentinel masking of unlabelled pixels.} Both the canonical
+and masked dominant-topic maps use sentinel 255 for unlabelled pixels;
+the paired ARI is computed only on the intersection of labelled
+pixels. The two fits therefore see a different document set from the
+band axis but the same document set from the spatial axis.
+
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+
+\end{document}

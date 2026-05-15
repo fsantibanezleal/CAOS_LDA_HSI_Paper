@@ -1,0 +1,265 @@
+% Supplementary C — Journal §III (Twelve-axis framework)
+% Per-axis motivation + alternative metrics considered + design rationale.
+
+\documentclass[11pt,a4paper]{article}
+\input{../preamble.tex}
+
+\title{Journal Supplementary C --- Per-axis motivation and alternatives\\
+{\large Companion to: \emph{Beyond Accuracy} (Section III)}}
+\author{Felipe Santib\'a\~nez-Leal}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope}
+This supplement documents, per axis F-1 through F-12, the question
+the axis answers, the metric chosen, the alternatives considered,
+and the design rationale for the final selection. The intent is
+that a reader could substitute an alternative metric within an axis
+without re-architecting the framework.
+
+\section{F-1: Hierarchical Bayesian classification}
+
+\paragraph{Question.} ``Does the topic representation outperform
+non-topic baselines after pooling across scenes and folds?''
+
+\paragraph{Metric.} Posterior mean and HDI94 of $\mu_m$ in the
+hierarchical model $\text{score}_{m,s,f} = \mu_m + \delta_s + \rho_f
++ \epsilon$, plus the pairwise $P[\mu_A > \mu_B]$ table.
+
+\paragraph{Alternatives considered.} (a)~Pooled OA average (drops
+scene-level uncertainty); (b)~Fixed-effect ANOVA (would require
+asymptotic normality on small per-fold samples); (c)~Bayesian
+paired-tests per (scene, method) (high false-discovery rate without
+correction).
+
+\paragraph{Rationale.} The hierarchical model is the smallest design
+that (i)~returns a per-method posterior, (ii)~marginalises over
+scene-level offsets, (iii)~yields pairwise probabilities directly
+interpretable as a graded ordering. The NUTS sampler with 1000
+draws + 1000 tune + 2 chains is the default PyMC configuration; no
+divergences are observed.
+
+\section{F-2: Topic-word coherence}
+
+\paragraph{Question.} ``Are the top-$N$ words per topic semantically
+coherent under the corpus's own co-occurrence statistics?''
+
+\paragraph{Metric.} $c_v$~\cite{roder2015exploring},
+$c_{\text{NPMI}}$, and U-Mass, reported with $N = 15$ and a
+sliding window of size 110 (matching Röder's default).
+
+\paragraph{Alternatives considered.} (a)~UCI coherence (less
+correlated with human judgement on Röder's benchmarks);
+(b)~$c_p$ Pointwise mutual information (drops the sliding window);
+(c)~Word2Vec embeddings (requires an external corpus, breaks the
+self-contained reproducibility commitment).
+
+\paragraph{Rationale.} $c_v$ is the strongest performer in Röder
+2015 on human judgements; reporting NPMI alongside is a robustness
+check; U-Mass is the historical reference. The three-way report
+also enables the coherence-vs-ARI scatter that surfaces the
+LDA-vs-ProdLDA tradeoff.
+
+\section{F-3: Seed stability}
+
+\paragraph{Question.} ``Does refitting under a different random
+seed yield the same topics?''
+
+\paragraph{Metric.} Mean $\pm$ std ARI(KMeans-on-$\theta$, label)
+over $N = 5$ seeds plus mean $\pm$ std $c_v$ over the same five.
+
+\paragraph{Alternatives considered.} (a)~Topic-by-topic matched
+cosine (sensitive to permutation, requires pre-alignment);
+(b)~Bootstrap-resampled corpora (mixes seed stability with sample
+stability); (c)~$N = 30$ seeds (the companion code repository's
+\texttt{deep\_seed\_stability/} block runs $N = 30$; the framework
+uses $N = 5$ for parsimony plus an explicit upgrade path).
+
+\paragraph{Rationale.} The ARI + $c_v$ pair is the smallest set
+that surfaces both the cluster-quality and topic-interpretability
+sides of stability. The five-seed budget is enough to estimate the
+std reliably for a unimodal posterior; multi-modal posteriors (which
+we suspect on KSC and Botswana) would benefit from larger $N$ and
+are flagged for follow-up.
+
+\section{F-4: Capacity sensitivity}
+
+\paragraph{Question.} ``How does the topic representation change
+when one allows $K$ to vary?''
+
+\paragraph{Metric.} ARI(canonical, KMeans-on-$\theta_K$, label),
+held-out perplexity, topic diversity (fraction of unique top-15
+words), and cross-seed matched-cosine, all reported across
+$K \in \{4, 6, 8, 10, 12, 16, 20, 24\}$.
+
+\paragraph{Alternatives considered.} (a)~ELBO vs $K$ curve
+(diverges in batch sizes and not directly interpretable);
+(b)~AIC / BIC at the corpus level (penalty terms become arbitrary
+for non-Gaussian likelihoods); (c)~Held-out perplexity alone (the
+de-facto default but uninformative on topic interpretability).
+
+\paragraph{Rationale.} The four-metric report covers the three
+distinct ways capacity choice can fail: underfitting (perplexity
+high, ARI low), overfitting on tokenisation noise (perplexity low,
+diversity collapses), and topic splitting/merging without ARI gain
+(matched-cosine high but ARI flat).
+
+\section{F-5: Band-mask robustness}
+
+\paragraph{Question.} ``Does the topic basis survive a class of
+spectral-window restrictions?''
+
+\paragraph{Metric.} Paired ARI between canonical and masked
+dominant-topic maps, restricted to pixels labelled in both, under
+four canonical masks (VNIR, SWIR, no-water, top-50 Fisher).
+
+\paragraph{Alternatives considered.} (a)~Phi-cosine after Hungarian
+alignment (basis-level, but conflates marginal-prevalence with
+identity); (b)~KL between $\theta$ posteriors per pixel
+(continuous, but interpretation across pixels is unclear);
+(c)~Jaccard of top-words per topic after Hungarian alignment
+(vocabulary-level, useful supplementary B axis in the conference
+paper).
+
+\paragraph{Rationale.} Paired ARI is the metric most directly
+interpretable as ``how much agreement under best-permutation'' on
+the same data set; it is the principal metric. The companion
+swap-rate is the un-corrected fraction and the Hungarian alignment
+is the per-topic correspondence; the three together constitute the
+axis output.
+
+\section{F-6: Cross-method clustering agreement}
+
+\paragraph{Question.} ``How does the canonical topic-dominant map
+relate to other partitions of the same scene?''
+
+\paragraph{Metric.} All-pairs ARI and NMI matrix between $\{$label,
+topic-dominant, Felzenszwalb, SLIC-500, SLIC-2000, patch-15,
+patch-7, pixel$\}$.
+
+\paragraph{Alternatives considered.} (a)~Pair-by-pair ARI with a
+sole reference (loses the cross-method symmetric structure);
+(b)~V-measure heatmap (V-measure equals NMI on these partitions
+and gives the same information); (c)~Graph-clustering modularity
+between methods (interesting but requires a per-method graph
+that we do not produce).
+
+\paragraph{Rationale.} The 8$\times$8 matrix surfaces shared
+inductive biases (e.g.\ SLIC-500 and patch-15 are spatially smooth
+and agree highly even though they disagree with the ground-truth
+label) that a single-row reference cannot show.
+
+\section{F-7: Topic--label coupling}
+
+\paragraph{Question.} ``How concentrated is the support of each
+canonical topic on the ground-truth label?''
+
+\paragraph{Metric.} Per-topic
+$H(L \mid t) = -\sum_\ell P(\ell \mid t) \log P(\ell \mid t)$ and
+the corresponding KL divergence $\KL{P(L \mid t)}{P(L)}$.
+
+\paragraph{Alternatives considered.} (a)~Topic-to-label hard
+mapping via Hungarian (a special case of F-8 applied to the label
+side); (b)~Mutual information $I(L; T)$ (a corpus-level summary,
+useful as a single-number companion); (c)~Topic precision/recall on
+the dominant-label hypothesis (per-(topic, label) but multiplies
+the artefact size).
+
+\paragraph{Rationale.} Per-topic $H$ and KL admit direct
+interpretation as concentration / divergence from the marginal,
+and integrate cleanly with the dominant-topic-map raster that the
+framework already produces.
+
+\section{F-8: Per-topic identity tracking under masks}
+
+\paragraph{Question.} ``Which masked topic corresponds to which
+canonical topic, and how much disagreement survives the
+correspondence?''
+
+\paragraph{Metric.} Hungarian permutation $\sigma^* = \arg\max_\sigma
+\sum_k C_{k, \sigma(k)}$ on the confusion matrix
+$C \in \mathbb{Z}^{K \times K^{(m)}}_{\ge 0}$, plus the swap rate
+under alignment $|\mathcal{S}|^{-1} \sum_d \mathbf{1}[z^{(m)}_d \ne
+\sigma^*(z_d)]$.
+
+\paragraph{Alternatives considered.} (a)~Top-$N$ greedy assignment
+(faster but sub-optimal); (b)~Soft alignment via Sinkhorn (returns
+a transport matrix, not a permutation); (c)~Spectral alignment of
+the eigenvectors of $C$ (numerical stability concerns at small
+$K$).
+
+\paragraph{Rationale.} The exact Hungarian solution is computable
+in $O(K^3)$ on $K \le 12$ in milliseconds and is the standard
+benchmark in the cluster-comparison literature.
+
+\section{F-9: Preprocessing stability (HIDSAG)}
+
+\paragraph{Question.} ``Does the topic basis survive a change in
+the preprocessing pipeline (continuum removal, smoothing,
+derivative)?''
+
+\paragraph{Metric.} ARI(dominant-topic recipe A, dominant-topic
+recipe B) per pair, summarised as the mean ARI across the
+$\binom{R}{2} = 3$ pairs for $R = 3$ recipes.
+
+\paragraph{Alternatives considered.} (a)~Phi-cosine pairwise
+(basis-level, parallel to F-5's alternative); (b)~Recipe-conditioned
+classification accuracy (drops the topic-level question);
+(c)~Procrustes alignment of $\phi$ matrices (returns a continuous
+similarity but does not produce a discrete per-pair scalar).
+
+\paragraph{Rationale.} Mean pairwise ARI is the simplest summary
+that yields a per-subset scalar comparable across HIDSAG subsets.
+
+\section{F-10: Cross-scene topic transfer}
+
+\paragraph{Question.} ``Does the canonical topic basis on scene $s$
+generate a useful topic representation on scene $t$?''
+
+\paragraph{Metric.} ARI(label$_t$, dominant-topic of $\theta^{(t)} =
+\theta(\phi^{(s)}, \mathbf{c}^{(t)})$) for the transfer
+$\phi^{(s)} \to \theta^{(t)}$.
+
+\paragraph{Alternatives considered.} (a)~Held-out perplexity of
+$\phi^{(s)}$ on scene $t$ (loses the cluster-quality side);
+(b)~Top-words drift between $\phi^{(s)}$ and a refit
+$\phi^{(t)}$ (a basis-level statistic that does not say whether the
+transfer is useful downstream).
+
+\paragraph{Rationale.} The ARI report is the most directly
+interpretable transfer score and is symmetric in the sense of
+producing both $s \to t$ and $t \to s$ numbers.
+
+\section{F-11: Rate--distortion of $\theta$}
+
+\paragraph{Question.} ``How aggressively does the topic
+representation compress the spectrum while remaining useful?''
+
+\paragraph{Metric.} Per-pixel MSE($\hat{\mathbf{x}} = \phi^\top
+\theta, \mathbf{x}$) versus rate $\log_2 K$.
+
+\paragraph{Caveat.} The reconstruction $\hat{\mathbf{x}}$ uses the
+quantised band-frequency tokenisation; the MSE therefore mixes a
+tokenisation-loss component into the rate--distortion curve. We
+flag this as a limitation in journal §VII and as a candidate for
+follow-up axis design.
+
+\section{F-12: External baseline comparison}
+
+\paragraph{Question.} ``How does the canonical topic-routed-soft OA
+compare to the literature on the same scene?''
+
+\paragraph{Metric.} OA delta = topic-routed-soft OA $-$ best
+published OA per scene, where ``best published'' is taken from a
+fixed set of three reference papers per scene.
+
+\paragraph{Caveat.} Train/test splits across papers are not always
+comparable, so the delta is reported with the per-paper split
+caveat in journal §VII and in the artefact.
+
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+
+\end{document}

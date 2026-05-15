@@ -1,0 +1,140 @@
+% Supplementary C — Conference paper §III (Experimental setup)
+% Full dataset descriptors, tokenisation choices, and per-scene
+% sampling traceability.
+
+\documentclass[11pt,a4paper]{article}
+\input{../preamble.tex}
+
+\title{Supplementary C --- Dataset descriptors and tokenisation\\
+{\large Companion to: \emph{A Band-Mask Robustness Diagnostic for LDA on HSI}}}
+\author{Felipe Santib\'a\~nez-Leal}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\section{Scope}
+This supplement expands Section~III of the conference paper. We
+document per-scene the sensor history, band selection, ground-truth
+class catalogue, and the sampling decisions that produced the
+canonical 220-per-class corpora used in the band-mask diagnostic.
+
+\section{Per-scene sensor and corpus traceability}
+
+\begin{longtable}{l p{2.6cm} c c c p{4.0cm}}
+\caption{Labelled HSI scenes used in the diagnostic. $B$ is the band
+count after the canonical correction (uncorrected bands removed per
+the UPV/EHU collection's official policy). $D$ is the document count
+that enters the canonical fit (= samples per class × number of
+admissible classes, with classes having fewer than $100$ available
+pixels rejected). $K$ is the canonical topic count.}
+\label{tab:scenes-full}\\
+\toprule
+Scene & Sensor / platform & $B$ & $D$ & $K$ & Source URL  \\
+\midrule
+Indian Pines       & AVIRIS / NASA      & 200 & 2812 & 12 & ehu.eus/ccwintco/index.php?title=Hyperspectral\_Remote\_Sensing\_Scenes \\
+Salinas            & AVIRIS / NASA      & 204 & 3520 & 12 & ehu.eus / Salinas \\
+Salinas-A          & AVIRIS / NASA      & 204 & 1320 & 6  & ehu.eus / Salinas-A (subset)  \\
+Pavia U            & ROSIS-03 / DLR     & 103 & 1980 & 9  & ehu.eus / Pavia University \\
+KSC                & AVIRIS / NASA      & 176 & 2686 & 12 & ehu.eus / Kennedy Space Center \\
+Botswana           & EO-1 Hyperion / NASA & 145 & 2775 & 12 & ehu.eus / Botswana \\
+\bottomrule
+\end{longtable}
+
+\subsection{Indian Pines}
+\textbf{Sensor.} Airborne Visible/Infrared Imaging Spectrometer
+(AVIRIS), 224 raw bands at $\approx 10$~nm resolution over
+400--2500~nm. The canonical correction removes 24 noisy and
+atmospheric-water bands, leaving $B = 200$ usable bands.
+\textbf{Scene.} $145 \times 145$ pixels acquired over the
+agricultural test site at Purdue University, Indiana, June 1992
+\cite{baumgardner1992indianpines}. \textbf{Classes.} 16 ground-truth
+classes covering corn-notill, corn-mintill, corn, grass-pasture,
+grass-trees, hay-windrowed, oats, soybean-notill, soybean-mintill,
+soybean-clean, wheat, woods, buildings-grass-trees-drives,
+stone-steel-towers, alfalfa, grass-pasture-mowed. Some classes have
+fewer than $100$ labelled pixels and are excluded from the canonical
+sample.
+\textbf{Sampling.} For each admissible class, the canonical fit draws
+$220$ pixels without replacement using NumPy's
+\texttt{default\_rng(42)}.
+
+\subsection{Salinas}
+\textbf{Sensor.} AVIRIS, same instrument family as Indian Pines.
+\textbf{Scene.} $512 \times 217$ pixels acquired over Salinas Valley,
+California~\cite{aviris_salinas}, $B = 204$ usable bands after the
+canonical correction.
+\textbf{Classes.} 16 classes: brocoli-green-weeds-1/2, fallow,
+fallow-rough-plow, fallow-smooth, stubble, celery, grapes-untrained,
+soil-vinyard-develop, corn-senesced-green-weeds,
+lettuce-romaine-{4,5,6,7}wk, vinyard-untrained, vinyard-vertical-trellis.
+
+\subsection{Salinas-A}
+\textbf{Sensor + classes.} A subset of Salinas comprising 6 of the
+classes on a $83 \times 86$ window. Sensor history identical to
+Salinas. We treat it as an independent benchmark because its smaller
+spatial footprint and fewer classes make the canonical fit
+substantially easier than the parent scene.
+
+\subsection{Pavia University}
+\textbf{Sensor.} Reflective Optics System Imaging Spectrometer
+(ROSIS-03), DLR. 115 raw bands over 430--860~nm; the canonical
+correction removes 12 noisy bands leaving $B = 103$, all in the VNIR
+range. The scene is consequently \emph{auto-skipped} for the SWIR
+mask in the diagnostic ($V^{(m)} = 0$ bands kept).
+\textbf{Scene.} $610 \times 340$ pixels over the University of Pavia,
+Italy~\cite{rosis_pavia}.
+\textbf{Classes.} 9 classes: asphalt, meadows, gravel, trees,
+painted-metal-sheets, bare-soil, bitumen, self-blocking-bricks,
+shadows.
+
+\subsection{Kennedy Space Center (KSC)}
+\textbf{Sensor.} AVIRIS-Old (AVIRIS recording before 1996).
+\textbf{Scene.} $512 \times 614$ pixels acquired over the Kennedy
+Space Center, Florida, March 1996. $B = 176$ usable bands after the
+canonical correction~\cite{aviris_ksc}.
+\textbf{Classes.} 13 classes covering wetland vegetation
+(salt-marsh, mud-flat, water, swamp, etc.).
+\textbf{Note.} KSC is the labelled scene most frequently observed to
+yield a band-fragile canonical basis, an observation surfaced by the
+diagnostic; the supplementary E document discusses possible
+mechanisms in more depth.
+
+\subsection{Botswana}
+\textbf{Sensor.} Earth Observing 1 (EO-1) Hyperion.
+\textbf{Scene.} $1476 \times 256$ pixels acquired over the Okavango
+Delta, Botswana, May 2001~\cite{eo1_botswana}. $B = 145$ usable bands
+after the canonical correction.
+\textbf{Classes.} 14 classes including water, hippo-grass,
+floodplain-grasses-1/2, reeds, riparian, firescar-2, island-interior,
+acacia-woodlands, acacia-shrublands, acacia-grasslands,
+short-mopane, mixed-mopane, exposed-soils.
+
+\section{Tokenisation reproducibility note}
+
+The min-max normalisation of \S2.1 of supplementary B is computed
+\emph{within each pixel} and not across the corpus, so the
+tokenisation of pixel $d$ depends only on the spectrum of pixel $d$.
+This is by design: across-corpus normalisation would couple the
+tokenisation to the sample selection, and the band-mask diagnostic
+would then conflate spectral-window restriction with corpus-extent
+sensitivity. The trade-off is that pixels with very flat spectra
+(e.g.\ heavy shadow) tokenise to a uniform count vector, which the
+LDA fit downweights via the small $\alpha$ prior.
+
+\section{HIDSAG mineral subsets}
+
+The five HIDSAG subsets evaluated alongside the labelled scenes are
+documented in detail in the journal supplement E. Briefly: HIDSAG is
+a curated collection of point-spectrum measurements over
+mineralogical samples acquired with a SWIR-only sensor; the five
+subsets (GEOMET, MINERAL1, MINERAL2, GEOCHEM, PORPHYRY) collectively
+cover 19 target labels distributed across multiple samples. The
+band-mask diagnostic on HIDSAG uses \emph{between-covariate-variance}
+band ranking in place of the labelled-scene Fisher discriminant, as
+HIDSAG has no per-pixel ground truth.
+
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
+
+\end{document}
