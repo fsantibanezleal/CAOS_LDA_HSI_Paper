@@ -248,10 +248,10 @@ field \texttt{off\_diagonal\_summary.off\_diagonal\_mean}.}
 Subset & off-diag mean & K \\
 \midrule
 GEOMET   & 0.229 & 6 \\
-MINERAL1 & (see artefact) & 6 \\
-MINERAL2 & (see artefact) & 4 \\
-GEOCHEM  & (see artefact) & 5 \\
-PORPHYRY & (see artefact) & 6 \\
+MINERAL1 & 0.356 & 6 \\
+MINERAL2 & 0.237 & 4 \\
+GEOCHEM  & 0.322 & 5 \\
+PORPHYRY & 0.123 & 6 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -307,27 +307,26 @@ $\sigma \approx 0.10$ across 30 seeds; CAE-3D dominates on Pavia U.}
 
 \section{Axis F-12: external baseline deltas}
 
-\begin{table}[h]
-\caption{Per-scene OA delta between the canonical topic-routed-soft
-classifier and three reference papers per scene. Negative values
-indicate the baseline outperforms; positive values indicate the
-topic-routed-soft outperforms.}
-\label{tab:b12}
-\centering
-\small
-\begin{tabular}{l c c c}
-\toprule
-Scene & vs ref 1 & vs ref 2 & vs ref 3 \\
-\midrule
-Indian Pines & (reported) & (reported) & (reported) \\
-Salinas      & (reported) & (reported) & (reported) \\
-Salinas-A    & (reported) & (reported) & (reported) \\
-Pavia U      & (reported) & (reported) & (reported) \\
-KSC          & (reported) & (reported) & (reported) \\
-Botswana     & (reported) & (reported) & (reported) \\
-\bottomrule
-\end{tabular}
-\end{table}
+\begin{description}
+\item[Status note (2026-05-15).] Axis F-12 is the cross-paper OA
+delta against published baselines on each labelled scene. Per the
+candor caveat documented in journal Suppl G §Reporting choices,
+the per-paper train/test splits are not always comparable across
+the literature, so a single $\Delta_s = \mathrm{OA}^{\text{this work}}_s
+- \mathrm{OA}^{(\text{ref})}_s$ scalar can be misleading.
+\textbf{We deliberately defer the F-12 table to a verification
+appendix paired with the journal submission cover letter,} where
+each reference's per-paper split (train fraction, fold count,
+augmentation policy) can be reported alongside the OA delta.
+The deferred-table approach is preferable to populating cells with
+numbers under split conditions that the reader cannot inspect, and
+also gives reviewers a concrete versionable target for the
+verification appendix. The framework's F-12 \emph{definition} is
+unchanged; only the per-scene table is deferred. See journal
+Section~\ref{subsec:b12} in the main paper for the F-12 axis
+description (it remains part of the framework's twelve-axis
+declaration).
+\end{description}
 
 \bibliographystyle{IEEEtran}
 \bibliography{../../bibliography/refs}
