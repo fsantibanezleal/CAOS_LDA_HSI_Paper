@@ -23,11 +23,17 @@ from a single Python script under `figures/source/`.
 | `topic-spectra-contrast.{svg,pdf}` | `source/build_topic_spectra_contrast.py` | `topic_views/{salinas-a-corrected,kennedy-space-center}.json` | Suppl H |
 | `topic-pairwise-distance.{svg,pdf}` | `source/build_topic_pairwise_distance.py` | `topic_views/<scene>.json` × 6 (`topic_distance_cosine`) | Suppl H |
 | `hidsag-topic-spectra.{svg,pdf}` | `source/build_hidsag_topic_spectra.py` | `band_masks_hidsag/<subset>/swir/summary.json` × 5 | Suppl H |
+| `hidsag-preprocessing-stability.{svg,pdf}` | `source/build_hidsag_preprocessing_stability.py` | `hidsag_cross_preprocessing_stability/<subset>.json` × 5 | Journal F-9, Suppl F |
+| `cross-scene-transfer.{svg,pdf}` | `source/build_cross_scene_transfer.py` | `cross_scene_transfer/transfer_matrix.json` | Journal F-10, Suppl F |
+| `rate-distortion.{svg,pdf}` | `source/build_rate_distortion.py` | `rate_distortion_curve/<scene>.json` × 6 | Journal F-11, Suppl F |
+| `deep-seed-stability-n30.{svg,pdf}` | `source/build_deep_seed_stability_n30.py` | `deep_seed_stability/<scene>__<method>__N30.json` × 24 | Suppl F (companion to F-3) |
 
 ## Honest gaps
 
-The figure set deliberately omits a few candidates whose source data
-is partial or whose value-add over an existing figure is marginal:
+With the c190-c193 figure-batch, every F-axis B-1..B-12 now has at
+least one figure (most have multiple). The figure set deliberately
+omits a few candidates whose source data is partial or whose
+value-add over an existing figure is marginal:
 
 - **Per-pixel dominant-topic rasters.** Each scene has a
   `dominant_topic_map.bin` (uint8 H×W) and rendering them as a 6-panel
@@ -36,10 +42,10 @@ is partial or whose value-add over an existing figure is marginal:
   rendering across the grid would crowd the page. The web app at
   `lda-hsi.fasl-work.com/workspace > raster` is the appropriate
   interactive surface for these.
-- **Rate–distortion curve.** The relevant artefact
-  (`rate_distortion_curve/*.json`) exists but reconstructs the spectrum
-  from quantised tokens, which mixes a tokenisation-loss confound into
-  the curve. Discussed as a limitation in journal §VII.
+
+Note: `rate-distortion.{svg,pdf}` is now shipped (`build_rate_distortion.py`),
+with the tokenisation-loss caveat preserved in journal §VII /
+Suppl G §Reporting choices rather than as a missing-figure pointer.
 
 ## Building
 
@@ -54,6 +60,14 @@ python build_capacity_sweep.py
 python build_cross_method_grid.py
 python build_basis_spectra_grid.py
 python build_hidsag_band_mask.py
+python build_topic_profile_cards.py
+python build_topic_spectra_contrast.py
+python build_topic_pairwise_distance.py
+python build_hidsag_topic_spectra.py
+python build_hidsag_preprocessing_stability.py
+python build_cross_scene_transfer.py
+python build_rate_distortion.py
+python build_deep_seed_stability_n30.py
 ```
 
 Each script writes both an `.svg` (canonical, for the README and the
