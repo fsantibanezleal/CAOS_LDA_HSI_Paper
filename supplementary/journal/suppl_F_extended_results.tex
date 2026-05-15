@@ -222,25 +222,88 @@ Botswana     & 10.48 & 27.63 \\
 
 \section{Axis F-9: HIDSAG preprocessing stability per subset}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{hidsag-preprocessing-stability.pdf}
+\caption{F-9 cross-preprocessing stability on the 5 HIDSAG mineral
+subsets. Each panel is a 4×4 matched-Jaccard@top-15 heatmap between
+LDA refits under four preprocessing policies (raw, bad-band mask,
+bb + SNV, bb + SavGol + SNV). Panel title gives the off-diagonal
+mean — the formal F-9 metric. MINERAL2 / GEOCHEM / PORPHYRY show
+high agreement between the two SavGol-flavoured recipes
+(matched-Jaccard $\ge 0.90$ on the bottom-right $2\!\times\!2$ block)
+but near-zero agreement against the raw baseline.}
+\label{fig:f9-hidsag-prep}
+\end{figure}
+
 \begin{table}[h]
-\caption{HIDSAG cross-preprocessing ARI (mean over the 3 recipe
-pairs cont-rem / deriv / smooth) per subset. Public artefact
-\texttt{hidsag\_cross\_preprocessing\_stability/<subset>.json}.}
-\label{tab:b9}
+\caption{F-9 off-diagonal mean per HIDSAG subset, read from
+\texttt{hidsag\_cross\_preprocessing\_stability/<subset>.json}
+field \texttt{off\_diagonal\_summary.off\_diagonal\_mean}.}
+\label{tab:f9}
 \centering
 \small
-\begin{tabular}{l c}
+\begin{tabular}{l c c}
 \toprule
-Subset & mean cross-recipe ARI \\
+Subset & off-diag mean & K \\
 \midrule
-GEOMET   & (reported in artefact) \\
-MINERAL1 & (reported in artefact) \\
-MINERAL2 & (reported in artefact) \\
-GEOCHEM  & (reported in artefact) \\
-PORPHYRY & (reported in artefact) \\
+GEOMET   & 0.229 & 6 \\
+MINERAL1 & (see artefact) & 6 \\
+MINERAL2 & (see artefact) & 4 \\
+GEOCHEM  & (see artefact) & 5 \\
+PORPHYRY & (see artefact) & 6 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\section{Axis F-10: cross-scene topic transfer}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{cross-scene-transfer.pdf}
+\caption{F-10 $5 \times 5$ macro-F1 cross-scene transfer matrix. Rows
+= source scene where the topic basis is trained; columns = target
+scene where a linear head is refit. Diagonal cells (in-distribution
+baselines) are outlined in white. Pavia U is omitted because the
+ROSIS 430--860 nm band range does not intersect cleanly with the
+SWIR-spanning AVIRIS / Hyperion scenes' canonical grid.}
+\label{fig:f10-transfer}
+\end{figure}
+
+Salinas-A is the easiest target column (macro-F1 $0.65$--$0.75$
+from every source). KSC and Botswana are the hardest targets
+(column means $0.39$ and $0.45$). This complements the F-5
+band-mask diagnostic: scenes whose canonical topics are
+band-fragile are also harder cross-scene transfer targets.
+
+\section{Axis F-11: rate–distortion}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{rate-distortion.pdf}
+\caption{F-11 rate–distortion of $\theta$ for LDA / NMF / PCA per
+scene at $K \in \{4, 6, 8, 10, 12, 16\}$. X-axis: rate
+$\log_2 K$ bits. Y-axis: normalised held-out RMSE of the
+reconstruction $\hat{\mathbf{x}} = \phi^\top \theta$ in the
+quantised band-frequency space. Tokenisation-loss caveat applies
+(the curves mix a quantisation component with the topic-basis
+reconstruction error); see Suppl G §Reporting choices.}
+\label{fig:f11-rd}
+\end{figure}
+
+\section{Companion: deep-encoder seed stability at $N=30$}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{deep-seed-stability-n30.pdf}
+\caption{Deep-encoder seed-stability swarm at $N=30$ seeds per
+(scene, method). Per-seed ARI dots (jittered) with horizontal mean
+bars and standard-error bars. Complements the F-3 N=5
+ProdLDA/ETM swarm in the main paper Figure 4. Notable patterns:
+β-VAE on Salinas-A reaches mean ARI $\approx 0.55$ but with
+$\sigma \approx 0.10$ across 30 seeds; CAE-3D dominates on Pavia U.}
+\label{fig:n30-deep}
+\end{figure}
 
 \section{Axis F-12: external baseline deltas}
 
