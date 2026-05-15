@@ -148,10 +148,62 @@ extension could plug those into the same topic--covariate frame
 using ridge plots per topic on the continuous variable, following
 the same idiom as Figure~\ref{fig:conf-ridge}.
 
-\section{Why these six figures}
+\section{HIDSAG continuous-measurement ridges, corner plot, mosaic}
 
-The six figures answer six distinct cognitive questions about the
-topic--label relationship:
+After the initial release of this supplement, the HIDSAG continuous
+mineralogical / geometallurgical measurements were extracted from
+the per-sample \texttt{metadata.json} files in the figshare
+collection~\cite{hidsag2023figshare} (closing issue
+\texttt{CAOS\_LDA\_HSI\_Paper\#2}). A new derived layer at
+\texttt{data/derived/hidsag\_topic\_measurements/<subset>.json}
+joins the per-document $\theta$ matrix with the assay values; 427
+records across the five subsets with 5--33 continuous variables per
+subset.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{hidsag-measurement-ridges.pdf}
+\caption{HIDSAG topic-conditional continuous-measurement ridges per
+subset. For each subset the variable with the largest normalised
+per-topic-mean range is selected; one KDE ridge per dominant topic
+on a shared $x$-axis (the variable). Per-row $n$ and mean annotated.
+Rug marks at the actual observations. The most striking ridge is
+\emph{PORPHYRY \% biotite}: per-topic means range $1.1\to 39.6$,
+indicating that the canonical-fit topic basis on PORPHYRY captures
+the porphyry-alteration mineralogy at a high level of fidelity.}
+\label{fig:hidsag-ridges}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{hidsag-corner-geomet.pdf}
+\caption{GEOMET corner-plot matrix coloured by dominant topic
+(K\,$=\,6$). Diagonal: per-variable KDE per topic. Lower triangle:
+scatter of variable pairs coloured by topic with 2-$\sigma$
+Gaussian confidence ellipses per topic. Idiom from
+Foreman-Mackey~\cite{foremanmackey2016corner}; ellipses via the
+canonical matplotlib gallery
+recipe~\cite{matplotlibConfidenceEllipse}.}
+\label{fig:hidsag-corner}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{hidsag-measurement-mosaic.pdf}
+\caption{HIDSAG mosaic / fluctuation heatmap of $P(\text{quartile} \mid
+\text{dominant topic})$ on three subsets and the variable picked per
+subset (PORPHYRY: \% biotite; GEOMET: Cu recovery; MINERAL1:
+albite). Bins are scene-wide quartiles; rows normalised. Captures
+non-monotone topic-vs-quartile patterns that the smooth ridge KDE
+can hide. Idiom: Hofmann~\cite{hofmann2008mosaic};
+Friendly~\cite{friendly1994mosaic}.}
+\label{fig:hidsag-mosaic}
+\end{figure}
+
+\section{Why these nine figures}
+
+The nine figures answer nine distinct cognitive questions about the
+topic--label and topic--measurement relationships:
 
 \begin{enumerate}
 \item Heatmap (Fig.~\ref{fig:tc-heatmap}) --- ``which topic--class
@@ -166,6 +218,13 @@ topics and labels align in the $\theta$-PCA manifold?''
 is each topic's posterior?''
 \item HIDSAG covariate (Fig.~\ref{fig:hidsag-cov}) --- ``do topics
 carry information about the HIDSAG covariate tags?''
+\item HIDSAG ridges (Fig.~\ref{fig:hidsag-ridges}) --- ``does the
+dominant-topic assignment separate the continuous mineralogical
+assays?''
+\item HIDSAG corner plot (Fig.~\ref{fig:hidsag-corner}) --- ``do
+topics occupy distinct manifolds in the GEOMET assay space?''
+\item HIDSAG mosaic (Fig.~\ref{fig:hidsag-mosaic}) --- ``does the
+topic membership stochastically order each continuous variable?''
 \end{enumerate}
 
 Each chosen idiom dominates its question on the cognitive-ergonomic

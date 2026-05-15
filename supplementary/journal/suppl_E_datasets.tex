@@ -117,6 +117,35 @@ F-9, F-10, F-11, F-12 are all run, with F-5 using
 between-covariate-variance band ranking instead of the labelled
 Fisher discriminant.
 
+\section{Continuous-measurement layer}
+
+A complementary derived layer at
+\texttt{data/derived/hidsag\_topic\_measurements/<subset>.json}
+joins the per-document $\theta$ matrix shipped by the band-mask
+builder with the continuous mineralogical / geometallurgical assay
+values extracted from each sample's \texttt{metadata.json} (per the
+HIDSAG figshare data release~\cite{hidsag2023figshare}). The layer
+ships 427 records across the five subsets, exposing 5--33 continuous
+variables per subset:
+
+\begin{itemize}
+\item GEOMET: Cu rec, Mo rec, PH, Lime cons, WI (5 vars, 146 records)
+\item MINERAL1: 33 mineral abundance \% (99 records)
+\item MINERAL2: 25 mineral abundance \% (20 records)
+\item GEOCHEM: 18 elemental wt\%/ppm (106 records)
+\item PORPHYRY: 11 mineral abundance \% incl.\ biotite / molybdenite
+/ chalcopyrite (56 records)
+\end{itemize}
+
+This layer feeds the topic-conditional ridges, the GEOMET corner
+plot, and the HIDSAG mosaic of supplement I. Figure
+\ref{fig:hidsag-ridges} of Suppl I reports the most striking signal:
+on PORPHYRY, per-topic mean \% biotite ranges $1.1$--$39.6$,
+indicating that the canonical-fit topic basis on PORPHYRY captures
+the porphyry-alteration mineralogy at high fidelity. The extraction
+builder is documented at
+\texttt{data-pipeline/build\_hidsag\_topic\_measurements.py}.
+
 \section{Citation status}
 
 HIDSAG is cited via two complementary bibliographic entries:

@@ -33,6 +33,9 @@ from a single Python script under `figures/source/`.
 | `theta-embedding-scatter.{svg,pdf}` | `source/build_theta_embedding_scatter.py` | `topic_to_data/<scene>.json` (`theta_embedding_pca_2d`) | Suppl I |
 | `confidence-ridge.{svg,pdf}` | `source/build_confidence_ridge.py` | same as above (`confidence` field) | Suppl I |
 | `hidsag-topic-covariate.{svg,pdf}` | `source/build_hidsag_topic_covariate.py` | `band_masks_hidsag/<subset>/swir/summary.json` (`p_covariate_given_topic_dominant`) | Suppl I |
+| `hidsag-measurement-ridges.{svg,pdf}` | `source/build_hidsag_measurement_ridges.py` | `hidsag_topic_measurements/<subset>.json` × 5 | Suppl I |
+| `hidsag-corner-geomet.{svg,pdf}` | `source/build_hidsag_corner_geomet.py` | `hidsag_topic_measurements/GEOMET.json` | Suppl I |
+| `hidsag-measurement-mosaic.{svg,pdf}` | `source/build_hidsag_mosaic.py` | `hidsag_topic_measurements/{PORPHYRY,GEOMET,MINERAL1}.json` | Suppl I |
 
 ## Honest gaps
 
