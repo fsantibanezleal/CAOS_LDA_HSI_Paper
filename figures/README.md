@@ -27,6 +27,12 @@ from a single Python script under `figures/source/`.
 | `cross-scene-transfer.{svg,pdf}` | `source/build_cross_scene_transfer.py` | `cross_scene_transfer/transfer_matrix.json` | Journal F-10, Suppl F |
 | `rate-distortion.{svg,pdf}` | `source/build_rate_distortion.py` | `rate_distortion_curve/<scene>.json` × 6 | Journal F-11, Suppl F |
 | `deep-seed-stability-n30.{svg,pdf}` | `source/build_deep_seed_stability_n30.py` | `deep_seed_stability/<scene>__<method>__N30.json` × 24 | Suppl F (companion to F-3) |
+| `topic-class-heatmap.{svg,pdf}` | `source/build_topic_class_heatmap.py` | `topic_to_data/<scene>.json` × 6 (`p_label_given_topic_dominant`) | Suppl I |
+| `per-topic-class-bars.{svg,pdf}` | `source/build_per_topic_class_bars.py` | same as above | Suppl I |
+| `topic-class-sankey.{svg,pdf}` | `source/build_topic_class_sankey.py` | same as above | Suppl I |
+| `theta-embedding-scatter.{svg,pdf}` | `source/build_theta_embedding_scatter.py` | `topic_to_data/<scene>.json` (`theta_embedding_pca_2d`) | Suppl I |
+| `confidence-ridge.{svg,pdf}` | `source/build_confidence_ridge.py` | same as above (`confidence` field) | Suppl I |
+| `hidsag-topic-covariate.{svg,pdf}` | `source/build_hidsag_topic_covariate.py` | `band_masks_hidsag/<subset>/swir/summary.json` (`p_covariate_given_topic_dominant`) | Suppl I |
 
 ## Honest gaps
 

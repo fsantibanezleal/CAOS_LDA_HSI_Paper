@@ -1,7 +1,7 @@
 # Supplementary material
 
-Twelve chapter-aligned supplementary documents, one per main-paper
-section, providing the technical, mathematical, theoretical, and
+Thirteen chapter-aligned supplementary documents (5 conference +
+8 journal) providing the technical, mathematical, theoretical, and
 extended-results material that did not fit in the
 page-budget-constrained manuscripts.
 
@@ -18,7 +18,7 @@ Companion to `conference/tex/main.tex` (WHISPERS 2026 target,
 | D | §IV Results | Extended results (full per-tuple tables, Hungarian permutations, HIDSAG) | `build/conference_suppl_D_extended_results.pdf` |
 | E | §V Discussion | Extended discussion + four explicit non-claims | `build/conference_suppl_E_discussion.pdf` |
 
-## Journal paper (7 supplements, A through G)
+## Journal paper (8 supplements, A through I)
 
 Companion to `journal/tex/main.tex` (IEEE TGRS target, ~20-25 pages):
 
@@ -32,6 +32,7 @@ Companion to `journal/tex/main.tex` (IEEE TGRS target, ~20-25 pages):
 | F | §VI Results | Extended per-axis results across 6 scenes + 5 HIDSAG subsets | `build/journal_suppl_F_extended_results.pdf` |
 | G | §VII Discussion | Limitations + threats to validity + 2nd-paper redesign notes | `build/journal_suppl_G_limitations.pdf` |
 | H | cross-section visual annex | Topic spectra: do different topics have different basis spectra? (4 dedicated figures) | `build/journal_suppl_H_topic_spectra.pdf` |
+| I | cross-section visual annex | Topic ↔ label/covariate relational visualisations (6 figures: heatmap, per-topic bars, Sankey, θ-PCA scatter, confidence ridge, HIDSAG covariate) | `build/journal_suppl_I_topic_label_relations.pdf` |
 
 ## Layout
 
@@ -53,7 +54,8 @@ supplementary/
 │   ├── suppl_E_datasets.tex
 │   ├── suppl_F_extended_results.tex
 │   ├── suppl_G_limitations.tex
-│   └── suppl_H_topic_spectra.tex
+│   ├── suppl_H_topic_spectra.tex
+│   └── suppl_I_topic_label_relations.tex
 ├── build/             (PDFs, gitignored except for the latest set)
 └── word/              (DOCX conversions via pandoc, see scripts/build-supplements.{ps1,sh})
 ```
@@ -109,3 +111,4 @@ also in the .bib file.
 | Journal F | ✅ | ✅ | (build) | shipped |
 | Journal G | ✅ | ✅ | (build) | shipped |
 | Journal H | ✅ | ✅ | (build) | shipped |
+| Journal I | ✅ | ✅ | (build) | shipped |
