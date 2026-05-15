@@ -1,4 +1,5 @@
-# LaTeX build artifacts
+# LaTeX build artifacts (transient — re-creatable by latexmk)
+# Final PDFs in build/ are tracked (see explicit !**/build/*.pdf below).
 **/build/
 *.aux
 *.bbl
@@ -36,15 +37,26 @@
 # Pandoc temp
 *.pandoc-aux
 
-# Generated PDFs (live in build/ already gitignored above, but
-# explicitly exclude paper-level PDFs that may sit next to .tex)
+# Generated PDFs next to .tex are transient (use build/ for tracked)
 conference/tex/main.pdf
 journal/tex/main.pdf
 supplementary/conference/*.pdf
 supplementary/journal/*.pdf
 
-# Supplementary Word output (regenerable via build-supplements scripts)
-supplementary/word/
+# Track the final PDFs and DOCX so a reader does not have to run
+# the build to inspect them
+!conference/build/
+!conference/build/main.pdf
+!journal/build/
+!journal/build/main.pdf
+!supplementary/build/
+!supplementary/build/*.pdf
+!conference/word/
+!conference/word/main.docx
+!journal/word/
+!journal/word/main.docx
+!supplementary/word/
+!supplementary/word/**/*.docx
 
 # Reference templates downloaded archives
 templates/*.zip
