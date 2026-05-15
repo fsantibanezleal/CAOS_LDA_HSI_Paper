@@ -200,10 +200,64 @@ Friendly~\cite{friendly1994mosaic}.}
 \label{fig:hidsag-mosaic}
 \end{figure}
 
-\section{Why these nine figures}
+\section{Extended HIDSAG corner plots: MINERAL2 + PORPHYRY}
 
-The nine figures answer nine distinct cognitive questions about the
-topic--label and topic--measurement relationships:
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{hidsag-corner-mineral2.pdf}
+\caption{MINERAL2 corner plot ($K=4$, $N=20$). Top-5 most-discriminative
+mineral abundances on the high-sulfidation epithermal mineralogy.
+The alunite-pyrophyllite-illite block is the canonical lithocap motif
+on porphyry-Cu systems.}
+\label{fig:corner-mineral2}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{hidsag-corner-porphyry.pdf}
+\caption{PORPHYRY corner plot ($K=6$, $N=56$). Auto-selected
+top-5 most-discriminative mineral abundances (\% biotite, \%
+molybdenite, \% quartz, \% pyrite, combined sulfide
+[Cpy+Py+Bo]\%). The Bt\%-vs-Mb\% panel surfaces the biotite-dominant
+versus molybdenite-dominant topic families directly.}
+\label{fig:corner-porphyry}
+\end{figure}
+
+\section{PORPHYRY hammock plot — topic ↔ Bt\% ↔ Mb\% ↔ Py\%}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{porphyry-hammock.pdf}
+\caption{Hammock plot~\cite{schonlau2025hammock} on PORPHYRY combining
+the categorical \emph{dominant topic} axis ($K=6$) with three
+continuous mineralogical assays (\% biotite, \% molybdenite, \%
+pyrite). Continuous axes are binned into scene-wide quintiles
+($Q_1$..$Q_5$). Ribbon thickness = document count; topic-coloured
+(tab10). The hammock idiom unifies mosaic plots
+(categorical-only) and parallel-coordinates (continuous-only) on
+the same diagram.}
+\label{fig:porphyry-hammock}
+\end{figure}
+
+\section{Cross-method top-word $\lambda$ comparison: LDA / ProdLDA / ETM}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{neural-topic-word-compare.pdf}
+\caption{Cross-method top-word $\lambda$ comparison on Indian Pines
+($K=12$). One panel per method (LDA, ProdLDA, ETM); each panel shows
+$K$ rows of top-15-word wavelength tick marks. Complements the
+coherence-vs-ARI scatter (which reports scalars) with the spectral
+identity of each method's basis: if LDA and ETM emphasise the same
+wavelength bands but ProdLDA's emphasis shifts, the shift \emph{is}
+the interpretability difference.}
+\label{fig:neural-words}
+\end{figure}
+
+\section{Why these thirteen figures}
+
+The thirteen figures answer thirteen distinct cognitive questions
+about the topic--label and topic--measurement relationships:
 
 \begin{enumerate}
 \item Heatmap (Fig.~\ref{fig:tc-heatmap}) --- ``which topic--class
@@ -225,6 +279,14 @@ assays?''
 topics occupy distinct manifolds in the GEOMET assay space?''
 \item HIDSAG mosaic (Fig.~\ref{fig:hidsag-mosaic}) --- ``does the
 topic membership stochastically order each continuous variable?''
+\item MINERAL2 corner (Fig.~\ref{fig:corner-mineral2}) --- ``does
+the high-sulfidation epithermal mineralogy separate by topic?''
+\item PORPHYRY corner (Fig.~\ref{fig:corner-porphyry}) --- ``does
+the porphyry-Cu signature separate by topic?''
+\item PORPHYRY hammock (Fig.~\ref{fig:porphyry-hammock}) --- ``how
+does the joint distribution over topic + 3 assays decompose?''
+\item Cross-method words (Fig.~\ref{fig:neural-words}) --- ``do
+LDA / ProdLDA / ETM emphasise the same spectral bands?''
 \end{enumerate}
 
 Each chosen idiom dominates its question on the cognitive-ergonomic

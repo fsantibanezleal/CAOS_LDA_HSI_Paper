@@ -36,6 +36,10 @@ from a single Python script under `figures/source/`.
 | `hidsag-measurement-ridges.{svg,pdf}` | `source/build_hidsag_measurement_ridges.py` | `hidsag_topic_measurements/<subset>.json` × 5 | Suppl I |
 | `hidsag-corner-geomet.{svg,pdf}` | `source/build_hidsag_corner_geomet.py` | `hidsag_topic_measurements/GEOMET.json` | Suppl I |
 | `hidsag-measurement-mosaic.{svg,pdf}` | `source/build_hidsag_mosaic.py` | `hidsag_topic_measurements/{PORPHYRY,GEOMET,MINERAL1}.json` | Suppl I |
+| `hidsag-corner-mineral2.{svg,pdf}` | `source/build_hidsag_corner_mineral2_porphyry.py` | `hidsag_topic_measurements/MINERAL2.json` | Suppl I |
+| `hidsag-corner-porphyry.{svg,pdf}` | same | `hidsag_topic_measurements/PORPHYRY.json` | Suppl I |
+| `porphyry-hammock.{svg,pdf}` | `source/build_porphyry_hammock.py` | `hidsag_topic_measurements/PORPHYRY.json` | Suppl I |
+| `neural-topic-word-compare.{svg,pdf}` | `source/build_neural_topic_word_compare.py` | `topic_views/<scene>.json` + `topic_variants/{prodlda,etm}/<scene>.json` | Suppl I |
 
 ## Honest gaps
 
