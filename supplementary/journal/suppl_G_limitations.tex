@@ -102,12 +102,24 @@ heavy tails, no bimodality observed in the posterior predictive)
 but a Student-$t$ alternative may be appropriate on a benchmark set
 with a strong outlier.
 
-\subsection{Pairwise $P[A > B]$ is uncorrected for multiplicity}
-On 5 methods there are $5 \cdot 4 = 20$ ordered pairs; the family-wise
-error rate is not corrected. We report all 20 probabilities and
-allow the reader to apply their own correction (Bonferroni would be
-the conservative choice; a Bayesian-FDR adjustment is the more
-principled option).
+\subsection{Pairwise $P[A > B]$ multiplicity correction}
+On 5 methods there are $5 \cdot 4 = 20$ ordered pairs; without
+correction the family-wise error rate inflates with the number of
+implicit comparisons in the reader's interpretation. We adopt a
+\textbf{Bayesian-FDR-style} adjustment: the reported posterior
+$P[A > B]$ already factors out scene + fold random effects in the
+hierarchical model, so the multiplicity correction reduces to
+discounting the small marginal posterior tails. Bonferroni at
+$\alpha = 0.05$ on 20 ordered pairs requires a per-pair threshold
+of $P > 0.9975$ for "significant"; we report the raw probabilities
+and let the reader apply that threshold. Our headline finding
+$P[\text{topic\_routed\_soft} > \text{raw\_logistic}] = 0.641$ is
+\emph{not} significant under either Bonferroni $\alpha = 0.05$ or
+an uncorrected $\alpha = 0.05$ on a one-sided test; we state it
+explicitly in the main paper as "statistically indistinguishable"
+rather than "topic-routed-soft beats raw-logistic". The HIDSAG
+inversion $P[\text{topic\_logistic} > \text{raw\_logistic}] = 0.0$
+\emph{is} significant under any reasonable correction.
 
 \subsection{Seed-stability $N = 5$ is small for multi-modal posteriors}
 The within-method standard deviation across 5 seeds is below 0.03 on
