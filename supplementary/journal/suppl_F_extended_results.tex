@@ -220,6 +220,38 @@ Botswana     & 10.48 & 27.63 \\
 \end{tabular}
 \end{table}
 
+\section{Axis F-7 companion: per-class precision / recall}
+\label{sec:per_class_pr}
+
+The main paper reports macro F1 for the canonical topic-routed
+classifier (axis F-1) but does not break out per-class
+precision and recall. Per-class numbers expose which classes the
+canonical basis explains well versus which classes share a topic
+basin with another class.
+
+The tables below report per-class precision, recall and F1 for the
+topic-routed-\emph{hard} classifier (each pixel labelled with the
+arg-max topic, each topic mapped to its arg-max label) under the
+canonical fit
+$K = \max(4, \min(12, n_{\text{classes}}))$,
+$\alpha = 0.45$, $\eta = 0.20$, $Q + 1 = 13$ tokens. The numbers are
+computed directly from the per-(scene)
+\texttt{p\_label\_given\_topic\_dominant} joint counts in the
+canonical pipeline output --- see
+\texttt{figures/source/build\_per\_class\_pr\_table.py} in the
+companion code repository for the reproduction script.
+
+The macro averages mirror the F-7 KL-coupling pattern of
+Table~\ref{tab:b7}: scenes where the canonical basis explains the
+labels well (Salinas, Salinas-A) carry the higher macro F1; KSC's
+macro F1 of 0.025 is the headline ``band-fragile'' result already
+surfaced in the main paper, and the per-class breakdown shows
+\emph{every} KSC class except one carries F1 $< 0.05$ --- the
+canonical basis is genuinely unaligned to the KSC label set, not
+just weakly aligned on a handful of classes.
+
+\input{per_class_pr_table}
+
 \section{Axis F-9: HIDSAG preprocessing stability per subset}
 
 \begin{figure}[h]
@@ -300,7 +332,7 @@ reconstruction error); see Suppl G §Reporting choices.}
 (scene, method). Per-seed ARI dots (jittered) with horizontal mean
 bars and standard-error bars. Complements the F-3 N=5
 ProdLDA/ETM swarm in the main paper Figure 4. Notable patterns:
-β-VAE on Salinas-A reaches mean ARI $\approx 0.55$ but with
+$\beta$-VAE on Salinas-A reaches mean ARI $\approx 0.55$ but with
 $\sigma \approx 0.10$ across 30 seeds; CAE-3D dominates on Pavia U.}
 \label{fig:n30-deep}
 \end{figure}
