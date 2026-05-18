@@ -175,6 +175,48 @@ values are in conference table I of the main paper. The full table
 with swap rates, bands kept, perplexity, and ARI-vs-label is in
 conference supplement D.
 
+\subsection{Paired-ARI uncertainty quantification}
+\label{subsec:paired-ari-uncertainty}
+
+The headline contrast between Salinas-A SWIR (paired ARI $= 0.766$)
+and KSC under any mask (paired ARI $\approx 0.01$) carries the
+band-fragile narrative of the paper. The audit issue
+\texttt{CAOS\_LDA\_HSI\_Paper\#7} flagged that those point estimates
+were reported without error bars. The table below closes that gap with
+two independent uncertainty quantifications per (scene, mask) tuple:
+
+\begin{itemize}
+\item \textbf{Permutation null}: for each tuple, the masked-fit
+dominant-topic vector is uniformly shuffled $N_{\text{perm}} = 1000$
+times. Each shuffle yields an ARI under the null hypothesis ``the two
+maps share no structure beyond marginal label proportions''. The
+permutation $p$-value is the fraction of permuted ARIs at least as
+large as the observed ARI.
+\item \textbf{Bootstrap 95\% CI}: pixels paired in both maps are
+resampled with replacement $N_{\text{boot}} = 1000$ times; each
+resample yields an ARI; the 2.5--97.5 percentile band is reported.
+\end{itemize}
+
+Pixels are capped at $D = 10{,}000$ per tuple via random subsample
+under a fixed seed (RNG seed 42); the permutation null is identical
+in distribution to the full-population null at this sample size and
+the bootstrap CI is conservative by a factor of $\sqrt{D / D_{\max}}$
+when the full count exceeds $10{,}000$. The reproduction script is
+\texttt{figures/source/build\_paired\_ari\_uncertainty.py} in the
+companion code repository.
+
+\input{paired_ari_uncertainty}
+
+Every (scene, mask) tuple carries a permutation $p$-value below
+$0.05$; 23 of 24 carry $p < 0.001$ (only Botswana / SWIR comes in at
+$p = 0.003$). The Salinas-A / SWIR headline of $0.766$ has
+95\% CI $[0.735, 0.800]$ --- the basis is genuinely
+SWIR-robust on that scene. The KSC tuples all sit at observed
+$\in [0.007, 0.013]$ with 95\% CIs that do not cross zero; the
+null mean is exactly zero by construction, so KSC is significantly
+\emph{non-zero} but still genuinely band-fragile relative to every
+other scene's tighter alignment.
+
 \section{Axis F-6: cross-method ARI per scene}
 
 \begin{table}[h]
