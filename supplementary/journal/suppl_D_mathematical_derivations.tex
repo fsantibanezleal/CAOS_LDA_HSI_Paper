@@ -131,6 +131,56 @@ with $W_k^{(K)}$ the top-$N$ words per topic at capacity $K$,
 $\cos(\phi^{(s_1)}_k, \phi^{(s_2)}_{\sigma^*(k)})$.
 \end{itemize}
 
+\subsection{Canonical-$K$ rule vs F-4 recommended $K$}
+\label{subsec:canonical-k}
+
+The canonical fit used everywhere outside F-4 fixes
+\begin{equation}
+K_{\text{canonical}} = \max\!\big(4,\; \min(12,\; n_{\text{classes}})\big),
+\end{equation}
+yielding $K = 12$ on Indian Pines, Salinas, KSC and Botswana,
+$K = 9$ on Pavia U, and $K = 6$ on Salinas-A. The F-4 capacity
+sweep, by contrast, returns $K_{\text{recommended}} = 4$ uniformly
+across all six labelled scenes (recommendation rule
+$-$perplexity\_test\_norm $+$ npmi\_mean $+$ matched\_cosine\_mean,
+implemented in \texttt{data-pipeline/build\_lda\_sweep.py} of the
+companion code repository). This looks like a contradiction; it is
+not, and the resolution is that the two rules optimise different
+objectives.
+
+\paragraph{F-4 recommended $K$.} Maximises three intrinsic quality
+criteria: held-out perplexity, top-$N$ word coherence, seed
+stability. On every labelled scene the F-4 grid shows perplexity
+monotonically increasing in $K$, topic-diversity monotonically
+decreasing in $K$, and matched-cosine essentially flat
+($\in [0.95, 0.99]$); the rule therefore picks the smallest $K$
+in the grid, $K = 4$. This is the answer to
+\emph{``what is the smallest basis that explains the corpus word
+frequencies well and is stable across seeds?''}
+
+\paragraph{Canonical $K$.} Answers a different question:
+\emph{``what is the smallest basis that has any chance of being
+aligned with the $n_{\text{classes}}$ land-cover classes?''}
+A basis with $K < n_{\text{classes}}$ forecloses on the
+topic-routed-hard alignment: the model cannot predict more
+distinct classes than it has topics, so the per-class precision-
+recall table of Suppl F~\ref{sec:per_class_pr} would have at
+least $n_{\text{classes}} - K$ unreachable classes by
+construction. The canonical rule therefore lower-bounds $K$ at
+$n_{\text{classes}}$ (capped at 12 for parsimony) so that the
+downstream F-1, F-7, F-8 axes (classification, topic-label
+coupling, Hungarian alignment) are answerable on the same
+basis.
+
+\paragraph{Implication for the framework.} The two answers
+optimise competing notions of ``best $K$'' --- F-4 maximises
+model parsimony, the canonical rule maximises downstream
+interpretability. The paper documents both rather than forcing
+a single choice. A second-paper redesign (Suppl
+G~\ref{subsec:ppc}) would lift the canonical $K$ from a fixed
+parameter to a per-axis sweep ($K \in \{4, 6, 8, 10, 12, 16\}$
+on every F-axis) to remove the asymmetry.
+
 \section{Axis F-5: paired ARI under masks}
 Detailed in conference supplement B; restated here for cross-reference.
 $\ari_{\text{paired}}(m) = \ari(\{z_d\}_\mathcal{S},
