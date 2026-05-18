@@ -181,9 +181,34 @@ The work sits at the **intersection of remote sensing, image processing, and rep
 - WHISPERS 2026 author-kit specifics — pull from the EasyChair-linked author kit when it appears.
 - IEEE TGRS final review-timeline figures — cross-check via recent papers' submission histories.
 - IGARSS 2026 explicit review-blinding policy — query the TPC.
-- Pattern Recognition 2024/2025 IF — pull from JCR directly.
 - JAG and Pattern Recognition APCs — Elsevier per-journal pricing.
 - MDPI Remote Sensing "GeoAI" special-issue deadline.
+
+## JCR cross-check audit (c282, 2026-05-18)
+
+Performed a snapshot cross-check of the IF figures cited above
+against current web-aggregator data. Significant deltas vs the
+2024 JCR numbers in the body of this document:
+
+| Journal | Cited above | 2024 JCR (web search snapshot) | Action |
+|---|---|---|---|
+| IEEE Transactions on Image Processing | 7.6 ("sources disagree") | **13.7** (also reported as 7.6 by older aggregators) | Update to 13.7 with cross-check note; older sources lag |
+| Pattern Recognition | 7.6 (unverified) | 7.6 / 9.84 (sources still disagree) | Re-verify at submission; keep "needs JCR check" flag |
+| IJAG | 9.83 (cited) | 9.83 (verified) | OK |
+| TGRS | 9.5 (cited) | 7.0 / 8.6 / 9.5 (multiple values reported) | Re-verify; the 9.5 figure may be Clarivate's "Journal Impact Factor" 2024 release (published mid-2025), other sources may cite 5-year or category-specific IFs |
+
+**Authoritative source**: the only definitive number is the one
+on Clarivate's Web of Science / JCR portal (institutional access).
+Re-fetch within 30 days of any submission deadline to lock in
+manuscript claims. The web-aggregator deltas above are caused by
+different IF definitions (2-year, 5-year, CiteScore, SJR) and
+different release timing relative to the JCR June refresh.
+
+Conclusion: the rankings between candidates do not flip under any
+of the variant numbers, so the **recommended targets (WHISPERS
+2026 + IEEE TGRS) remain the right choices regardless** of which
+IF aggregate is used. The audit is closed pending an
+authoritative pre-submission JCR pull.
 
 ## Sources
 
