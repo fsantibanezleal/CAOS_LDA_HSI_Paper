@@ -171,8 +171,15 @@ def main() -> int:
                     format="svg", bbox_inches="tight")
         fig.savefig(outdir / "topic-class-sankey.pdf",
                     format="pdf", bbox_inches="tight")
+        # Closes paper #3 audit item 'Suppl I figure quality pass —
+        # rasterise the Sankey vector for any reviewer system that
+        # struggles with vector PDFs'. 600 dpi is the IEEE recommended
+        # minimum for combo art; uses the same bbox as the SVG/PDF
+        # exports so the inset positioning stays identical.
+        fig.savefig(outdir / "topic-class-sankey.png",
+                    format="png", bbox_inches="tight", dpi=600)
     plt.close(fig)
-    print(f"wrote topic-class-sankey.{{svg,pdf}}")
+    print(f"wrote topic-class-sankey.{{svg,pdf,png}} (PNG @ 600 dpi)")
     return 0
 
 
