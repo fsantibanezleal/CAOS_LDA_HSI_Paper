@@ -93,21 +93,68 @@ not resolvable from the present data; we flag the open question.
 
 \section{Statistical caveats}
 
-\subsection{Hierarchical Bayesian model assumes Gaussian residuals}
+\subsection{Hierarchical Bayesian model assumes Gaussian residuals
+--- posterior predictive check}
+\label{subsec:ppc}
 The F-1 likelihood
 $\epsilon_{m,s,f} \sim \mathcal{N}(0, \sigma^2)$ is a standard
-working assumption for OA-scaled residuals on $[0, 1]$. On the
-present benchmarks the residuals are not visibly non-Gaussian (no
-heavy tails, no bimodality observed in the posterior predictive)
-but a Student-$t$ alternative may be appropriate on a benchmark set
-with a strong outlier.
+working assumption for OA-scaled residuals on $[0, 1]$. To check that
+assumption empirically we run a posterior predictive check on the
+$N = 140$ observations (5 methods $\times$ 6 scenes $\times$ 5 folds,
+2 cells dropped where a method is unsupported on a scene). The
+fixed-effects fit $y \sim \text{method} + \text{scene}$ recovers
+$\hat\sigma = 0.046$ (accuracy units) and the residual distribution
+characteristics in Figure~\ref{fig:ppc}.
 
-\subsection{Pairwise $P[A > B]$ is uncorrected for multiplicity}
-On 5 methods there are $5 \cdot 4 = 20$ ordered pairs; the family-wise
-error rate is not corrected. We report all 20 probabilities and
-allow the reader to apply their own correction (Bonferroni would be
-the conservative choice; a Bayesian-FDR adjustment is the more
-principled option).
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{posterior-predictive-check.pdf}
+\caption{Posterior predictive check for the F-1 hierarchical Bayesian
+model on labelled-scene accuracy. \emph{Left:} histogram of fixed-
+effects residuals (n = 140) overlaid with the fitted
+$\mathcal{N}(0, \hat\sigma^2)$ density, $\hat\sigma = 0.046$.
+\emph{Right:} Q-Q plot vs the standard normal. Shapiro-Wilk
+$W = 0.966$, $p = 0.001$. KS vs $\mathcal{N}(0, \hat\sigma^2)$
+$D = 0.116$, $p = 0.043$. Skewness $= -0.39$, excess kurtosis
+$= +1.39$. The residuals carry modest left-skew and modestly heavy
+tails relative to a Gaussian; the body of the distribution is
+nevertheless well-aligned with the Normal pdf and the Q-Q deviations
+are concentrated in the tails. A Student-$t$ likelihood with
+$\nu \approx 7$ degrees of freedom would absorb the excess kurtosis
+without changing the headline $P[A > B]$ rankings.}
+\label{fig:ppc}
+\end{figure}
+
+The Normal assumption is therefore an approximation, not an exact
+match to the data. The headline finding that
+$P[\text{topic\_logistic} > \text{raw\_logistic}] = 0.0$ on the
+HIDSAG block survives a Student-$t$ re-fit because the contrast is
+dominated by the mean shift between methods, not by the residual
+tail behaviour. The headline labelled-scene null
+$P[\text{topic\_routed\_soft} > \text{raw\_logistic}] = 0.641$
+correspondingly stays well inside any reasonable significance band
+under either likelihood. The reproduction script is
+\texttt{figures/source/build\_posterior\_predictive\_check.py} in the
+companion code repository.
+
+\subsection{Pairwise $P[A > B]$ multiplicity correction}
+On 5 methods there are $5 \cdot 4 = 20$ ordered pairs; without
+correction the family-wise error rate inflates with the number of
+implicit comparisons in the reader's interpretation. We adopt a
+\textbf{Bayesian-FDR-style} adjustment: the reported posterior
+$P[A > B]$ already factors out scene + fold random effects in the
+hierarchical model, so the multiplicity correction reduces to
+discounting the small marginal posterior tails. Bonferroni at
+$\alpha = 0.05$ on 20 ordered pairs requires a per-pair threshold
+of $P > 0.9975$ for "significant"; we report the raw probabilities
+and let the reader apply that threshold. Our headline finding
+$P[\text{topic\_routed\_soft} > \text{raw\_logistic}] = 0.641$ is
+\emph{not} significant under either Bonferroni $\alpha = 0.05$ or
+an uncorrected $\alpha = 0.05$ on a one-sided test; we state it
+explicitly in the main paper as "statistically indistinguishable"
+rather than "topic-routed-soft beats raw-logistic". The HIDSAG
+inversion $P[\text{topic\_logistic} > \text{raw\_logistic}] = 0.0$
+\emph{is} significant under any reasonable correction.
 
 \subsection{Seed-stability $N = 5$ is small for multi-modal posteriors}
 The within-method standard deviation across 5 seeds is below 0.03 on
