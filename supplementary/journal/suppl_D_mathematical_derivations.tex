@@ -210,11 +210,19 @@ $\KL{P(L \mid t)}{P(L)} = \sum_\ell P(\ell \mid t)
 Confusion matrix
 $C \in \mathbb{Z}^{K \times K^{(m)}}_{\ge 0}$,
 $C_{k, j} = |\{d \in \mathcal{S} : z_d = k \wedge z^{(m)}_d = j\}|$.
-Hungarian: $\sigma^* = \arg\max_\sigma \sum_k C_{k, \sigma(k)}$,
+Hungarian \cite{kuhn1955hungarian} with Munkres's $O(K^3)$
+refinement \cite{munkres1957algorithms}:
+$\sigma^* = \arg\max_\sigma \sum_k C_{k, \sigma(k)}$,
 solved by \texttt{scipy.optimize.linear\_sum\_assignment} on $-C$.
 Swap rate:
 $\mathrm{swap} = |\mathcal{S}|^{-1} \sum_d \mathbf{1}[z^{(m)}_d \ne
 \sigma^*(z_d)]$.
+The Hungarian permutation is the discrete analogue of the
+orthogonal-Procrustes
+alignment of Schönemann \cite{schoenemann1966procrustes}: both
+solve a maximum-overlap matching, but Procrustes operates over
+continuous rotations of a $K$-dim feature space while the
+Hungarian operates over discrete label permutations.
 
 \section{Axis F-9: HIDSAG preprocessing stability}
 For each HIDSAG subset, $R = 3$ preprocessing recipes $\{\text{cont-rem},

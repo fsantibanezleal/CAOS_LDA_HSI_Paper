@@ -271,13 +271,20 @@ soft membership to multiple topics representing spectral classes, and
 demonstrated improved classification on a small set of HSI benchmarks.
 Liu et al.\ \cite{liu2019hsilda} explored a different tokenisation
 based on spectral derivatives and trained LDA on the resulting
-discrete corpora. Beyond these two direct applications, the broader
+discrete corpora. An adjacent line by Wahabzada et
+al.~\cite{wahabzada2015plant} applied probabilistic topic models to
+hyperspectral plant phenotyping to recover an interpretable
+``hyperspectral language of plants''. Beyond these direct
+applications, the broader
 HSI literature treats $\theta$ implicitly through related abstractions:
-linear unmixing \cite{nascimento2005vca,bioucasdias2012unmixing}
+linear unmixing \cite{nascimento2005vca,bioucasdias2012unmixing,borsoi2021variability}
 estimates a per-pixel abundance over a small set of endmembers,
 which is functionally analogous to $\theta$ over a basis of
-$\phi_k$; sparse coding and dictionary learning on spectra is
-similarly analogous. The conceptual gap addressed by this paper is
+$\phi_k$ — the survey of Borsoi et
+al.~\cite{borsoi2021variability} consolidates the modern
+spectral-variability variants and the Samson / Jasper-Ridge / Urban
+benchmarks that the unmixing community uses. Sparse coding and
+dictionary learning on spectra are similarly analogous. The conceptual gap addressed by this paper is
 \emph{not} a new tokenisation or a new variant of LDA --- it is the
 absence of a shared, axis-by-axis evaluation framework that lets
 follow-on work be compared on a uniform basis.
@@ -536,7 +543,8 @@ $C \in \mathbb{Z}_{\ge 0}^{K \times K^{(m)}}$ with
 $C_{k,j} = |\{d \in \mathcal{S} : z_d = k \wedge z^{(m)}_d = j\}|$
 defines a maximum-weight bipartite matching whose solution
 $\sigma^* = \arg\max_\sigma \sum_k C_{k, \sigma(k)}$ is computed by
-the Hungarian algorithm \cite{kuhn1955hungarian} via
+the Hungarian algorithm of Kuhn~\cite{kuhn1955hungarian} with
+Munkres's $O(K^3)$ refinement~\cite{munkres1957algorithms} via
 \texttt{scipy.optimize.linear\_sum\_assignment}
 \cite{scipy_assignment}. The \emph{swap rate under alignment} is
 $|\mathcal{S}|^{-1} \sum_{d \in \mathcal{S}} \mathbf{1}[z^{(m)}_d
@@ -583,7 +591,8 @@ topic-routed-soft OA and the published baseline. The
 and the comparison delta per scene. On the HIDSAG mineralogical
 subsets we additionally cross-validate the per-topic reconstructed
 spectrum against the USGS Spectral Library
-Version~7~\cite{kokaly2017splib07}, reporting both cosine similarity
+Version~7~\cite{kokaly2017splib07} and the companion ECOSTRESS
+spectral library~\cite{ecostress_speclib}, reporting both cosine similarity
 and Spectral Angle Mapper distance per topic-mineral pair; the
 \texttt{topic\_to\_usgs\_v7/} artefact ships these matchings.
 

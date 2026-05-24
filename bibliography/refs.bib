@@ -121,6 +121,18 @@
   url       = {https://arxiv.org/abs/1312.6114}
 }
 
+@article{alain2014ae,
+  title   = {What Regularized Auto-Encoders Learn from the Data-Generating Distribution},
+  author  = {Alain, Guillaume and Bengio, Yoshua},
+  journal = {Journal of Machine Learning Research},
+  volume  = {15},
+  number  = {1},
+  pages   = {3563--3593},
+  year    = {2014},
+  url     = {https://jmlr.org/papers/v15/alain14a.html},
+  note    = {Reconstruction loss in regularised auto-encoders locally encodes the score of the data distribution; basis for the Deep-Representations argument that CAE / $\beta$-VAE reconstruction loss tracks data-manifold volume rather than class discriminability.}
+}
+
 @inproceedings{higgins2017betavae,
   title     = {beta-{{VAE}}: Learning Basic Visual Concepts with a Constrained Variational Framework},
   author    = {Higgins, Irina and Matthey, Loic and Pal, Arka and Burgess, Christopher and Glorot, Xavier and Botvinick, Matthew and Mohamed, Shakir and Lerchner, Alexander},
@@ -285,6 +297,49 @@
   howpublished = {\url{https://www.ehu.eus/ccwintco/index.php/Hyperspectral_Remote_Sensing_Scenes#Botswana}}
 }
 
+@misc{ecostress_speclib,
+  title        = {{{ECOSTRESS}} Spectral Library},
+  author       = {{NASA/JPL ECOSTRESS Mission}},
+  year         = {2018},
+  url          = {https://speclib.jpl.nasa.gov/},
+  howpublished = {Online; \url{https://speclib.jpl.nasa.gov/}},
+  note         = {Multi-instrument spectral library combining the ASTER and JHU spectral libraries; descendant of the Caltech/NASA JPL holdings. Used as a cross-check companion to the USGS splib07 v7 reference set in the topic--library cosine + SAM matching layer.}
+}
+
+@article{borsoi2021variability,
+  title   = {Spectral Variability in Hyperspectral Data Unmixing: {{A}} Comprehensive Review},
+  author  = {Borsoi, Ricardo Augusto and Imbiriba, Tales and Bermudez, José Carlos Moreira and Richard, Cédric and Chanussot, Jocelyn and Drumetz, Lucas and Tourneret, Jean-Yves and Zare, Alina and Jutten, Christian},
+  journal = {IEEE Geoscience and Remote Sensing Magazine},
+  volume  = {9},
+  number  = {4},
+  pages   = {223--270},
+  year    = {2021},
+  doi     = {10.1109/MGRS.2021.3071158},
+  note    = {Review consolidating Samson / Jasper-Ridge / Urban unmixing benchmarks; the source we cite when comparing topic-to-endmember alignment against the linear-unmixing literature.}
+}
+
+@techreport{clark1999spectroscopy,
+  title       = {Spectroscopy of Rocks and Minerals, and Principles of Spectroscopy},
+  author      = {Clark, Roger N.},
+  institution = {U.S. Geological Survey},
+  type        = {Open-File Report},
+  number      = {03-395},
+  year        = {1999},
+  url         = {https://pubs.usgs.gov/of/2003/ofr-03-395/ofr-03-395.html},
+  note        = {Canonical USGS mineralogy reference; the standard citation for Cuprite (NV) AVIRIS-Classic f970619 scene mineralogy.}
+}
+
+@article{wahabzada2015plant,
+  title   = {Plant Phenotyping Using Probabilistic Topic Models: Uncovering the Hyperspectral Language of Plants},
+  author  = {Wahabzada, Mirwaes and Mahlein, Anne-Katrin and Bauckhage, Christian and Steiner, Ulrike and Oerke, Erich-Christian and Kersting, Kristian},
+  journal = {Scientific Reports},
+  volume  = {5},
+  pages   = {22482},
+  year    = {2015},
+  doi     = {10.1038/srep22482},
+  note    = {Earliest LDA-style probabilistic topic model on hyperspectral plant-phenotyping data; clarifies the wiki References §4 ``Scientific Reports / PLOS ONE lineage'' framing.}
+}
+
 @techreport{kokaly2017splib07,
   title       = {{USGS} Spectral Library Version 7},
   author      = {Kokaly, Raymond F. and Clark, Roger N. and Swayze, Gregg A. and Livo, K. Eric and Hoefen, Todd M. and Pearson, Neil C. and Wise, Richard A. and Benzel, William M. and Lowers, Heather A. and Driscoll, Rhonda L. and Klein, Anna J.},
@@ -409,6 +464,30 @@
   pages   = {83--97},
   year    = {1955},
   doi     = {10.1002/nav.3800020109}
+}
+
+@article{munkres1957algorithms,
+  title   = {Algorithms for the Assignment and Transportation Problems},
+  author  = {Munkres, James},
+  journal = {Journal of the Society for Industrial and Applied Mathematics},
+  volume  = {5},
+  number  = {1},
+  pages   = {32--38},
+  year    = {1957},
+  doi     = {10.1137/0105003},
+  note    = {The $O(n^3)$ refinement of Kuhn's Hungarian method; the algorithm \texttt{scipy.optimize.linear\_sum\_assignment} implements.}
+}
+
+@article{schoenemann1966procrustes,
+  title   = {A Generalized Solution of the Orthogonal {{Procrustes}} Problem},
+  author  = {Schönemann, Peter H.},
+  journal = {Psychometrika},
+  volume  = {31},
+  number  = {1},
+  pages   = {1--10},
+  year    = {1966},
+  doi     = {10.1007/BF02289451},
+  note    = {Closed-form SVD solution for the orthogonal Procrustes alignment used in cross-method topic alignment.}
 }
 
 @article{hubert1985ari,
