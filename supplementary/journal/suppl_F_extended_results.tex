@@ -375,7 +375,14 @@ reconstruction error); see Suppl G §Reporting choices.}
 bars and standard-error bars. Complements the F-3 N=5
 ProdLDA/ETM swarm in the main paper Figure 4. Notable patterns:
 $\beta$-VAE on Salinas-A reaches mean ARI $\approx 0.55$ but with
-$\sigma \approx 0.10$ across 30 seeds; CAE-3D dominates on Pavia U.}
+$\sigma \approx 0.10$ across 30 seeds; CAE-3D dominates on Pavia U.
+The interpretation of these reconstruction-loss-trained encoders
+follows Alain and Bengio~\cite{alain2014ae}: regularised
+auto-encoders locally encode the score of the data-generating
+distribution, so reconstruction loss tracks data-manifold volume
+rather than class discriminability — consistent with the
+\emph{larger spread, weaker mean} pattern observed for the
+deep-latent gates in §F-1 vs the topic-routed soft gate.}
 \label{fig:n30-deep}
 \end{figure}
 
