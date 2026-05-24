@@ -66,7 +66,7 @@ same set of benchmarks: (F-1) classification accuracy under a hierarchical
 Bayesian model over five method families, (F-2) topic--word coherence
 ($c_v$, $c_{\text{NPMI}}$, U-Mass), (F-3) seed stability for both LDA
 and two neural variants (ProdLDA, ETM), (F-4) capacity sensitivity
-across $K \in \{4, \ldots, 24\}$, (F-5) band-mask robustness, (F-6)
+across $K \in \{4, 6, 8, 10, 12, 16\}$, (F-5) band-mask robustness, (F-6)
 cross-method clustering agreement (LDA vs Felzenszwalb, SLIC, patches,
 pixels), (F-7) topic--label coupling via $P(L \mid t)$ entropy and KL,
 (F-8) per-topic Hungarian-aligned identity tracking, (F-9) HIDSAG
@@ -93,7 +93,7 @@ topic-logistic posterior ($0.316 \pm 0.220$) well below
 raw-logistic ($0.585 \pm 0.221$), inverting the labelled-scene picture
 and contradicting the prima-facie expectation that mineralogical
 mixtures favour topic decomposition over the raw spectrum. We release
-1726 deterministic derived artefacts (421~MB), the builder source,
+1734 deterministic derived artefacts (449~MB), the builder source,
 the FastAPI backend, the React frontend, and a 109-endpoint smoke
 harness as a public, MIT-licensed reproducibility package
 (\url{https://github.com/fsantibanezleal/CAOS_LDA_HSI}; live at
@@ -235,7 +235,7 @@ posterior, contradicting the labelled-scene picture in which the two
 are statistically indistinguishable. This is, to our knowledge, the
 first published demonstration of this inversion under a hierarchical
 model on HIDSAG.
-\item We release 1726 deterministic derived artefacts (421~MB), the
+\item We release 1734 deterministic derived artefacts (449~MB), the
 builder source code (Python, NumPy, scikit-learn, Gensim, PyTorch),
 the FastAPI backend, the React frontend, and a 109-endpoint smoke
 harness as a public MIT-licensed package.
@@ -292,11 +292,17 @@ sharper topic posteriors on text. The Embedded Topic Model (ETM)
 shared continuous space, allowing rare words to inherit semantic
 neighbours' topic associations. Miao et al.\ \cite{miao2016neural} and
 Higgins et al.\ \cite{higgins2017betavae} proposed related VAE-based
-topic and disentanglement variants. Direct applications of these
-neural topic models to HSI are rare in the published literature;
-the small body of work that does compare them on HSI typically does so
-on a single scene with a single seed, leaving the seed-stability
-question open.
+topic and disentanglement variants. Card et
+al.\ \cite{card2018scholar} extended the family with SCHOLAR, a
+metadata-conditioned neural topic model that recovers the
+Dirichlet-multinomial-regression idea of Mimno and
+McCallum~\cite{mimno2008topic} in a neural form; the present manuscript
+uses the latter on HIDSAG continuous targets and treats SCHOLAR as
+the natural deep-learning counterpart for future work. Direct
+applications of these neural topic models to HSI are rare in the
+published literature; the small body of work that does compare them
+on HSI typically does so on a single scene with a single seed,
+leaving the seed-stability question open.
 
 \subsection{Beyond-OA evaluation in remote sensing}
 
@@ -343,10 +349,13 @@ modality.
 
 \emph{Tokenisation.} Each pixel spectrum is min--max normalised
 across bands and quantised into $Q + 1 = 13$ levels, producing
-integer counts $c_{d,b} \in \{0, \ldots, 12\}$. The resulting
-document-term matrix has shape $D \times B$ where $B$ is the
-band count (200 for Indian Pines, 204 for Salinas/Salinas-A, 103
-for Pavia~U, 176 for KSC, 145 for Botswana).
+integer counts $c_{d,b} \in \{0, \ldots, 12\}$. The high-rate
+uniform-quantisation distortion bound
+$D \le \tfrac{1}{12 Q^2}$~\cite{gershogray1992vq} therefore yields
+an rms wordification noise below $0.025$ in normalised reflectance
+units. The resulting document-term matrix has shape $D \times B$
+where $B$ is the band count (200 for Indian Pines, 204 for
+Salinas/Salinas-A, 103 for Pavia~U, 176 for KSC, 145 for Botswana).
 
 \emph{Model.} Online variational Bayes LDA
 \cite{hoffman2010online}, scikit-learn implementation
@@ -417,7 +426,10 @@ where $m$ ranges over methods, $s$ over scenes, $f$ over folds, and
 $\text{score}$ is the fold-level OA. Sampling is performed with NUTS
 (1000 draws, 1000 tune, 2 chains) on the labelled-scene block; the
 HIDSAG block uses a parallel model with subsets in place of scenes and
-targets in place of folds. We report the posterior mean and standard
+targets in place of folds. Convergence is declared only when the
+rank-normalised $\widehat{R}$ diagnostic of Vehtari et
+al.~\cite{vehtari2021rhat} satisfies
+$\widehat{R} < 1.01$ for every monitored parameter. We report the posterior mean and standard
 deviation of $\mu_m$ for each method, plus the pairwise probability
 $P[\mu_A > \mu_B]$ derived from the joint posterior. Five methods
 populate the labelled block: \texttt{pca\_K\_logistic} (PCA to $K$
@@ -433,11 +445,14 @@ slate.
 
 We compute three coherence measures per scene: the sliding-window
 $c_v$ measure of Röder et al.\ \cite{roder2015exploring},
-$c_{\text{NPMI}}$ (normalised pointwise mutual information), and the
-intrinsic U-Mass measure. The reference corpus for the co-occurrence
-estimate is the canonical document-term matrix of the same scene.
-Coherence is reported with top-$N = 15$ words per topic, averaged
-over $K$ topics.
+$c_{\text{NPMI}}$ (normalised pointwise mutual information,
+following Newman et al.\ \cite{newman2010coherence} and the
+NPMI formulation surveyed in \cite{roder2015exploring}), and the
+intrinsic U-Mass measure of Mimno et al.\ \cite{mimno2011coherence}.
+The reference corpus for the co-occurrence estimate is the
+canonical document-term matrix of the same scene. Coherence is
+reported with top-$N = 15$ words per topic, averaged over $K$
+topics.
 
 \subsection{F-3: seed stability}
 
@@ -449,13 +464,20 @@ protocol. For each (method, seed) we compute (a) KMeans-on-$\theta$ to
 $K$ clusters and report ARI against the ground-truth label, (b) NMI
 against the ground-truth label, and (c) $c_v$ coherence on the
 inferred basis. The aggregate per-method statistic is mean~$\pm$~std
-ARI over the five seeds, plus the same for $c_v$.
+ARI over the five seeds, plus the same for $c_v$. The protocol is
+the multi-seed stability test of Greene, O'Callaghan and Cunningham
+\cite{greene2014topics} with the Hungarian-matched cosine (F-8)
+described in \S\ref{sec:f8} taking the place of their topic-overlap
+score.
 
 \subsection{F-4: capacity sensitivity}
 
-We sweep $K$ over the range $\{4, 6, 8, 10, 12, 16, 20, 24\}$ with the
+We sweep $K$ over the grid $\{4, 6, 8, 10, 12, 16\}$ with the
 canonical hyperparameters and report ARI(canonical fit, KMeans on
-$\theta$ at $K$) against ground-truth label. The curve diagnoses
+$\theta$ at $K$) against ground-truth label. The grid is set in
+\texttt{data-pipeline/build\_lda\_sweep.py} as \texttt{K\_grid =
+[4, 6, 8, 10, 12, 16]} and is mirrored by the
+\texttt{lda\_sweep/<scene>.json} payloads consumed by the F-4 panel. The curve diagnoses
 \emph{capacity over-/under-allocation}: capacities below
 $n_{\text{classes}}$ force topic merging and lower ARI; capacities
 well above $n_{\text{classes}}$ cause topic splitting and a different
@@ -507,6 +529,7 @@ $H(L \mid t)$ topics correspond to mixed-label regions and are useful
 candidates for transition zones or shadow/cloud artefacts.
 
 \subsection{F-8: per-topic identity tracking under masks}
+\label{sec:f8}
 
 Given the canonical fit and a masked refit, the confusion matrix
 $C \in \mathbb{Z}_{\ge 0}^{K \times K^{(m)}}$ with
@@ -557,7 +580,12 @@ For each labelled scene we collect three published OA numbers from a
 prior method and report the gap between the canonical
 topic-routed-soft OA and the published baseline. The
 \texttt{external\_validation/} artefact ships the literature reference
-and the comparison delta per scene.
+and the comparison delta per scene. On the HIDSAG mineralogical
+subsets we additionally cross-validate the per-topic reconstructed
+spectrum against the USGS Spectral Library
+Version~7~\cite{kokaly2017splib07}, reporting both cosine similarity
+and Spectral Angle Mapper distance per topic-mineral pair; the
+\texttt{topic\_to\_usgs\_v7/} artefact ships these matchings.
 
 % ---------------------------------------------------------------------
 \section{Experimental setup}
@@ -853,21 +881,20 @@ patch-7           & 0.117 & 0.021      & 0.170 & 0.374    & 0.316     & 0.292   
 
 \subsection{F-7 + F-8: topic--label coupling and per-topic identity}
 
-We use the canonical KL divergence between $P(L \mid t)$ (the
-empirical distribution of ground-truth labels conditioned on topic
-$t$) and $P(L)$ (the marginal) as a per-topic concentration measure;
-the within-scene mean and max are reported in
-Table~\ref{tab:b7-coupling}, drawn from the
-\texttt{band\_masks/canonical\_comparison.json} artefact (the
-canonical-vs-masked-KL is reported on the same scale; here we use
-the canonical-vs-uniform variant to express raw concentration).
+We use the per-topic KL divergence
+$\mathrm{KL}\!\big(P(L \mid t) \,\|\, P(L)\big)$ between the empirical
+distribution of ground-truth labels conditioned on topic $t$ and the
+marginal label distribution as a per-topic concentration measure;
+the within-scene mean and max over the canonical-fit topics
+are reported in Table~\ref{tab:b7-coupling}, computed from the
+\texttt{kl\_to\_label\_prior\_per\_topic} field of
+\texttt{topic\_to\_data/<scene>.json}.
 
 \begin{table}[t]
-\caption{F-7 topic--label coupling: per-topic KL mean and max on the
-canonical fit of each labelled scene. Higher values denote more
-sharply label-aligned topics; very high max values (KSC $\approx 27.6$
-nats) reflect topic-label cells with near-zero shared support, a
-signature of an ill-identified topic.}
+\caption{F-7 topic--label coupling: per-topic
+$\mathrm{KL}(P(L\mid t) \,\|\, P(L))$ mean and max on the
+\emph{canonical fit} of each labelled scene (i.e.\ the no-mask
+LDA fit). Higher values denote more sharply label-aligned topics.}
 \label{tab:b7-coupling}
 \centering
 \small
@@ -875,12 +902,12 @@ signature of an ill-identified topic.}
 \toprule
 Scene & KL mean (nats) & KL max (nats) \\
 \midrule
-Indian Pines     & 4.53  & 27.33 \\
-Salinas          & 7.11  & 27.63 \\
-Salinas-A        & 4.79  & 26.23 \\
-Pavia University & 4.09  & 11.53 \\
-Kennedy Space C. & 7.85  & 27.63 \\
-Botswana         & 10.48 & 27.63 \\
+Indian Pines     & 1.35 & 2.51 \\
+Salinas          & 1.73 & 2.77 \\
+Salinas-A        & 1.29 & 1.79 \\
+Pavia University & 0.81 & 1.17 \\
+Kennedy Space C. & 0.95 & 2.50 \\
+Botswana         & 1.73 & 3.37 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -913,7 +940,8 @@ axes. F-1 column: pooled posterior $\mu_m$ for
 \texttt{topic\_routed\_soft} (the canonical topic-based classifier).
 F-2: $c_v$ coherence of the canonical fit. F-3: ARI mean across 5
 seeds of LDA. F-5: max paired ARI across the four masks (the
-``best-case band-robustness''). F-7: KL mean(canonical topics, uniform).}
+``best-case band-robustness''). F-7: per-topic
+$\mathrm{KL}(P(L\mid t) \,\|\, P(L))$ mean over canonical-fit topics.}
 \label{tab:summary}
 \centering
 \small
@@ -921,12 +949,12 @@ seeds of LDA. F-5: max paired ARI across the four masks (the
 \toprule
 Scene & F-1 ($\mu_{\text{soft}}$) & F-2 ($c_v$) & F-3 (ARI 5-seed) & F-5 (max paired) & F-7 (KL nats) \\
 \midrule
-Indian Pines     & 0.741 (pooled) & 0.450 & 0.287    & 0.527 & 4.53 \\
-Salinas          & 0.741 (pooled) & ---   & ---      & 0.540 & 7.11 \\
-Salinas-A        & 0.741 (pooled) & ---   & ---      & \textbf{0.766} & 4.79 \\
-Pavia University & 0.741 (pooled) & ---   & ---      & 0.415 & 4.09 \\
-Kennedy Space C. & 0.741 (pooled) & ---   & ---      & 0.013 & 7.85 \\
-Botswana         & 0.741 (pooled) & ---   & ---      & 0.127 & 10.48 \\
+Indian Pines     & 0.741 (pooled) & 0.450 & 0.287    & 0.527 & 1.35 \\
+Salinas          & 0.741 (pooled) & ---   & ---      & 0.540 & 1.73 \\
+Salinas-A        & 0.741 (pooled) & ---   & ---      & \textbf{0.766} & 1.29 \\
+Pavia University & 0.741 (pooled) & ---   & ---      & 0.415 & 0.81 \\
+Kennedy Space C. & 0.741 (pooled) & ---   & ---      & 0.013 & 0.95 \\
+Botswana         & 0.741 (pooled) & ---   & ---      & 0.127 & 1.73 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -1039,8 +1067,8 @@ fixed seed and writing a deterministic JSON or NPZ artefact under
 \texttt{data/derived/}. Each builder records its
 \texttt{builder\_version} and \texttt{generated\_at} ISO timestamp in
 the artefact metadata.
-\item \textbf{Derived artefacts.} 1726 JSON and binary files,
-421~MB total, including: per-scene canonical fits
+\item \textbf{Derived artefacts.} 1734 JSON and binary files,
+449~MB total, including: per-scene canonical fits
 (\texttt{theta\_grid.bin}, \texttt{dominant\_topic\_map.bin}), the
 band-mask canonical comparison
 (\texttt{band\_masks/canonical\_comparison.json}, the source of all
@@ -1058,9 +1086,9 @@ visualisations.
 \item \textbf{Smoke harness.} A 109-endpoint smoke-test script
 verifying endpoint health, response schema, and SPA-shell content on
 every deploy; CI-equivalent verification ran on every cycle.
-\item \textbf{Companion conference paper.} The 4--5 page WHISPERS
-2026 submission focused on the F-5 band-mask diagnostic alone, also
-released in the same repository.
+\item \textbf{Companion conference paper.} A 4--5 page conference
+preprint focused on the F-5 band-mask diagnostic alone, also released
+in the same repository (target venue redacted while it circulates).
 \end{itemize}
 
 All code is MIT-licensed at
@@ -1090,7 +1118,7 @@ band-robust (Salinas-A SWIR paired ARI $0.766$) from scenes whose
 topics are band-fragile (KSC, Botswana paired ARI $\approx 0.01$);
 and on HIDSAG the topic representation under-performs the raw-spectrum
 baseline ($\mu_{\text{topic}} = 0.316$ vs $\mu_{\text{raw}} = 0.585$),
-inverting the labelled-scene picture. The full 1726-artefact
+inverting the labelled-scene picture. The full 1734-artefact
 reproducibility package is released under MIT licence.
 
 Future work includes (i) a per-axis $K$-sweep extending the
@@ -1124,8 +1152,11 @@ whose work this study rests on.
 
 The author is a co-author of the HIDSAG dataset descriptor
 publication~\cite{hidsag2023} and the accompanying data
-release~\cite{hidsag2023figshare}. The present manuscript is
-methodologically distinct: it proposes a twelve-axis evaluation
+release~\cite{hidsag2023figshare}, and first author of the
+earlier conference paper introducing the LDA-V1/V2/V3 corpus
+recipes and topic-routed regressor on private geometallurgical
+data~\cite{santibanezleal2022procemin}. The present manuscript
+is methodologically distinct: it proposes a twelve-axis evaluation
 framework for topic models on hyperspectral imagery and applies
 the framework, among other benchmarks, to the HIDSAG mineralogical
 subsets. HIDSAG is cited as a data source, not as a methodological
@@ -1144,7 +1175,7 @@ The HIDSAG database is available from
 scenes (Indian Pines, Salinas, Salinas-A, Pavia U, KSC, Botswana)
 are available from the UPV/EHU Hyperspectral Remote Sensing Scenes
 collection \cite{baumgardner1992indianpines,aviris_salinas,rosis_pavia,aviris_ksc,eo1_botswana}.
-The 1726-artefact derived bundle, the
+The 1734-artefact derived bundle, the
 \texttt{build\_*.py} pipeline source, the FastAPI backend, and the
 React frontend ship under the MIT licence. A versioned snapshot
 will be archived to Zenodo at the time of acceptance and the DOI

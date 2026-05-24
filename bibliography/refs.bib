@@ -32,14 +32,13 @@
   url     = {https://jmlr.org/papers/v3/blei03a.html}
 }
 
-@article{hoffman2010online,
-  title   = {Online Learning for Latent {{Dirichlet}} Allocation},
-  author  = {Hoffman, Matthew D. and Blei, David M. and Bach, Francis R.},
-  booktitle = {Advances in Neural Information Processing Systems},
-  volume  = {23},
-  pages   = {856--864},
-  year    = {2010},
-  url     = {https://papers.nips.cc/paper/3902-online-learning-for-latent-dirichlet-allocation}
+@inproceedings{hoffman2010online,
+  title     = {Online Learning for Latent {{Dirichlet}} Allocation},
+  author    = {Hoffman, Matthew D. and Blei, David M. and Bach, Francis R.},
+  booktitle = {Advances in Neural Information Processing Systems 23 (NIPS 2010)},
+  pages     = {856--864},
+  year      = {2010},
+  url       = {https://papers.nips.cc/paper/3902-online-learning-for-latent-dirichlet-allocation}
 }
 
 @article{griffiths2004finding,
@@ -332,6 +331,46 @@
   pages     = {399--408},
   year      = {2015},
   doi       = {10.1145/2684822.2685324}
+}
+
+@inproceedings{mimno2011coherence,
+  title     = {Optimizing Semantic Coherence in Topic Models},
+  author    = {Mimno, David and Wallach, Hanna M. and Talley, Edmund and Leenders, Miriam and McCallum, Andrew},
+  booktitle = {Proceedings of the 2011 Conference on Empirical Methods in Natural Language Processing (EMNLP)},
+  pages     = {262--272},
+  year      = {2011},
+  url       = {https://aclanthology.org/D11-1024/},
+  note      = {Source of the U-Mass document-co-occurrence coherence statistic used in the $c_v$ / NPMI / U-Mass battery.}
+}
+
+@inproceedings{mimno2008topic,
+  title     = {Topic Models Conditioned on Arbitrary Features with {{Dirichlet}}-Multinomial Regression},
+  author    = {Mimno, David and McCallum, Andrew},
+  booktitle = {Proceedings of the 24th Conference on Uncertainty in Artificial Intelligence (UAI)},
+  pages     = {411--418},
+  year      = {2008},
+  url       = {https://dl.acm.org/doi/10.5555/3023476.3023525},
+  note      = {Introduces Dirichlet-Multinomial Regression (DMR-LDA), the metadata-conditioned topic model used on the HIDSAG continuous targets in this manuscript.}
+}
+
+@inproceedings{newman2010coherence,
+  title     = {Automatic Evaluation of Topic Coherence},
+  author    = {Newman, David and Lau, Jey Han and Grieser, Karl and Baldwin, Timothy},
+  booktitle = {Human Language Technologies: The 2010 Annual Conference of the North American Chapter of the Association for Computational Linguistics (NAACL-HLT)},
+  pages     = {100--108},
+  year      = {2010},
+  url       = {https://aclanthology.org/N10-1012/},
+  note      = {Foundation for the human-judgement-correlated PMI / NPMI coherence definitions that Röder et al. 2015 generalises.}
+}
+
+@inproceedings{card2018scholar,
+  title     = {Neural Models for Documents with Metadata},
+  author    = {Card, Dallas and Tan, Chenhao and Smith, Noah A.},
+  booktitle = {Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (ACL)},
+  pages     = {2031--2040},
+  year      = {2018},
+  doi       = {10.18653/v1/P18-1189},
+  note      = {Introduces SCHOLAR, a neural variant of supervised topic modelling that conditions on document-level metadata; conceptual precursor to the DMR-LDA-style approach used on the HIDSAG covariates here.}
 }
 
 @inproceedings{greene2014topics,
