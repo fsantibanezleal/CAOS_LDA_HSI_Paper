@@ -157,6 +157,17 @@
   doi     = {10.1109/LGRS.2018.2887112}
 }
 
+@inproceedings{santibanezleal2022procemin,
+  title     = {Geometallurgical Estimation of Mineral Samples from Hyperspectral Images and Statistical Topic Modelling},
+  author    = {Santiba{\~n}ez-Leal, Felipe A. and Egaña, {\'A}lvaro F. and Ehrenfeld, Alejandro and Navarro, Felipe and Townley, Brian},
+  booktitle = {Proceedings of the 18th International Conference on Mineral Processing and Geometallurgy (Procemin Geomet 2022)},
+  publisher = {Gecamin},
+  address   = {Santiago, Chile},
+  year      = {2022},
+  url       = {https://www.researchgate.net/publication/369708272},
+  note      = {Internally referred to as the ``A39'' paper. Introduces the LDA-V1/V2/V3 spectral-document recipes and the topic-routed hierarchical regressor that reduced copper-recovery MAE from $\sim$4.57 (per-spectrum baseline) to $\sim$0.42 on private mineral data.}
+}
+
 % ---------------------------------------------------------------------
 % §4 Hyperspectral classification, deep learning, and unmixing
 % ---------------------------------------------------------------------
@@ -275,6 +286,19 @@
   howpublished = {\url{https://www.ehu.eus/ccwintco/index.php/Hyperspectral_Remote_Sensing_Scenes#Botswana}}
 }
 
+@techreport{kokaly2017splib07,
+  title       = {{USGS} Spectral Library Version 7},
+  author      = {Kokaly, Raymond F. and Clark, Roger N. and Swayze, Gregg A. and Livo, K. Eric and Hoefen, Todd M. and Pearson, Neil C. and Wise, Richard A. and Benzel, William M. and Lowers, Heather A. and Driscoll, Rhonda L. and Klein, Anna J.},
+  institution = {U.S. Geological Survey},
+  type        = {Data Series},
+  number      = {1035},
+  year        = {2017},
+  pages       = {61},
+  doi         = {10.3133/ds1035},
+  url         = {https://doi.org/10.3133/ds1035},
+  note        = {USGS Data Series 1035; release of 2467 laboratory and field spectra at native resolution plus convolutions to AVIRIS-Classic, AVIRIS-NG, Landsat-7/8, Sentinel-2, and other sensor wavelength grids. Source archive `splib07a` used in this project for the topic--USGS cosine + SAM matching layer.}
+}
+
 @article{hidsag2023,
   title   = {{HIDSAG}: Hyperspectral Image Database for Supervised Analysis in Geometallurgy},
   author  = {Ehrenfeld, Alejandro and Ega{\~n}a, {\'A}lvaro F. and Santiba{\~n}ez-Leal, Felipe and Garrido, Felipe and Ojeda, Marcia and Townley, Brian and Navarro, Felipe},
@@ -308,6 +332,33 @@
   pages     = {399--408},
   year      = {2015},
   doi       = {10.1145/2684822.2685324}
+}
+
+@inproceedings{greene2014topics,
+  title     = {How Many Topics? {{Stability}} Analysis for Topic Models},
+  author    = {Greene, Derek and O'Callaghan, Derek and Cunningham, Pádraig},
+  booktitle = {Joint European Conference on Machine Learning and Knowledge Discovery in Databases (ECML-PKDD)},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {8724},
+  pages     = {498--513},
+  year      = {2014},
+  publisher = {Springer},
+  doi       = {10.1007/978-3-662-44848-9_32},
+  url       = {https://arxiv.org/abs/1404.4606},
+  note      = {Multi-seed Hungarian-matching topic-stability protocol used in the seed-stability validation step of this project.}
+}
+
+@article{vehtari2021rhat,
+  title   = {Rank-Normalization, Folding, and Localization: An Improved $\widehat{R}$ for Assessing Convergence of {{MCMC}} (with Discussion)},
+  author  = {Vehtari, Aki and Gelman, Andrew and Simpson, Daniel and Carpenter, Bob and Bürkner, Paul-Christian},
+  journal = {Bayesian Analysis},
+  volume  = {16},
+  number  = {2},
+  pages   = {667--718},
+  year    = {2021},
+  doi     = {10.1214/20-BA1221},
+  url     = {https://doi.org/10.1214/20-BA1221},
+  note    = {Recommendation that 4 chains is the minimum to obtain a reliable $\widehat{R}$; basis for the 4-chain default in the Bayesian-method-comparison runs of this project.}
 }
 
 @article{kuhn1955hungarian,
@@ -351,6 +402,19 @@
   pages   = {2837--2854},
   year    = {2010},
   url     = {https://jmlr.org/papers/v11/vinh10a.html}
+}
+
+@book{gershogray1992vq,
+  title     = {Vector Quantization and Signal Compression},
+  author    = {Gersho, Allen and Gray, Robert M.},
+  publisher = {Kluwer Academic Publishers},
+  address   = {Boston, MA},
+  series    = {The Springer International Series in Engineering and Computer Science},
+  volume    = {159},
+  year      = {1992},
+  isbn      = {978-0-7923-9181-4},
+  doi       = {10.1007/978-1-4615-3626-0},
+  note      = {Canonical reference for the uniform-quantisation distortion bound $D \le 1/(12 Q^2)$ that this project uses to bound the wordification noise of $Q$-level band-frequency tokens.}
 }
 
 % ---------------------------------------------------------------------
