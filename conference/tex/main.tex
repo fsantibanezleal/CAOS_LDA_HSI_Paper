@@ -116,7 +116,7 @@ The sweep reveals a sharp split between scenes whose canonical
 topics are band-robust (paired ARI 0.4--0.77) and scenes whose
 topics are band-fragile (paired ARI~$\approx 0.01$).
 
-\item A \textbf{public, deterministic artefact set} (1726+ JSON and
+\item A \textbf{public, deterministic artefact set} (1734 JSON and
 binary files, including the dominant-topic maps, the per-pixel
 posteriors~$\theta$, the per-topic label distributions
 $P(L \mid t)$, and the full Hungarian alignment per (scene, mask)
@@ -416,7 +416,7 @@ Hungarian alignment), the per-pixel \texttt{dominant\_topic\_map.bin}
 (uint8 $H \times W$ with sentinel 255 for unlabelled), and the
 per-pixel \texttt{theta\_grid.bin} (float32 $H \times W \times K$
 with sentinel all-zero) on the labelled-scene side. Total derived
-footprint: 1726 deterministic artefacts, 421~MB.
+footprint: 1734 deterministic artefacts, 449~MB.
 
 A FastAPI backend serves the artefacts at three endpoints:
 \texttt{/api/band-masks}, \texttt{/api/band-masks/\{scene\}/\{mask\}},
@@ -444,7 +444,7 @@ and five HIDSAG mineral subsets, the diagnostic separates scenes
 whose canonical topics are band-robust (Salinas-A under SWIR-only,
 paired ARI $=0.77$) from scenes whose canonical topics are
 band-fragile (KSC and Botswana, paired ARI $\approx 0.01$). The
-full sweep, including 1726 deterministic JSON and binary artefacts,
+full sweep, including 1734 deterministic JSON and binary artefacts,
 is publicly released to support follow-on work.
 
 Future directions include extending the diagnostic to non-canonical
