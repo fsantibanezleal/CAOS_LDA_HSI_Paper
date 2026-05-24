@@ -292,11 +292,17 @@ sharper topic posteriors on text. The Embedded Topic Model (ETM)
 shared continuous space, allowing rare words to inherit semantic
 neighbours' topic associations. Miao et al.\ \cite{miao2016neural} and
 Higgins et al.\ \cite{higgins2017betavae} proposed related VAE-based
-topic and disentanglement variants. Direct applications of these
-neural topic models to HSI are rare in the published literature;
-the small body of work that does compare them on HSI typically does so
-on a single scene with a single seed, leaving the seed-stability
-question open.
+topic and disentanglement variants. Card et
+al.\ \cite{card2018scholar} extended the family with SCHOLAR, a
+metadata-conditioned neural topic model that recovers the
+Dirichlet-multinomial-regression idea of Mimno and
+McCallum~\cite{mimno2008topic} in a neural form; the present manuscript
+uses the latter on HIDSAG continuous targets and treats SCHOLAR as
+the natural deep-learning counterpart for future work. Direct
+applications of these neural topic models to HSI are rare in the
+published literature; the small body of work that does compare them
+on HSI typically does so on a single scene with a single seed,
+leaving the seed-stability question open.
 
 \subsection{Beyond-OA evaluation in remote sensing}
 
@@ -343,10 +349,13 @@ modality.
 
 \emph{Tokenisation.} Each pixel spectrum is min--max normalised
 across bands and quantised into $Q + 1 = 13$ levels, producing
-integer counts $c_{d,b} \in \{0, \ldots, 12\}$. The resulting
-document-term matrix has shape $D \times B$ where $B$ is the
-band count (200 for Indian Pines, 204 for Salinas/Salinas-A, 103
-for Pavia~U, 176 for KSC, 145 for Botswana).
+integer counts $c_{d,b} \in \{0, \ldots, 12\}$. The high-rate
+uniform-quantisation distortion bound
+$D \le \tfrac{1}{12 Q^2}$~\cite{gershogray1992vq} therefore yields
+an rms wordification noise below $0.025$ in normalised reflectance
+units. The resulting document-term matrix has shape $D \times B$
+where $B$ is the band count (200 for Indian Pines, 204 for
+Salinas/Salinas-A, 103 for Pavia~U, 176 for KSC, 145 for Botswana).
 
 \emph{Model.} Online variational Bayes LDA
 \cite{hoffman2010online}, scikit-learn implementation
@@ -417,7 +426,10 @@ where $m$ ranges over methods, $s$ over scenes, $f$ over folds, and
 $\text{score}$ is the fold-level OA. Sampling is performed with NUTS
 (1000 draws, 1000 tune, 2 chains) on the labelled-scene block; the
 HIDSAG block uses a parallel model with subsets in place of scenes and
-targets in place of folds. We report the posterior mean and standard
+targets in place of folds. Convergence is declared only when the
+rank-normalised $\widehat{R}$ diagnostic of Vehtari et
+al.~\cite{vehtari2021rhat} satisfies
+$\widehat{R} < 1.01$ for every monitored parameter. We report the posterior mean and standard
 deviation of $\mu_m$ for each method, plus the pairwise probability
 $P[\mu_A > \mu_B]$ derived from the joint posterior. Five methods
 populate the labelled block: \texttt{pca\_K\_logistic} (PCA to $K$
@@ -433,11 +445,14 @@ slate.
 
 We compute three coherence measures per scene: the sliding-window
 $c_v$ measure of Röder et al.\ \cite{roder2015exploring},
-$c_{\text{NPMI}}$ (normalised pointwise mutual information), and the
-intrinsic U-Mass measure. The reference corpus for the co-occurrence
-estimate is the canonical document-term matrix of the same scene.
-Coherence is reported with top-$N = 15$ words per topic, averaged
-over $K$ topics.
+$c_{\text{NPMI}}$ (normalised pointwise mutual information,
+following Newman et al.\ \cite{newman2010coherence} and the
+NPMI formulation surveyed in \cite{roder2015exploring}), and the
+intrinsic U-Mass measure of Mimno et al.\ \cite{mimno2011coherence}.
+The reference corpus for the co-occurrence estimate is the
+canonical document-term matrix of the same scene. Coherence is
+reported with top-$N = 15$ words per topic, averaged over $K$
+topics.
 
 \subsection{F-3: seed stability}
 
@@ -449,7 +464,11 @@ protocol. For each (method, seed) we compute (a) KMeans-on-$\theta$ to
 $K$ clusters and report ARI against the ground-truth label, (b) NMI
 against the ground-truth label, and (c) $c_v$ coherence on the
 inferred basis. The aggregate per-method statistic is mean~$\pm$~std
-ARI over the five seeds, plus the same for $c_v$.
+ARI over the five seeds, plus the same for $c_v$. The protocol is
+the multi-seed stability test of Greene, O'Callaghan and Cunningham
+\cite{greene2014topics} with the Hungarian-matched cosine (F-8)
+described in \S\ref{sec:f8} taking the place of their topic-overlap
+score.
 
 \subsection{F-4: capacity sensitivity}
 
@@ -510,6 +529,7 @@ $H(L \mid t)$ topics correspond to mixed-label regions and are useful
 candidates for transition zones or shadow/cloud artefacts.
 
 \subsection{F-8: per-topic identity tracking under masks}
+\label{sec:f8}
 
 Given the canonical fit and a masked refit, the confusion matrix
 $C \in \mathbb{Z}_{\ge 0}^{K \times K^{(m)}}$ with
@@ -560,7 +580,12 @@ For each labelled scene we collect three published OA numbers from a
 prior method and report the gap between the canonical
 topic-routed-soft OA and the published baseline. The
 \texttt{external\_validation/} artefact ships the literature reference
-and the comparison delta per scene.
+and the comparison delta per scene. On the HIDSAG mineralogical
+subsets we additionally cross-validate the per-topic reconstructed
+spectrum against the USGS Spectral Library
+Version~7~\cite{kokaly2017splib07}, reporting both cosine similarity
+and Spectral Angle Mapper distance per topic-mineral pair; the
+\texttt{topic\_to\_usgs\_v7/} artefact ships these matchings.
 
 % ---------------------------------------------------------------------
 \section{Experimental setup}
@@ -1127,8 +1152,11 @@ whose work this study rests on.
 
 The author is a co-author of the HIDSAG dataset descriptor
 publication~\cite{hidsag2023} and the accompanying data
-release~\cite{hidsag2023figshare}. The present manuscript is
-methodologically distinct: it proposes a twelve-axis evaluation
+release~\cite{hidsag2023figshare}, and first author of the
+earlier conference paper introducing the LDA-V1/V2/V3 corpus
+recipes and topic-routed regressor on private geometallurgical
+data~\cite{santibanezleal2022procemin}. The present manuscript
+is methodologically distinct: it proposes a twelve-axis evaluation
 framework for topic models on hyperspectral imagery and applies
 the framework, among other benchmarks, to the HIDSAG mineralogical
 subsets. HIDSAG is cited as a data source, not as a methodological
