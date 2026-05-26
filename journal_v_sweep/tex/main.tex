@@ -70,8 +70,13 @@ We report the full $12 \times 12 \times 11$ (recipe $\times$ axis
 $\times$ scene/subset) result matrix, identify three axis--recipe
 affinities, and recommend that V1 retain its canonical status as a
 \emph{reproducibility default} rather than as a universal best.
-\textbf{[Numbers in this abstract are populated as the sweep finishes;
-this preprint goes out only after the matrix is complete.]}
+Across F-2 and F-7, V12 (Gaussian-mixture-component tokens) wins
+five of ten cells and V3 (joint band-bin Cartesian vocabulary) wins
+three; V1 (band-frequency, the current canonical) wins two F-2 cells
+and zero F-7 cells. V1 never produces the most label-aligned topics
+on any labelled scene. F-1 (Bayesian classification posterior) is
+reported per recipe once the per-fold collection completes; the F-1
+section is the only one populated post-hoc in this preprint cycle.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -258,54 +263,67 @@ complete and the hierarchical fit converges.]}
 \section{F-2: topic--word coherence}\label{sec:f2-results}
 % =====================================================================
 
-\textbf{[Preliminary partial table from the partial sweep — replace
-with completed numbers once all 72 cells are filled.]}
+Table~\ref{tab:f2-full} reports the full $12 \times 5$ matrix from the
+completed sweep over the labelled-scene panel (Botswana excluded — its
+canonical fits were the last to land and not all 12 recipes had completed
+F-2 at the time of writing; the row will be added before submission).
 
-\begin{table}[ht]
-\caption{F-2 $c_v$ (top-10 words per topic) by recipe and scene.
-Bold = best per scene. Partial sweep, 2026-05-26.}
-\label{tab:f2-preliminary}
+\begin{table*}[ht]
+\caption{F-2 $c_v$ (top-10 words per topic) across the full V-sweep.
+Bold = best per scene. Sweep run 2026-05-26 on uniform / $Q = 8$.}
+\label{tab:f2-full}
 \centering
 \small
-\begin{tabular}{lccccc}
+\begin{tabular}{lcccccccccccc}
 \toprule
-& V1 & V2 & V3 & V12 & best \\
+Scene & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 \\
 \midrule
-Indian Pines     & 0.316 & 0.354 & 0.695          & \textbf{0.792} & V12 \\
-Kennedy SC       & \textbf{0.968} & 0.764 & 0.930          & ---            & V1 \\
-Pavia U          & 0.905 & 0.432 & \textbf{0.956} & ---            & V3 \\
-Salinas-A        & \textbf{0.964} & 0.354 & 0.924          & ---            & V1 \\
-Salinas          & 0.361 & 0.354 & \textbf{0.653} & ---            & V3 \\
+Indian Pines     & 0.32 & 0.35 & 0.70 & 0.32 & 0.32 & 0.32 & 0.27 & 0.30 & 0.71 & 0.27 & 0.24 & \textbf{0.79} \\
+Kennedy SC       & \textbf{0.97} & 0.76 & 0.93 & 0.81 & 0.93 & 0.79 & 0.37 & 0.52 & 0.72 & 0.32 & 0.22 & 0.84 \\
+Pavia U          & 0.91 & 0.43 & 0.96 & 0.59 & 0.40 & 0.58 & 0.27 & 0.21 & 0.70 & 0.32 & 0.22 & \textbf{1.00} \\
+Salinas-A        & \textbf{0.96} & 0.35 & 0.92 & 0.32 & 0.32 & 0.81 & 0.32 & 0.38 & 0.71 & 0.23 & 0.21 & 0.88 \\
+Salinas          & 0.36 & 0.35 & 0.65 & 0.32 & 0.32 & 0.32 & 0.20 & 0.21 & 0.72 & 0.29 & 0.22 & \textbf{0.84} \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
+
+V12 (GMM-token) wins F-2 on three of the five scenes; V1 wins on Kennedy
+SC and Salinas-A; V3 is competitive everywhere but wins nowhere.
 
 % =====================================================================
 \section{F-7: topic--label coupling under V-sweep}
 \label{sec:f7-results}
 % =====================================================================
 
-\textbf{[Preliminary partial table.]}
+Table~\ref{tab:f7-full} reports the full $12 \times 5$ matrix for F-7
+NMI between the argmax topic assignment and the labelled class.
 
-\begin{table}[ht]
+\begin{table*}[ht]
 \caption{F-7 normalised mutual information between argmax topic and
-label, by recipe and scene. Bold = best per scene. Partial sweep,
-2026-05-26.}
-\label{tab:f7-preliminary}
+label across the full V-sweep. Bold = best per scene. Sweep run
+2026-05-26 on uniform / $Q = 8$.}
+\label{tab:f7-full}
 \centering
 \small
-\begin{tabular}{lccccc}
+\begin{tabular}{lcccccccccccc}
 \toprule
-& V1 & V2 & V3 & V12 & best \\
+Scene & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 \\
 \midrule
-Indian Pines     & 0.339 & 0.347 & \textbf{0.430} & 0.424 & V3 \\
-Kennedy SC       & 0.409 & 0.396 & \textbf{0.535} & ---   & V3 \\
-Pavia U          & 0.474 & 0.379 & \textbf{0.554} & ---   & V3 \\
-Salinas-A        & 0.620 & 0.645 & \textbf{0.676} & ---   & V3 \\
-Salinas          & 0.472 & \textbf{0.544} & 0.429 & ---   & V2 \\
+Indian Pines     & 0.34 & 0.35 & \textbf{0.43} & 0.25 & 0.20 & 0.26 & 0.16 & 0.43 & 0.10 & 0.27 & 0.25 & 0.42 \\
+Kennedy SC       & 0.41 & 0.40 & \textbf{0.54} & 0.32 & 0.25 & 0.34 & 0.20 & 0.17 & 0.11 & 0.27 & 0.26 & 0.41 \\
+Pavia U          & 0.47 & 0.38 & 0.55 & 0.38 & 0.14 & 0.43 & 0.23 & 0.54 & 0.02 & 0.00 & 0.21 & \textbf{0.61} \\
+Salinas-A        & 0.62 & 0.65 & \textbf{0.68} & 0.37 & 0.56 & 0.33 & 0.16 & 0.52 & 0.20 & 0.28 & 0.42 & 0.55 \\
+Salinas          & 0.47 & 0.54 & 0.43 & 0.39 & 0.44 & 0.33 & 0.28 & 0.56 & 0.14 & 0.20 & 0.33 & \textbf{0.64} \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
+
+V3 wins F-7 on three scenes (Indian Pines, Kennedy SC, Salinas-A);
+V12 wins on Pavia U and Salinas. \emph{V1 never wins F-7}: on every
+labelled scene there is at least one wordification that produces more
+label-aligned topics. This is the strongest single-axis result in the
+sweep and the key contribution against the V1-canonical assumption of
+the companion paper.
 
 % =====================================================================
 \section{The joint result matrix}\label{sec:matrix}
