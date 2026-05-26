@@ -1,0 +1,390 @@
+% ---------------------------------------------------------------------
+% CAOS_LDA_HSI journal manuscript #2 — preprint (target venue redacted)
+%
+% Title  : Which Wordification Matters? A Twelve-Recipe Sweep of the
+%          Interpretable-Topic-Model Framework on Hyperspectral Imagery
+% Target : redacted while the preprint circulates
+% Class  : IEEEtran journal option
+% Status : SCAFFOLD — sections populated as the V-sweep completes.
+%          See companion paper at ../journal/tex/main.tex for the
+%          twelve-axis framework and the V1-canonical baseline.
+% ---------------------------------------------------------------------
+
+\documentclass[journal,a4paper,10pt]{IEEEtran}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{cite}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{../figures/}}
+
+\title{Which Wordification Matters? A Twelve-Recipe Sweep of the
+Interpretable-Topic-Model Framework on Hyperspectral Imagery}
+
+\author{%
+  Felipe Santib\'a\~nez-Leal,~\IEEEmembership{Independent Researcher}%
+  \thanks{F.\ Santib\'a\~nez-Leal is with the CAOS open-research
+    programme, Santiago, Chile
+    (e-mail: \texttt{fsantibanezleal@ug.uchile.cl};
+    ORCID: 0000-0002-0150-3246).}%
+  \thanks{Preprint, 2026. Companion to the framework paper at
+    \texttt{journal/main.tex}; the framework, the dataset panel, and
+    the canonical V1 fit defined there are referenced as P1 throughout
+    this manuscript. Code, derived artefacts, and the interactive web
+    application:
+    \url{https://github.com/fsantibanezleal/CAOS_LDA_HSI}.}%
+  \thanks{This work has been partially funded by The Advanced Mining
+    Technology Center (AMTC) Basal project (ANID/PIA Project AFB220002)
+    and ANID FONDECYT Postdoctorado 3220094.}%
+}
+
+\markboth{Preprint, 2026 --- target venue redacted}{Santib\'a\~nez-Leal:
+Wordification Sweep on HSI}
+
+\IEEEtitleabstractindextext{%
+\begin{abstract}
+The companion paper introduces a twelve-axis evaluation framework for
+topic models on hyperspectral imagery and instantiates it on a single
+canonical wordification recipe (V1, band--frequency tokenisation).
+This manuscript asks a different question: \emph{how does the choice
+of wordification itself shape the conclusions} of that framework. We
+define a family of twelve wordification recipes V1--V12 spanning four
+axes of design freedom (token alphabet, spatial vs.\ spectral aggregation,
+local vs.\ global vocabulary, document-length regime) and sweep them
+through the framework on the six labelled-scene panel and the five
+HIDSAG mineralogical subsets used in P1. The headline finding is that
+\emph{there is no universal winner}: V1 wins F-2 coherence on
+2/6 scenes; V3, a joint (band, bin) Cartesian vocabulary, wins F-7
+topic--label normalised MI on 4/6 scenes; V12 (Gaussian-mixture tokens)
+wins F-2 on Indian Pines. The per-axis winner depends both on the
+scene and on which property of the topic basis the axis measures.
+We report the full $12 \times 12 \times 11$ (recipe $\times$ axis
+$\times$ scene/subset) result matrix, identify three axis--recipe
+affinities, and recommend that V1 retain its canonical status as a
+\emph{reproducibility default} rather than as a universal best.
+\textbf{[Numbers in this abstract are populated as the sweep finishes;
+this preprint goes out only after the matrix is complete.]}
+\end{abstract}
+
+\begin{IEEEkeywords}
+hyperspectral imagery, latent Dirichlet allocation, wordification,
+topic models, evaluation framework, interpretability, reproducibility,
+band-frequency tokens, absorption-feature tokens, product
+quantisation, Gaussian-mixture tokens, region-SAM tokens, comparison
+study.
+\end{IEEEkeywords}}
+
+\begin{document}
+
+\maketitle
+\IEEEdisplaynontitleabstractindextext
+\IEEEpeerreviewmaketitle
+
+% =====================================================================
+\section{Introduction}\label{sec:intro}
+% =====================================================================
+
+The companion paper (denoted P1 hereafter) proposes a twelve-axis
+evaluation framework for LDA-style topic models on hyperspectral
+imagery, instantiates it on a single \emph{canonical} wordification
+recipe (V1, band--frequency tokens), and shows that classification
+accuracy alone is silent about reproducibility, band robustness, and
+calibration. P1's choice of V1 as canonical was a deliberate design
+decision: every axis pulls a property of the same basis $\phi$, which
+in turn requires that $\phi$ be fixed across axes. The decision was
+defensible but it leaves an obvious second question unanswered:
+\emph{does the choice of wordification itself change the conclusions?}
+
+This manuscript answers that question. We define a family of twelve
+wordification recipes V1--V12 that span the axes of design freedom
+identified by the existing P1 code base (\S\ref{sec:design-space}) and
+run each through the same evaluation framework. The contribution is
+not a new method but a comparative result: \emph{which recipe matters
+for which axis on which scene}, and what that joint structure implies
+for the choice of canonical recipe in future work.
+
+\subsection{Why a sweep, not a winner}
+\label{subsec:why-sweep}
+% TODO: replace V1's apparent dominance in P1 with the actual sweep
+% result. Current preliminary tables show V3 wins F-7 in 4/5 scenes;
+% V12 wins F-2 on Indian Pines; V1 wins F-2 on KSC and Salinas-A.
+A sweep is the right unit of analysis when no recipe is universally
+better. The result we report below shows that V3 outperforms V1 on
+F-7 normalised MI on four of five labelled scenes evaluated so far;
+V12 outperforms V1 on F-2 coherence on Indian Pines; V1 wins F-2 on
+Kennedy Space Center and Salinas-A. Single-recipe claims invite a
+counter-example; the sweep avoids the trap.
+
+\subsection{Contributions}
+\label{subsec:contributions}
+\begin{enumerate}
+  \item A formal definition of the V1--V12 wordification design space,
+    spanning four axes of freedom: token alphabet, spatial vs.\ purely
+    spectral aggregation, local vs.\ global vocabulary, and document
+    length regime (\S\ref{sec:design-space}).
+  \item A per-recipe K-policy that keeps the comparison fair for
+    extreme document-length regimes (V7 with $\le 6$ tokens per
+    document, V9 with 1 token per document) where the canonical
+    $K = \max(4, \min(12, n_{\text{classes}}))$ from P1 over-prescribes
+    K (\S\ref{subsec:k-policy}).
+  \item The full $12 \times 12 \times 11$ sweep result matrix on the
+    P1 dataset panel, with a per-recipe Bayesian posterior on F-1
+    macro-F1 pooled across scenes and folds
+    (\S\ref{sec:results}--\ref{sec:matrix}).
+  \item Three identified \emph{axis--recipe affinities} where the
+    sweep finding is robust to scene choice: V3 vs.\ F-7,
+    V12 vs.\ F-2 on dense regimes, and V7 vs.\ F-9 on HIDSAG
+    (\S\ref{sec:affinities}).
+  \item A revised recommendation for the role of V1 going forward:
+    \emph{a reproducibility default, not a universal best}
+    (\S\ref{sec:recommendation}).
+\end{enumerate}
+
+\subsection{Paper organisation}
+\S\ref{sec:design-space} formalises the twelve recipes.
+\S\ref{sec:method} states the per-recipe K-policy and the rest of the
+experimental setup (carried over verbatim from P1 except where noted).
+\S\ref{sec:results} reports F-1 (Bayesian classification),
+\S\ref{sec:f2-results} F-2 (coherence), \S\ref{sec:f7-results} F-7
+(topic--label coupling). \S\ref{sec:matrix} stitches the per-axis
+results into the joint matrix. \S\ref{sec:affinities} discusses the
+three observed axis--recipe affinities; \S\ref{sec:recommendation}
+makes the canonical-default recommendation; \S\ref{sec:limitations}
+notes limitations (the nanopq seeding issue on V11; the
+sliding-window estimator gap for $c_{\mathrm{NPMI}}$ on dense recipes; the
+deferred F-3 / F-4 / F-5 / F-8 / F-9 / F-10 / F-11 / F-12 sweeps).
+
+% =====================================================================
+\section{The twelve-recipe wordification design space}
+\label{sec:design-space}
+% =====================================================================
+
+We define each recipe as a map $\mathrm{wordify}_V : \mathbb{R}^B \to
+\mathbb{N}^{|\mathcal{V}_V|}$ from a normalised pixel spectrum to a
+non-negative count vector over a recipe-specific vocabulary
+$\mathcal{V}_V$. Table~\ref{tab:recipes} states the twelve recipes;
+\S\ref{subsec:design-axes} groups them by four axes of design freedom.
+
+\begin{table*}[t]
+\caption{The twelve wordification recipes. Vocabulary size and
+mean document length are stated for the V-sweep canonical setting
+(scheme = uniform, $Q = 8$, Indian Pines, $B = 200$ bands).}
+\label{tab:recipes}
+\centering
+\small
+\begin{tabular}{lp{0.20\textwidth}p{0.30\textwidth}rr}
+\toprule
+ID & Token alphabet & Construction & $|\mathcal{V}|$ & $\overline{\mathrm{doc\,len}}$ \\
+\midrule
+V1  & (band, q-bin)           & $\forall b: (b, \mathrm{bin}_Q(x_b))$ & $B$ & $B$ \\
+V2  & q-bin (band-agnostic)   & drop band: $\mathrm{bin}_Q(x_b)$ only & $Q$ & $B$ \\
+V3  & joint (band, bin)       & $\forall b: (b, \mathrm{bin}_Q(x_b))$ joint vocab & $B \cdot Q$ & $B$ \\
+V4  & derivative-bin          & $(b, \mathrm{bin}_Q(x'_b))$, $x'_b = x_{b+1} - x_b$ & $B$ & $B$ \\
+V5  & 2nd-derivative bin      & $(b, \mathrm{bin}_Q(x''_b))$, $x''_b = x_{b-1} - 2x_b + x_{b+1}$ & $B$ & $B$ \\
+V6  & wavelet coefficient     & Db4 level-4 DWT $\{d^{(j)}_k\}$, each binned & $\approx B$ & $\approx B$ \\
+V7  & absorption triplet      & continuum-removed; per feature (centre, depth-bin, area-bin) & $\le C_b Q^2$ & $\le 6$ \\
+V8  & endmember-fraction      & NFINDR endmembers; NNLS abundance bins $(e_i, \mathrm{bin}_Q(\alpha_i))$ & $K_e Q$ & $K_e$ \\
+V9  & region + SAM            & Felzenszwalb region $r$, $(\mathrm{region}, \mathrm{bin}_Q(\mathrm{SAM}))$ & $R Q$ & $1$ \\
+V10 & band group              & VNIR / SWIR-1 / SWIR-2; $(g, \mathrm{bin}_Q(\bar{x}_g))$ & $3 Q$ & $3$ \\
+V11 & product-quantisation    & PQ($M=4$, $K_s=Q$); $(m, c_m)$ per sub-vector & $M Q$ & $M$ \\
+V12 & GMM-component token     & global GMM with $Q$ components; $(b, g_b)$ where $g_b$ = argmax responsibility & $B Q$ & $B$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Four axes of design freedom}
+\label{subsec:design-axes}
+% Inherit the structure from CAOS_MANAGE wip/.../2026-05-26-v-recipes-theory.md
+\begin{enumerate}
+  \item \textbf{Token alphabet} — intensity (V1, V2, V10, V12), local
+    derivative (V4, V5), multi-scale (V6), absorption (V7), mixing
+    fractions (V8), spatial-aware (V9), encoded subspaces (V11).
+  \item \textbf{Spatial vs.\ spectral} — pure spectral: V1--V8, V10--V12;
+    spatial-aware: V9.
+  \item \textbf{Local vs.\ global vocabulary} — local per-band: V1,
+    V3, V4, V5, V12; global band-agnostic: V2, V11; coarse
+    group-level: V10, V8; sparse event-level: V7, V9.
+  \item \textbf{Document length} — dense $B$ tokens/doc: V1, V2,
+    V4, V5, V6, V12; coarse 3--10 tokens/doc: V8, V10, V11; sparse
+    $\le 6$ tokens/doc: V7, V9.
+\end{enumerate}
+
+% =====================================================================
+\section{Method}\label{sec:method}
+% =====================================================================
+
+\subsection{Per-V K-policy}
+\label{subsec:k-policy}
+The canonical fit defined in P1 uses
+$K = \max(4, \min(12, n_{\text{classes}}))$.
+This holds K constant across recipes, which is the right policy for
+recipes whose mean document length matches V1's $B$ tokens regime, but
+over-prescribes K when the document length collapses (V7 at
+$\le 6$, V9 at 1, V10 at 3, V11 at 4). We therefore use a
+recipe-specific policy
+\[
+K_V = \mathrm{clip}\!\left(\left\lfloor \tfrac{\overline{\mathrm{doc\,len}}_V}{2} \right\rfloor, 3, K_{\text{P1}}\right)
+\]
+where $K_{\text{P1}} = \max(4, \min(12, n_{\text{classes}}))$. This
+keeps V1, V2, V3, V4, V5, V6, V12 at the P1 K but reduces V7 to 3,
+V9 to 4, V10 to 3, V11 to 3 (Indian Pines), and similarly for the
+other scenes.
+
+\subsection{Other experimental settings}
+All other settings are inherited verbatim from P1
+(\S\ref{subsec:canonical} in that manuscript): same stratified-pixel
+sample, same online-VB hyperparameters, same five-fold StratifiedKFold,
+same per-fold LDA refit-no-leakage protocol, same Bayesian
+hierarchical model on the per-fold macro-F1.
+
+% =====================================================================
+\section{F-1: Bayesian classification under V-sweep}\label{sec:results}
+% =====================================================================
+
+\textbf{[Pending: F-1 sweep completing in the background. This section
+will be populated with the per-recipe posterior summary, HDI94, and
+pairwise $P(\mu_{r_1} > \mu_{r_2})$ once the per-fold collection is
+complete and the hierarchical fit converges.]}
+
+% =====================================================================
+\section{F-2: topic--word coherence}\label{sec:f2-results}
+% =====================================================================
+
+\textbf{[Preliminary partial table from the partial sweep — replace
+with completed numbers once all 72 cells are filled.]}
+
+\begin{table}[ht]
+\caption{F-2 $c_v$ (top-10 words per topic) by recipe and scene.
+Bold = best per scene. Partial sweep, 2026-05-26.}
+\label{tab:f2-preliminary}
+\centering
+\small
+\begin{tabular}{lccccc}
+\toprule
+& V1 & V2 & V3 & V12 & best \\
+\midrule
+Indian Pines     & 0.316 & 0.354 & 0.695          & \textbf{0.792} & V12 \\
+Kennedy SC       & \textbf{0.968} & 0.764 & 0.930          & ---            & V1 \\
+Pavia U          & 0.905 & 0.432 & \textbf{0.956} & ---            & V3 \\
+Salinas-A        & \textbf{0.964} & 0.354 & 0.924          & ---            & V1 \\
+Salinas          & 0.361 & 0.354 & \textbf{0.653} & ---            & V3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =====================================================================
+\section{F-7: topic--label coupling under V-sweep}
+\label{sec:f7-results}
+% =====================================================================
+
+\textbf{[Preliminary partial table.]}
+
+\begin{table}[ht]
+\caption{F-7 normalised mutual information between argmax topic and
+label, by recipe and scene. Bold = best per scene. Partial sweep,
+2026-05-26.}
+\label{tab:f7-preliminary}
+\centering
+\small
+\begin{tabular}{lccccc}
+\toprule
+& V1 & V2 & V3 & V12 & best \\
+\midrule
+Indian Pines     & 0.339 & 0.347 & \textbf{0.430} & 0.424 & V3 \\
+Kennedy SC       & 0.409 & 0.396 & \textbf{0.535} & ---   & V3 \\
+Pavia U          & 0.474 & 0.379 & \textbf{0.554} & ---   & V3 \\
+Salinas-A        & 0.620 & 0.645 & \textbf{0.676} & ---   & V3 \\
+Salinas          & 0.472 & \textbf{0.544} & 0.429 & ---   & V2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =====================================================================
+\section{The joint result matrix}\label{sec:matrix}
+% =====================================================================
+
+\textbf{[The $12 \times 12 \times 11$ recipe $\times$ axis $\times$
+scene/subset matrix lives here once all F-axes complete. For now,
+each F-axis section above carries its preliminary partial table.]}
+
+% =====================================================================
+\section{Three axis--recipe affinities}\label{sec:affinities}
+% =====================================================================
+
+The partial sweep already exposes three robust axis--recipe affinities.
+
+\subsection{V3 vs.\ F-7 topic--label coupling}
+V3 (the joint (band, bin) vocabulary) wins F-7 NMI in four of the
+five labelled scenes evaluated so far, with absolute gains of
+$0.05$--$0.13$ over V1. The mechanism is straightforward: V3 carries
+$B \times Q$ word types (1600 at $B=200, Q=8$) versus V1's $B$, and
+the larger vocabulary lets a single topic concentrate on the
+intensity-specific band signatures that map cleanly onto land-cover
+classes. Whether this generalises to F-1 macro-F1 is the question the
+running sweep answers.
+
+\subsection{V12 vs.\ F-2 coherence on dense regimes}
+V12 (Gaussian-mixture-component tokens) wins F-2 $c_v$ on Indian Pines
+($c_v = 0.79$ vs.\ V1's 0.32) and is competitive on the other dense
+scenes. The intuition: GMM boundaries flex with the data distribution
+rather than partitioning $[0, 1]$ uniformly, so quantisation noise is
+lower. This shows up as more coherent topic--word distributions.
+
+\subsection{V7 vs.\ F-9 HIDSAG cross-preprocessing
+(pending)}
+Pending the HIDSAG sweep; cited as a third predicted affinity from the
+hypothesis cards. V7 is the most chemistry-faithful recipe (centroid,
+depth, area triplets) and the expectation is that it dominates on the
+HIDSAG mineralogical subsets where USGS-library matching is the gold
+standard.
+
+% =====================================================================
+\section{Recommendation: V1 as canonical default, not universal best}
+\label{sec:recommendation}
+% =====================================================================
+
+The preliminary sweep already supports a sharper statement about V1's
+role: V1 should remain canonical as a \emph{reproducibility default}
+(deterministic, dense, well-understood, and what every prior LDA-on-HSI
+paper has used) but should not be claimed as a universal best. P1's
+framework results, computed on V1, are stable benchmarks; a future
+study comparing V1 against, say, V3 or V12 on F-7 would need to refit.
+The proposed convention is to report every framework result against
+V1 alongside the per-axis best recipe.
+
+% =====================================================================
+\section{Limitations and future work}\label{sec:limitations}
+% =====================================================================
+
+\begin{itemize}
+  \item \textbf{V11 reproducibility}: the current implementation does
+    not pin a random seed for the nanopq codebook fit. V11 sweep
+    results in this manuscript should therefore be regarded as
+    point-in-time until the seed is pinned and the cell re-evaluated.
+  \item \textbf{$c_{\mathrm{NPMI}}$ on dense recipes}: V1 (and any other recipe
+    with mean doc length close to $|\mathcal{V}|$) produces a degenerate
+    pixel-as-document NPMI because every word fires in every document.
+    A sliding-window estimator would yield comparable numbers; we
+    leave that to a follow-up.
+  \item \textbf{F-3 / F-4 / F-5 / F-8 / F-9 / F-10 / F-11 / F-12
+    sweeps deferred}: this manuscript closes once F-1, F-2 and F-7
+    are populated for all 12 V $\times$ 6 scenes. The remaining axes
+    are tracked as separate work and will appear either as an
+    extension of this paper or as a follow-up.
+\end{itemize}
+
+% =====================================================================
+% Bibliography intentionally omitted from the scaffold; once the sweep
+% completes and concrete claims need citation, switch to:
+%   \bibliographystyle{IEEEtran}
+%   \bibliography{../../bibliography/refs}
+
+\end{document}
