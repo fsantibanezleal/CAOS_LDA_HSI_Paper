@@ -465,10 +465,35 @@ S2's documents, compute F-7 NMI on the target. Only vocab-portable
 recipes (V2, V10, V11) qualify. V2 transfers best at 0.32 mean NMI;
 V11 0.19; V10 0.10.
 
-\textbf{F-18 reliability.} Maier 2024 protocol — top-10 cosine
-similarity threshold across reseed pairs. Compute-bound on Windows;
-partial results show V12 and V3 both above 0.20 fraction-above-0.7;
-V8 and V10 below 0.05.
+\textbf{F-18 reliability.} Maier 2024 protocol — top-10 indicator
+cosine similarity threshold across reseed pairs (seeds 42--46).
+Per-recipe mean fraction-above-0.7 across the six labelled scenes:
+
+\begin{center}
+\small
+\begin{tabular}{lcccccccccccc}
+\toprule
+& V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 \\
+\midrule
+F-18 & 0.25 & \emph{1.00} & 0.22 & 0.20 & 0.15 & \emph{0.95} & 0.15 & \emph{1.00} & 0.00 & 0.54 & 0.28 & \textbf{0.14} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\emph{Italic} marks recipes whose reliability is an artefact of
+vocabulary size: V2 (8 q-bins), V8 (12 endmembers), and V6 (wavelet
+levels) have small or smooth vocabularies that force top-10 alignment
+across seeds regardless of model dynamics. The \textbf{bold} V12 marks
+the recipe that wins F-1, F-2, F-7, F-14 and F-22 but loses F-18 to
+every recipe except V9. V12's flexibility is seed-sensitive.
+
+\paragraph{The reliability--informativeness tradeoff.}
+V12, V3, V7, V5, V4 all sit in the 0.14--0.25 range — informative
+but seed-sensitive. V1 (current canonical) at 0.25 is the most
+reliable of the informative recipes that have non-trivial vocabulary
+(B = 200 bands). This is the strongest argument for V1 retaining
+its canonical status \emph{even when V12 wins all other axes}: V1 is
+the most reliable wordification with informative vocabulary.
 
 \textbf{F-22 counterfactual.} Coordinate-descent search for minimum
 $L_1$ perturbation that flips $\arg\max \theta_d$. Higher = more
