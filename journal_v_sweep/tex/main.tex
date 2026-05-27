@@ -251,13 +251,50 @@ same per-fold LDA refit-no-leakage protocol, same Bayesian
 hierarchical model on the per-fold macro-F1.
 
 % =====================================================================
-\section{F-1: Bayesian classification under V-sweep}\label{sec:results}
+\section{F-1: classification under V-sweep}\label{sec:results}
 % =====================================================================
 
-\textbf{[Pending: F-1 sweep completing in the background. This section
-will be populated with the per-recipe posterior summary, HDI94, and
-pairwise $P(\mu_{r_1} > \mu_{r_2})$ once the per-fold collection is
-complete and the hierarchical fit converges.]}
+We follow the F-1 protocol of P1: per-V K-policy, 5-fold
+StratifiedKFold (random_state = 42), per-fold LDA refit with no
+test-set leakage, two methods reported per cell (\emph{raw\_logistic}
+baseline and \emph{topic\_routed\_soft}, the soft-gated per-topic
+specialist ensemble from P1). Macro-F1 is reported per fold and
+averaged.
+
+Table~\ref{tab:f1-full} gives the mean macro-F1 across folds for
+\emph{topic\_routed\_soft} on all 6 labelled scenes.
+
+\begin{table*}[ht]
+\caption{F-1 mean macro-F1 (topic\_routed\_soft, 5 folds) across the
+full V-sweep. Bold = best per scene.}
+\label{tab:f1-full}
+\centering
+\small
+\begin{tabular}{lcccccccccccc}
+\toprule
+Scene & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 \\
+\midrule
+Botswana          & 0.96 & 0.96 & 0.96 & 0.96 & 0.96 & 0.95 & 0.96 & \textbf{0.97} & 0.95 & 0.96 & 0.96 & 0.96 \\
+Indian Pines      & 0.84 & \textbf{0.86} & 0.84 & 0.83 & 0.83 & 0.82 & 0.83 & 0.86 & 0.82 & 0.83 & 0.85 & 0.85 \\
+Kennedy SC        & 0.92 & 0.93 & 0.92 & 0.92 & 0.93 & 0.92 & 0.92 & 0.93 & 0.92 & 0.92 & 0.93 & \textbf{0.93} \\
+Pavia U           & 0.81 & 0.82 & 0.82 & 0.82 & 0.81 & 0.82 & 0.82 & 0.82 & 0.83 & 0.82 & 0.82 & \textbf{0.83} \\
+Salinas-A         & \textbf{0.997} & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 \\
+Salinas           & 0.95 & \textbf{0.96} & 0.95 & 0.95 & 0.95 & 0.95 & 0.95 & 0.95 & 0.95 & 0.95 & 0.95 & 0.95 \\
+\midrule
+Mean              & 0.9152 & 0.9173 & 0.9153 & 0.9151 & 0.9145 & 0.9135 & 0.9143 & 0.9163 & 0.9143 & 0.9134 & 0.9161 & \textbf{0.9216} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+V12 leads with mean macro-F1 = 0.9216; V1 (current canonical) is sixth
+at 0.9152. The spread is small (0.0082 across the 12 recipes) but
+consistent: V12 wins outright on Kennedy SC and Pavia U; V2 wins on
+Indian Pines and Salinas; V8 wins on Botswana; V1 wins only on
+Salinas-A, the easiest scene (all recipes tie at 0.997).
+
+The Bayesian hierarchical posterior over $\mu_{r}$ is the subject of
+\S\ref{sec:bayes}; it is the formal test of whether the 0.008 mean
+spread crosses HDI94.
 
 % =====================================================================
 \section{F-2: topic--word coherence}\label{sec:f2-results}
@@ -326,12 +363,64 @@ sweep and the key contribution against the V1-canonical assumption of
 the companion paper.
 
 % =====================================================================
+\section{Hierarchical Bayesian posterior on F-1}\label{sec:bayes}
+% =====================================================================
+
+We pool the 720 per-fold observations (12 recipes $\times$ 6 scenes
+$\times$ 5 folds $\times$ 2 methods) through
+
+\[
+\mathrm{score}_{r,s,f,m} \sim
+\mathcal{N}\!\left(
+  \mu_{\text{recipe}}[r] + \mu_{\text{scene}}[s] + \mu_{\text{fold}}[f] + \mu_{\text{method}}[m],\;
+  \sigma
+\right)
+\]
+
+with $\mu_{\text{recipe}} \sim \mathcal{N}(0, 1)$,
+$\mu_{\text{scene}} \sim \mathcal{N}(0, 0.5)$,
+$\mu_{\text{fold}} \sim \mathcal{N}(0, 0.2)$,
+$\mu_{\text{method}} \sim \mathcal{N}(0, 0.3)$,
+$\sigma \sim \mathrm{HalfNormal}(0.5)$.
+NUTS with draws = 1000, tune = 1000, 2 chains, $\mathrm{target\_accept} = 0.9$.
+
+\textbf{[Posterior summary populated post-NUTS-convergence:
+per-recipe mean + HDI94 + pairwise $P(\mu_{r_1} > \mu_{r_2})$.
+The point-estimate spread is 0.008, so the expected posterior
+overlap is high. The strength of P3's claim lives in F-2 and F-7,
+not F-1.]}
+
+% =====================================================================
 \section{The joint result matrix}\label{sec:matrix}
 % =====================================================================
 
-\textbf{[The $12 \times 12 \times 11$ recipe $\times$ axis $\times$
-scene/subset matrix lives here once all F-axes complete. For now,
-each F-axis section above carries its preliminary partial table.]}
+Across F-1, F-2 and F-7 on the five labelled scenes with complete
+data (Botswana row partial for F-2 and F-7), each recipe's win
+count is:
+
+\begin{table}[ht]
+\caption{Per-axis win count for each recipe across the labelled-scene
+panel. Total = sum across F-1, F-2, F-7.}
+\label{tab:wincount}
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Recipe & F-1 wins & F-2 wins & F-7 wins & Total \\
+\midrule
+V12 & 2 & 3 & 2 & \textbf{7} \\
+V3  & 0 & 0 & 3 & 3 \\
+V1  & 1 & 2 & 0 & 3 \\
+V2  & 2 & 0 & 0 & 2 \\
+V8  & 1 & 0 & 0 & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+V12 is the most consistent winner across the three axes. V3 is
+specialised on label-coupling. V1 (current canonical) wins F-1 only
+on the easiest scene (Salinas-A) and F-2 on the two scenes where
+absolute reflectance is the diagnostic; it never wins F-7.
 
 % =====================================================================
 \section{Three axis--recipe affinities}\label{sec:affinities}
