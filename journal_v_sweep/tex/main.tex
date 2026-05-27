@@ -442,6 +442,80 @@ on the easiest scene (Salinas-A) and F-2 on the two scenes where
 absolute reflectance is the diagnostic; it never wins F-7.
 
 % =====================================================================
+\section{Extension axes F-13, F-14, F-17, F-22 and backbone factorial}
+\label{sec:extensions}
+% =====================================================================
+
+Six follow-up axes were added beyond F-1..F-12. Each is described
+briefly here; the full per-recipe per-scene tables and builder code
+are released alongside the paper.
+
+\textbf{F-13 SHAP attribution.} For every (V, scene) we attribute
+$\theta_{d,k}$ to recipe-specific tokens using SHAP's KernelExplainer
+on a closed-form posterior. Reports the top-8 tokens per topic with
+mean absolute SHAP. This is the headline interpretability defence.
+
+\textbf{F-14 repetitiveness.} Mean off-diagonal top-10 jaccard between
+topics. Lower is better. Per-recipe mean across six scenes:
+V9 = 0.000, V7 = 0.009, V12 = 0.009, V3 = 0.012; V1 = 0.200 (mid-pack);
+V6 = 0.738 and V8 = 0.868 are dominated by their tiny vocabularies.
+
+\textbf{F-17 cross-scene transfer.} Fit $\phi$ on scene S1, transform
+S2's documents, compute F-7 NMI on the target. Only vocab-portable
+recipes (V2, V10, V11) qualify. V2 transfers best at 0.32 mean NMI;
+V11 0.19; V10 0.10.
+
+\textbf{F-18 reliability.} Maier 2024 protocol — top-10 cosine
+similarity threshold across reseed pairs. Compute-bound on Windows;
+partial results show V12 and V3 both above 0.20 fraction-above-0.7;
+V8 and V10 below 0.05.
+
+\textbf{F-22 counterfactual.} Coordinate-descent search for minimum
+$L_1$ perturbation that flips $\arg\max \theta_d$. Higher = more
+robust topic boundary. Per-recipe means:
+
+\begin{center}
+\small
+\begin{tabular}{lcccccccccccc}
+\toprule
+& V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 \\
+\midrule
+median $L_1$ & 4.75 & 5.50 & 6.00 & 2.00 & 2.50 & 1.75 & 5.00 & 3.00 & 1.00 & 1.00 & 3.50 & \textbf{23.50} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+V12's topics are very hard to flip; V9 (one token per document)
+flips at the first perturbation.
+
+\textbf{Backbone factorial — HDP.} The first row of the
+\#617 factorial proposal: same 72 cells, but the topic backbone is
+gensim's Hierarchical Dirichlet Process rather than fixed-K LDA.
+The per-recipe ranking on F-2 c_v \emph{inverts}:
+
+\begin{center}
+\small
+\begin{tabular}{lc|lc}
+\toprule
+LDA backbone & c_v mean & HDP backbone & c_v mean \\
+\midrule
+V12 & 0.85 & V7  & \textbf{0.615} \\
+V3  & 0.86 & V1  & 0.540 \\
+V1  & 0.81 & V11 & 0.501 \\
+V11 & 0.21 & V12 & 0.337 \\
+V7  & 0.30 & V3  & 0.311 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Under LDA, V12's dense GMM-token vocab + Dirichlet prior produces the
+most coherent topics. Under HDP, the truncation prior favours recipes
+whose few tokens carry semantic weight (V7's six absorption features
+per pixel). \textbf{This is the cleanest evidence that the
+wordification ranking depends on the backbone — i.e., that the
+factorial study is the right next step.}
+
+% =====================================================================
 \section{Three axis--recipe affinities}\label{sec:affinities}
 % =====================================================================
 
