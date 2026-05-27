@@ -20,16 +20,22 @@ predict-proba wrapper.
 
 **Issue**: [#615](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/615).
 
-## F-14 — repetitiveness (LLM-judge)
+## F-14 — repetitiveness (**SHIPPED 2026-05-27 c366**)
 
-**What**: fraction of top-N words shared across topics (jaccard on
-top-10 sets). Already partially in F-2's top-word jaccard matrix,
-but presented as a coherence diagnostic rather than a quality metric.
+**What**: mean off-diagonal jaccard of top-10 word sets across topics.
+Low = diverse topics; high = redundant topics (LDA's common failure
+mode at large K).
 
-**Why**: free axis from arxiv:2502.07352. Cheap to compute. Common
-reviewer ask.
+**Result**: per-recipe mean across 6 labelled scenes:
+  - V9 0.000, V7 0.009, V12 0.009, V3 0.012, V11 0.053 (most diverse)
+  - V1 0.200 (current canonical, mid-pack)
+  - V4 0.218, V5 0.221
+  - V10 0.472 (moderate)
+  - V6 0.738, V8 0.868 (high; vocab too small for K=12)
+  - V2 1.000 (Q=8 vocab, K=12 → trivially complete overlap)
 
-**Effort**: low (reuse f7's top-word lists).
+**Status**: SHIPPED. `build_v_sweep_f14_repetitiveness.py`. Results
+under `data/derived/v_sweep/f14_repetitiveness/`.
 
 **Issue**: [#616](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/616).
 
@@ -62,29 +68,38 @@ LDA; the per-V LDA refit-per-fold protocol may need adjustment.
 
 **Issue**: [#621](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/621).
 
-## F-17 — cross-scene transfer of label-coupling
+## F-17 — cross-scene transfer (**SHIPPED 2026-05-27 c366**)
 
 **What**: fit phi on scene S1; transform pixels of scene S2; compute
 F-7 NMI on S2. Tests vocabulary reusability across scenes.
 
-**Why**: every prior topic-models-on-HSI paper fits and evaluates on
-the same scene. Cross-scene transfer is unanswered.
+**Result**: only vocab-portable recipes (V2, V10, V11) can be evaluated
+without resampling to a common band grid. Per-recipe mean transfer NMI
+across 30 src→tgt pairs:
+  - V2 0.3241 (band-agnostic q-bins generalise best)
+  - V11 0.1881
+  - V10 0.0972 (3-group too coarse)
 
-**Effort**: low (uses existing fits; just adds a transform pass).
+V1/V3/V4/V5/V6/V12 deferred until a common-grid resampler is added.
+
+**Status**: SHIPPED. `build_v_sweep_f17_cross_scene.py`. Results
+under `data/derived/v_sweep/f17_cross_scene/`.
 
 **Issue**: [#623](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/623).
 
-## F-18 — test-retest reliability beyond seed stability
+## F-18 — test-retest reliability beyond seed stability (**SHIPPED 2026-05-27 c366**)
 
-**What**: Maier 2024 reliability protocol — top-word cosine-similarity
-> 0.7 proportion across reseed runs, beyond the simple ARI of F-3.
+**What**: Maier 2024 reliability protocol — top-N word indicator cosine
+similarity > 0.7 proportion across reseed runs. Augments F-3 (which
+uses ARI on argmax dominant topic).
 
-**Why**: free axis from arxiv:2410.23186. Digital-humanities reviewers
-expect it.
+**Status**: Builder shipped at `data-pipeline/build_v_sweep_f18_reliability.py`
+in CAOS_LDA_HSI. N_SEEDS = 5 (random_state = 42,43,44,45,46), TOP_N = 10,
+Hungarian alignment across seed pairs. Output thresholds: 0.5, 0.7.
+Running in background as of 2026-05-27. Numbers will populate the
+per-V reliability column in P3 supplementary once complete.
 
-**Effort**: low (extends F-3's existing seed-sweep).
-
-**Issue**: [#624](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/624).
+**Issue**: [#624](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/624) — implementation done; results pending.
 
 ## Cost / benefit
 

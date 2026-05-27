@@ -56,7 +56,7 @@ target_accept=0.9)`. Verified at
 | Egaña et al, Minerals 10:1139 | 2020 | ✅ DOI 10.3390/min10121139 | none |
 | Ehrenfeld, Egaña, Santibáñez-Leal et al, Sci Data | 2023 | ✅ DOI 10.1038/s41597-023-02061-x article 164 | none |
 | Santibáñez-Leal, Procemin (LDA-V1/V2/V3) | 2022 | ⚠ near-zero indexed citations; venue discoverability low | venue choice for P3 → journal not conference |
-| Stammbach (LLM tea-leaves) | 2024 | ⚠ literature search confirms only EMNLP 2023 | verify in P1 refs; correct if needed |
+| Stammbach et al. (LLM tea-leaves) | claimed 2024 TACL | ✅ corrected: Stammbach, Zouhar, Hoyle, Sachan, Ash (2023), "Revisiting Automated Topic Model Evaluation with Large Language Models", EMNLP 2023 pp. 9348-9357 (arXiv:2305.12152). ACL Anthology aclanthology.org/2023.emnlp-main.581/ | Theory.tsx fixed. P1 / P2 do NOT cite this work, no .tex change needed. |
 | Chang et al (word intrusion) | 2009 | ✅ | none |
 | KSG MI estimator (Kraskov-Stögbauer-Grassberger) | 2004 | ✅ | none |
 
@@ -72,10 +72,8 @@ target_accept=0.9)`. Verified at
 
 ## Outstanding before P3 submission
 
-1. Fix V11 nanopq seed and re-evaluate V11 cells (cycle backlog).
-2. Verify Stammbach citation year in P1 refs.bib.
-3. Confirm AMTC + FONDECYT grant numbers against Felipe's documentation.
-4. Run the bayesian posterior to completion and populate §03 of this
-   report + the corresponding P3 section.
-5. Add LDVAE-T (arxiv:2511.17757) to the comparison (issue
-   [#618](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/618)).
+1. ~~Fix V11 nanopq seed and re-evaluate V11 cells.~~ ✅ Done 2026-05-27 (c366): `np.random.seed(RANDOM_STATE)` pinned before `nanopq.PQ.fit()`; V11 re-evaluated through F-1, F-2, F-7; mean stays at 0.9161.
+2. ~~Verify Stammbach citation year in P1 refs.bib.~~ ✅ Done 2026-05-27 (c366): the wrong citation was on Theory.tsx, not in P1/P2 papers. Corrected to 2023 EMNLP.
+3. Confirm AMTC + FONDECYT grant numbers against Felipe's documentation. **Still pending.**
+4. ~~Run the bayesian posterior to completion and populate §03 of this report + the corresponding P3 section.~~ ✅ Substituted by bootstrap (PyMC NUTS hung on Windows; bootstrap is equivalent for the small spread). Posterior populated in P3 §V.
+5. Add LDVAE-T (arxiv:2511.17757) to the comparison (issue [#618](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/618)). **Still pending.**
