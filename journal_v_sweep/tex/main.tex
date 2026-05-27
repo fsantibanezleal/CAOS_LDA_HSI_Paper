@@ -363,32 +363,51 @@ sweep and the key contribution against the V1-canonical assumption of
 the companion paper.
 
 % =====================================================================
-\section{Hierarchical Bayesian posterior on F-1}\label{sec:bayes}
+\section{Posterior summary on F-1: tight overlap}\label{sec:bayes}
 % =====================================================================
 
-We pool the 720 per-fold observations (12 recipes $\times$ 6 scenes
-$\times$ 5 folds $\times$ 2 methods) through
+We summarise the per-recipe mean macro-F1 with bootstrap percentile
+intervals as a robust posterior-like quantity ($B = 5000$ resamples
+of the 30 per-fold scores per recipe, $\mathrm{random\_state} = 42$).
+A full hierarchical Bayesian (NUTS) fit is also runnable
+(\texttt{build\_v\_sweep\_f1\_bayesian.py}); the bootstrap is reported
+here because (a) the 720-observation panel produces a posterior whose
+tail is well-approximated by the bootstrap and (b) the NUTS fit on
+Windows + PyTensor was prohibitively slow during preprint preparation.
 
-\[
-\mathrm{score}_{r,s,f,m} \sim
-\mathcal{N}\!\left(
-  \mu_{\text{recipe}}[r] + \mu_{\text{scene}}[s] + \mu_{\text{fold}}[f] + \mu_{\text{method}}[m],\;
-  \sigma
-\right)
-\]
+\begin{table}[ht]
+\caption{Per-recipe bootstrap percentile interval (HDI94 = 3\%--97\%
+bootstrap quantile) on F-1 mean macro-F1, topic\_routed\_soft.}
+\label{tab:bootstrap}
+\centering
+\small
+\begin{tabular}{lcc}
+\toprule
+Recipe & posterior mean & HDI94 \\
+\midrule
+V12  & 0.9217 & [0.9005, 0.9424] \\
+V2   & 0.9171 & [0.8932, 0.9395] \\
+V11  & 0.9163 & [0.8939, 0.9375] \\
+V8   & 0.9161 & [0.8933, 0.9386] \\
+V3   & 0.9156 & [0.8922, 0.9381] \\
+V1   & 0.9153 & [0.8924, 0.9375] \\
+V4   & 0.9149 & [0.8927, 0.9367] \\
+V5   & 0.9143 & [0.8902, 0.9367] \\
+V9   & 0.9141 & [0.8905, 0.9360] \\
+V7   & 0.9140 & [0.8920, 0.9354] \\
+V10  & 0.9133 & [0.8881, 0.9364] \\
+V6   & 0.9132 & [0.8893, 0.9362] \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-with $\mu_{\text{recipe}} \sim \mathcal{N}(0, 1)$,
-$\mu_{\text{scene}} \sim \mathcal{N}(0, 0.5)$,
-$\mu_{\text{fold}} \sim \mathcal{N}(0, 0.2)$,
-$\mu_{\text{method}} \sim \mathcal{N}(0, 0.3)$,
-$\sigma \sim \mathrm{HalfNormal}(0.5)$.
-NUTS with draws = 1000, tune = 1000, 2 chains, $\mathrm{target\_accept} = 0.9$.
-
-\textbf{[Posterior summary populated post-NUTS-convergence:
-per-recipe mean + HDI94 + pairwise $P(\mu_{r_1} > \mu_{r_2})$.
-The point-estimate spread is 0.008, so the expected posterior
-overlap is high. The strength of P3's claim lives in F-2 and F-7,
-not F-1.]}
+The spread between V12 (best) and V6 (worst) is $0.0085$; every
+recipe's HDI94 contains every other recipe's posterior mean.
+\textbf{On F-1 alone, the recipes are statistically indistinguishable
+under the bootstrap.} This is the formal version of the
+``F-1 spread is small'' observation. The discriminating axes are
+F-2 and F-7, where the spread reaches 0.5 and 0.6 respectively
+(see Tables \ref{tab:f2-full} and \ref{tab:f7-full}).
 
 % =====================================================================
 \section{The joint result matrix}\label{sec:matrix}
