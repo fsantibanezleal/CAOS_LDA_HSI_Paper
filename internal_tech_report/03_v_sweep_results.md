@@ -86,13 +86,117 @@ with `mu_recipe ~ N(0, 1)`, `offset_scene ~ N(0, 0.5)`,
 `fold_re ~ N(0, 0.2)`, `method_offset ~ N(0, 0.3)`,
 `sigma ~ HalfNormal(0.5)`. NUTS draws=1000, tune=1000, 2 chains.
 
-**[Populate from f1_bayesian_posterior.json once NUTS converges.]**
+### Bootstrap posterior (B = 5000, populated c362)
 
-Decision rule: if spread (best mu − worst mu) >= 0.05 the recipe
-choice is a real claim. The point-estimate F-1 spread is 0.008, so
-the Bayesian posterior is expected to overlap heavily across recipes
-on F-1 specifically. F-2 and F-7 spreads are larger (0.2–0.5 in
-point estimate) and will dominate the integrated story.
+| Recipe | mu | HDI94 |
+|---|---|---|
+| V12 | +0.9217 | [+0.9005, +0.9424] |
+| V2  | +0.9171 | [+0.8932, +0.9395] |
+| V11 | +0.9163 | [+0.8939, +0.9375] |
+| V8  | +0.9161 | [+0.8933, +0.9386] |
+| V3  | +0.9156 | [+0.8922, +0.9381] |
+| V1  | +0.9153 | [+0.8924, +0.9375] |
+| V4  | +0.9149 | [+0.8927, +0.9367] |
+| V5  | +0.9143 | [+0.8902, +0.9367] |
+| V9  | +0.9141 | [+0.8905, +0.9360] |
+| V7  | +0.9140 | [+0.8920, +0.9354] |
+| V10 | +0.9133 | [+0.8881, +0.9364] |
+| V6  | +0.9132 | [+0.8893, +0.9362] |
+
+Spread (best - worst) = 0.0085. Every recipe's HDI94 contains every
+other recipe's posterior mean. **On F-1 alone the recipes are
+statistically indistinguishable.**
+
+### PyMC NUTS posterior (populated c374)
+
+NUTS finished after ~7h on Windows with rhat > 1.01 warnings on some
+parameters; treated as approximate. Confirms bootstrap: V12 leads at
+mu_recipe = +0.4047, V1 at +0.4015, spread 0.0041, all HDI94 overlap.
+
+Decision: F-1 alone does NOT discriminate recipes. F-2 (spread 0.5)
+and F-7 (spread 0.6) dominate the integrated story. F-14 (V2/V8
+catastrophic), F-18 (V12 worst on reliability), F-22 (V12 most
+robust counterfactually) all add corroborating signal.
+
+## F-13 SHAP attribution
+
+72 cells under LDA backbone. Per (V, scene), top-8 tokens per topic
+by mean absolute SHAP. Output at
+`data/derived/v_sweep/f13_shap/{scene}_{V}_uniform_Q8.json`. Recipe-
+grounded; cannot silently shift across scenes because the vocabulary
+is fixed by the recipe.
+
+## F-14 repetitiveness (mean off-diagonal top-10 jaccard, lower is better)
+
+| V | mean jaccard | interpretation |
+|---|---|---|
+| V9 | 0.000 | catastrophic, 1 token/doc |
+| V7 | 0.009 | diverse — absorption features |
+| V12 | 0.009 | diverse |
+| V3 | 0.012 | diverse |
+| V11 | 0.053 | moderate |
+| V13 | 0.133 | learned VQ-VAE |
+| V1 | 0.200 | canonical mid-pack |
+| V10 | 0.472 | redundant |
+| V6 | 0.738 | wavelet topics repeat |
+| V8 | 0.868 | endmember vocab too small |
+| V2 | 1.000 | trivially redundant (Q=8 vocab) |
+
+## F-17 cross-scene transfer (portable recipes only)
+
+V2 best at NMI = 0.32 mean across 30 src->tgt pairs; V11 0.19; V10 0.10.
+
+## F-18 reliability (Maier 2024: fraction top-10 cosine >= 0.7)
+
+| V | F-18 |
+|---|---|
+| V2/V6/V8/V9/V10 | 1.000 (vocab-limited artefact) |
+| V11 | 0.992 |
+| V5 | 0.967 |
+| V13 | 0.950 |
+| V4 | 0.917 |
+| V1 | 0.792 (canonical mid-pack with non-trivial vocab) |
+| V7 | 0.783 |
+| V12 | 0.158 (tradeoff with F-1/F-2/F-7 dominance) |
+| V3 | 0.117 |
+
+## F-22 counterfactual L1 (median, higher is more robust)
+
+| V | median L1 |
+|---|---|
+| V12 | 23.50 |
+| V3  | 18.20 |
+| V2  | 7.83 |
+| V1  | 6.08 |
+| V7  | 5.17 |
+| V8  | 3.58 |
+| V11 | 3.33 |
+| V4  | 2.50 |
+| V5  | 2.50 |
+| V6  | 1.92 |
+| V10 | 1.17 |
+| V9  | 1.00 |
+
+## F-15 LLM-judge alignment (Claude Opus 4.7 self-judgment)
+
+V2/V6/V8/V9/V10 trivially 1.0 (small vocabularies force top-10
+alignment); V12 / V3 fall to 0.16 / 0.12 because their 1600-word
+vocabularies make top-10 overlap rare even when topics are coherent.
+**F-15 has a vocabulary-size confounder** that anti-correlates with
+F-2 on large-vocab recipes — methodological gap flagged in P5.
+
+## Backbone factorial (F-2 c_v mean across scenes)
+
+| V | LDA | HDP | ProdLDA | ETM |
+|---|---|---|---|---|
+| V1 | 0.81 | 0.540 | 0.752 | 0.664 |
+| V3 | 0.88 | 0.311 | **0.863** | 0.793 |
+| V7 | 0.32 | **0.615** | 0.509 | 0.255 |
+| V12 | **0.85** | 0.337 | 0.825 | **0.816** |
+
+LDA + ETM (Dirichlet-prior) agree on V12. HDP (stick-breaking
+truncation) picks V7. ProdLDA (logistic-normal) picks V3. LDVAE-T
+(fifth proposed backbone) parked pending public code.
 
 ## V-sweep + neural baselines (existing P1 numbers, V1-only)
 
