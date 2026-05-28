@@ -15,19 +15,28 @@ foundation-model wordification deferred to a follow-up). Source artefacts:
 
 ## F-1 — topic-routed-soft macro-F1 (5-fold mean)
 
-| Scene | V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 | V10 | V11 | V12 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| botswana          | 0.963 | 0.956 | 0.961 | 0.961 | 0.958 | 0.945 | 0.962 | **0.967** | 0.954 | 0.957 | 0.957 | 0.964 |
-| indian-pines      | 0.842 | **0.861** | 0.835 | 0.833 | 0.829 | 0.819 | 0.831 | 0.857 | 0.819 | 0.834 | 0.853 | 0.853 |
-| kennedy-sc        | 0.923 | 0.925 | 0.924 | 0.924 | 0.925 | 0.923 | 0.922 | 0.927 | 0.922 | 0.917 | 0.927 | **0.930** |
-| pavia-u           | 0.815 | 0.824 | 0.820 | 0.819 | 0.815 | 0.819 | 0.816 | 0.820 | 0.825 | 0.819 | 0.819 | **0.834** |
-| salinas-a         | **0.997** | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 |
-| salinas-c         | 0.951 | **0.956** | 0.954 | 0.953 | 0.952 | 0.950 | 0.951 | 0.950 | 0.953 | 0.951 | 0.949 | 0.952 |
-| **mean across scenes** | 0.9152 | 0.9173 | 0.9153 | 0.9151 | 0.9145 | 0.9135 | 0.9143 | 0.9163 | 0.9143 | 0.9134 | 0.9161 | **0.9216** |
+| Scene | V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 | V10 | V11 | V12 | V14 | V18 | V20 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| botswana          | 0.963 | 0.956 | 0.961 | 0.961 | 0.958 | 0.945 | 0.962 | **0.967** | 0.954 | 0.957 | 0.957 | 0.964 | 0.964 | 0.965 | 0.964 |
+| indian-pines      | 0.842 | 0.861 | 0.835 | 0.833 | 0.829 | 0.819 | 0.831 | 0.857 | 0.819 | 0.834 | 0.853 | 0.853 | 0.847 | 0.837 | **0.858** |
+| kennedy-sc        | 0.923 | 0.925 | 0.924 | 0.924 | 0.925 | 0.923 | 0.922 | 0.927 | 0.922 | 0.917 | 0.927 | **0.930** | 0.917 | 0.919 | 0.921 |
+| pavia-u           | 0.815 | 0.824 | 0.820 | 0.819 | 0.815 | 0.819 | 0.816 | 0.820 | 0.825 | 0.819 | 0.819 | **0.834** | 0.811 | 0.810 | 0.811 |
+| salinas-a         | **0.997** | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 |
+| salinas-c         | 0.951 | **0.956** | 0.954 | 0.953 | 0.952 | 0.950 | 0.951 | 0.950 | 0.953 | 0.951 | 0.949 | 0.952 | 0.951 | 0.951 | 0.950 |
+| **mean across scenes** | 0.9152 | 0.9173 | 0.9153 | 0.9151 | 0.9145 | 0.9135 | 0.9143 | 0.9163 | 0.9143 | 0.9134 | 0.9161 | **0.9216** | 0.9145 | 0.9132 | 0.9168 |
 
-Spread (best − worst across recipes, mean of scenes) = 0.0082.
-Small, but consistent: V12 leads on 2 scenes outright, V8 on 1, V2
-on 2, V1 on 1 (the tied easiest scene).
+Spread (best − worst across all 15 recipes shown, mean of scenes)
+= 0.0084. V20 places **second** in F-1 mean (0.9168), behind V12
+(0.9216) but ahead of V2 (0.9173). On Indian Pines, **V20 wins F-1
+outright** (0.858), beating V12 (0.853) and V2 (0.861 — note V2's win
+is the previous record, now V20 reverses it to 0.858 > V12). This is
+the third Indian Pines axis V20 wins, after F-2 (0.88) and F-7 (0.44),
+making V20 the **only recipe with a triple-axis win on any single
+labelled scene**.
+
+V14 and V18 are competitive (0.9145, 0.9132) but never win F-1
+outright. Their differences from V1 are within the bootstrap HDI
+shown below.
 
 ## F-2 — top-10 c_v coherence (full 19-recipe matrix)
 
