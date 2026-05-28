@@ -16,9 +16,9 @@ F-2 + F-7 + F-1 sweep results. The literature search confirmed that:
 |---|---|---|---|---|---|
 | P1 | Beyond accuracy: 12-axis framework (V1 only) | journal #1 | written | -- | Framework introduces 12 axes; V1 baseline. |
 | P2 | Band-mask robustness diagnostic | conference companion to P1 | written | -- | F-5 deep-dive on V1; complements P1. |
-| P3 | Which wordification matters? V-sweep on F-1, F-2, F-7 | journal #2 | scaffold + numbers | sweep done | V12 wins coherence + NMI most often; V1 is canonical not universal. |
-| P4 | Backbone factorial: V × {LDA, HDP, ProdLDA, ETM, LDVAE} on F-1..F-12 | journal #3 | not started | #617, #621, #618 | Wordification matters as much as backbone choice. |
-| P5 | Post-hoc interpretability of LDA-on-HSI (SHAP + counterfactual + F-13/F-14/F-15) | journal #4 | not started | #615, #616, #622 | LDA topics are SHAP-defensible against transformer attention. |
+| P3 | Which wordification matters? V-sweep + F-13/F-14/F-17/F-18/F-22 extensions | journal #2 | **draft 5pp + bootstrap posterior** | sweep done | V12 dominates 6 F-axes under LDA, loses F-18; V1 retains canonical. |
+| P4 | Which backbone picks which wordification? 4×13 factorial | journal #3 | **draft 3pp** | #617 (4/5 backbones) | LDA+ETM→V12, HDP→V7, ProdLDA→V3 — backbone choice inverts the recipe winner. |
+| P5 | Post-hoc interpretability of LDA on HSI (F-13 SHAP + F-22 counterfactual + F-15 LLM-judge) | journal #4 | **draft 2pp** | F-13/F-22/F-15 done | F-13 SHAP is defensible; F-15 has vocab-size confounder. |
 | P6 (internal) | V-sweep technical report | internal-only | this directory | -- | Single source of truth for design decisions + reproducibility audit. |
 
 ## P1 — status
