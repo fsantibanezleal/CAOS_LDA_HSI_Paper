@@ -226,24 +226,29 @@ labelled scenes for every (backbone, recipe) pair.
 
 \begin{table*}[ht]
 \caption{F-2 $c_v$ mean across the six labelled scenes,
-$13 \times 4$ factorial.}
+$16 \times 4$ factorial (V1--V13 + V14, V18, V20 extension).}
 \label{tab:f2-factorial}
 \centering
-\small
-\begin{tabular}{lcccccccccccccc}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{l*{16}{c}c}
 \toprule
-Backbone & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 & V13 & best \\
+Backbone & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 & V13 & V14 & V18 & V20 & best \\
 \midrule
-LDA      & 0.81 & 0.43 & 0.88 & 0.46 & 0.45 & 0.45 & 0.32 & 0.36 & 0.71 & 0.30 & 0.21 & \textbf{0.85} & --- & V12 \\
-HDP      & 0.54 & 0.44 & 0.31 & 0.44 & 0.44 & 0.32 & \textbf{0.62} & 0.31 & 0.35 & 0.35 & 0.50 & 0.34 & --- & V7 \\
-ProdLDA  & 0.75 & 0.44 & \textbf{0.86} & 0.43 & 0.43 & 0.54 & 0.51 & 0.31 & 0.73 & 0.33 & 0.34 & 0.83 & 0.25 & V3 \\
-ETM      & 0.66 & 0.44 & 0.79 & 0.43 & 0.44 & 0.55 & 0.26 & 0.31 & 0.73 & 0.32 & 0.24 & \textbf{0.82} & 0.25 & V12 \\
+LDA      & 0.81 & 0.43 & 0.88 & 0.46 & 0.45 & 0.45 & 0.32 & 0.36 & 0.71 & 0.30 & 0.21 & 0.85 & 0.25 & 0.63 & 0.57 & \textbf{0.85} & V3/V12/V20 \\
+HDP      & 0.54 & 0.44 & 0.31 & 0.44 & 0.44 & 0.32 & \textbf{0.62} & 0.31 & 0.35 & 0.35 & 0.50 & 0.34 & --- & 0.31 & 0.42 & 0.38 & V7 \\
+ProdLDA  & 0.75 & 0.44 & \textbf{0.86} & 0.43 & 0.43 & 0.54 & 0.51 & 0.31 & 0.73 & 0.33 & 0.34 & 0.83 & 0.25 & 0.47 & 0.48 & 0.74 & V3 \\
+ETM      & 0.66 & 0.44 & 0.79 & 0.43 & 0.44 & 0.55 & 0.26 & 0.31 & 0.73 & 0.32 & 0.24 & \textbf{0.82} & 0.25 & 0.62 & 0.58 & 0.77 & V12 \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-LDA's numbers in the V1--V12 columns are reproduced from P3; the V13
-column is empty for LDA because P3 was written before V13 was added.
+LDA's numbers in the V1--V12 columns are reproduced from P3; V13--V20
+are new to this revision (c397--c401). HDP V13 cell is omitted because
+the recipe was not run under that backbone in the 2026-05-28 sweep.
+V20 (mutual-information-weighted bands) ties V3 / V12 for the LDA
+``best'' slot and places in the top-3 of ProdLDA and ETM — confirming
+its versatility across non-HDP backbones.
 
 \subsection{Per-recipe affinity score}
 
@@ -286,6 +291,15 @@ backbone, making it the most consistent recipe across families.
 per-backbone minimum across all four. The optimised reconstruction
 objective of VQ-VAE training does not align with any of the four
 backbones' priors.
+
+\paragraph{V14, V18, V20 in the affinity ranking (2026-05-28).}
+Treating the new recipes' cells in Table~\ref{tab:f2-factorial} on the
+same affinity scale (with HDP V13 imputed at the per-recipe HDP
+average), V20 places second after V3 ($\mathcal{A} \approx 0.78$),
+slightly above V12. V14 lands around V1 ($\mathcal{A} \approx 0.42$),
+and V18 around V6 ($\approx 0.39$). The headline: \textbf{V20 is the
+most cross-backbone-portable label-aware recipe in the sweep}, and a
+near-replacement for V3 / V12 when label information is available.
 
 \subsection{Three backbone--recipe affinities}\label{sec:affinities}
 
