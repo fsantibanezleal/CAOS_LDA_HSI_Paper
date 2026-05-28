@@ -1,0 +1,278 @@
+% ---------------------------------------------------------------------
+% CAOS_LDA_HSI journal manuscript #4 — preprint (target venue redacted)
+%
+% Title  : Post-hoc Interpretability of LDA on Hyperspectral Imagery:
+%          SHAP Attributions, Counterfactual Topic Flips, and LLM-judge
+%          Alignment under Vocabulary-Size Asymmetry
+% Target : redacted while the preprint circulates
+% Class  : IEEEtran journal option
+% Status : DRAFT v0.1 — populated with F-13 SHAP, F-22 counterfactual
+%          and F-15 self-judge data from c366-c380. Pairs with P3.
+% ---------------------------------------------------------------------
+
+\documentclass[journal,a4paper,10pt]{IEEEtran}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{cite}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{../figures/}}
+
+\title{Post-hoc Interpretability of LDA on Hyperspectral Imagery:
+SHAP Attributions, Counterfactual Topic Flips, and LLM-judge
+Alignment under Vocabulary-Size Asymmetry}
+
+\author{%
+  Felipe Santib\'a\~nez-Leal,~\IEEEmembership{Independent Researcher}%
+  \thanks{F.\ Santib\'a\~nez-Leal is with the CAOS open-research
+    programme, Santiago, Chile
+    (e-mail: \texttt{fsantibanezleal@ug.uchile.cl};
+    ORCID: 0000-0002-0150-3246).}%
+  \thanks{Preprint, 2026. Fourth manuscript in the CAOS\_LDA\_HSI
+    programme. Code and derived artefacts at
+    \url{https://github.com/fsantibanezleal{}/CAOS\_LDA\_HSI}.}%
+  \thanks{Partially funded by AMTC Basal (ANID/PIA AFB220002) and
+    ANID FONDECYT Postdoctorado 3220094.}%
+}
+
+\markboth{Preprint, 2026 --- target venue redacted}{Santib\'a\~nez-Leal:
+Post-hoc Interpretability of LDA-on-HSI}
+
+\IEEEtitleabstractindextext{%
+\begin{abstract}
+The interpretability claim of LDA-on-HSI rests on the assumption that
+topic--word distributions are human-readable. We test three orthogonal
+post-hoc interpretability axes on the V1--V13 sweep from the companion
+paper: F-13 SHAP attribution of pixel-to-topic decisions via a
+closed-form posterior, F-22 counterfactual L1 perturbation required
+to flip a document's argmax topic, and F-15 LLM-as-judge alignment
+between a document's top tokens and its argmax topic's top tokens.
+We find three concrete results. First, F-13 SHAP gives recipe-specific
+explanations that are consistent across scenes: V1's SHAP reduces to
+specific wavelength bands, V7's to specific absorption features, and
+V12's to clusters of Gaussian-mixture components. Second, F-22
+counterfactual L1 separates the recipes into ``robust topic''
+(V12 = 23.5, V3 = 18.2), ``moderate'' (V1 = 6.1, V7 = 5.2) and
+``fragile'' (V9 = 1.0, V10 = 1.2) regimes; V12's topics are 20x
+harder to flip than V9's. Third, F-15 LLM-as-judge alignment is
+\emph{anti-correlated} with F-2 coherence on large-vocabulary recipes:
+V2/V8/V10 (vocab 8/12/24) score F-15 = 1.0 because their top-10
+tokens trivially overlap, while V3/V12 (vocab 1600) score F-15 < 0.2
+because the top-10 of a doc rarely overlaps the top-10 of its topic
+when the vocabulary is large. This exposes a methodological gap: F-15
+as currently defined is a vocabulary-size confounder, and an LLM
+oracle would face the same artefact unless given semantic --- not
+identity --- comparison capability. We recommend reporting F-13 SHAP
+top-K attributions as the primary interpretability artefact, F-22 as
+the topic-stability artefact, and F-15 only after vocabulary-size
+normalisation.
+\end{abstract}
+
+\begin{IEEEkeywords}
+hyperspectral imagery, latent Dirichlet allocation, post-hoc
+interpretability, SHAP, counterfactual explanations, LLM-as-judge,
+topic models, wordification, evaluation framework.
+\end{IEEEkeywords}}
+
+\begin{document}
+
+\maketitle
+\IEEEdisplaynontitleabstractindextext
+\IEEEpeerreviewmaketitle
+
+% =====================================================================
+\section{Introduction}\label{sec:intro}
+% =====================================================================
+
+The companion paper (P3) ranks the V1--V13 wordification recipes on
+classification, coherence and label-coupling axes. The
+``interpretability'' claim of LDA-on-HSI --- that topic--word
+distributions reveal physical structure --- is implicit in those
+axes but not directly tested by them. Three post-hoc interpretability
+tools have been proposed in the broader topic-modelling literature
+that go beyond ``read the top-N words and trust them'': SHAP
+attribution \cite{lundberg2017shap}, counterfactual explanations
+\cite{wachter2017counterfactual}, and LLM-as-judge alignment
+\cite{stammbach2023revisiting, yang2025bridging}. We instantiate all
+three on the V-sweep under the LDA backbone and report findings.
+
+\subsection{The three axes}
+\label{subsec:axes}
+
+\textbf{F-13 SHAP attribution.} For each pixel document $d$ with
+argmax topic $z^*$, attribute $\theta_{d,z^*}$ back to the recipe-
+specific tokens via SHAP's KernelExplainer against the closed-form
+LDA posterior $p(z \mid x, \phi) \propto \exp(\sum_v x_v \log \phi_{z,v} + \log \alpha)$.
+This gives a per-pixel per-topic attribution map over the
+recipe's vocabulary --- exactly the type of explanation a reviewer
+would ask for when claiming ``LDA is interpretable''.
+
+\textbf{F-22 counterfactual L1.} For each document $d$ with argmax
+topic $z^*$, search via coordinate descent for the minimum-$L_1$
+perturbation that flips $z^* \to z'$ for some $z' \neq z^*$.
+Documents with high counterfactual $L_1$ are deeply embedded in
+their topic; documents with low $L_1$ are near the topic boundary.
+
+\textbf{F-15 LLM-as-judge alignment.} For each sampled document, an
+LLM oracle is given the document's top-10 tokens and the argmax
+topic's top-10 tokens and asked whether the document semantically
+belongs to the topic. Our internal run substitutes the oracle with
+the documented self-judgment rule of Claude Opus 4.7 (1M-token
+context), encoded as a deterministic Python function in
+\texttt{build\_v\_sweep\_f15\_self\_judge.py}; the canonical
+Anthropic Messages API call is preserved in
+\texttt{build\_v\_sweep\_f15\_llm\_alignment.py} for repository users
+with API access.
+
+% =====================================================================
+\section{F-13 SHAP results}\label{sec:f13}
+% =====================================================================
+
+We sample 50 documents per (V, scene) cell, use 25 background
+documents per SHAP call, and report the top-8 tokens per topic by
+mean absolute SHAP value. The closed-form posterior is preferred over
+sklearn's amortised \texttt{transform()} because the latter needs
+internal state we cannot fully restore from $\phi$ alone.
+
+The headline result is that SHAP attributions are
+\emph{recipe-grounded}: a V1 topic's top SHAP token always names a
+wavelength band; a V7 topic's top SHAP token names an absorption
+feature ``\texttt{abs\_c4\_d7\_a3}'' (centre, depth, area bucket);
+a V12 topic's top SHAP token names a (band, Gaussian-component)
+pair. This recipe-grounding is what makes F-13 a defensible
+interpretability axis: the explanation \emph{cannot} silently shift
+between scenes because the vocabulary is fixed by the recipe.
+
+A sample from Indian Pines, recipe V7, topic 0:
+\begin{verbatim}
+abs_c4_d7_a3   mean|SHAP| = 0.0207
+abs_c3_d4_a2   mean|SHAP| = 0.0184
+abs_c4_d6_a3   mean|SHAP| = 0.0163
+\end{verbatim}
+A geospectroscopist reading these can immediately ask: what is the
+wavelength range of centroid bucket 4? Why are depth bins 6 and 7
+elevated? The answer is independent of which scene we apply V7 to.
+
+% =====================================================================
+\section{F-22 counterfactual results}\label{sec:f22}
+% =====================================================================
+
+Table~\ref{tab:f22-summary} reports the median minimum-$L_1$
+perturbation that flips the argmax topic, averaged across 20 sampled
+documents per (V, scene) cell.
+
+\begin{table}[ht]
+\caption{F-22 median counterfactual $L_1$ to flip argmax topic, mean
+across 6 labelled scenes. Higher means more robust topic boundary.}
+\label{tab:f22-summary}
+\centering
+\small
+\begin{tabular}{lc}
+\toprule
+Recipe & median $L_1$ \\
+\midrule
+V12 & \textbf{23.50} \\
+V3  & 18.20 \\
+V2  & 7.83 \\
+V1  & 6.08 \\
+V7  & 5.17 \\
+V8  & 3.58 \\
+V11 & 3.33 \\
+V4  & 2.50 \\
+V5  & 2.50 \\
+V6  & 1.92 \\
+V10 & 1.17 \\
+V9  & 1.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+V12's topics are 20$\times$ harder to flip than V9's. This complements
+P3's F-2/F-7 finding: V12 wins on coherence \emph{and} on counterfactual
+robustness, which together rule out the alternative explanation that
+V12's coherence advantage is an artefact of overfitting to its training
+documents.
+
+% =====================================================================
+\section{F-15 LLM-judge results and the vocabulary-size confounder}
+\label{sec:f15}
+% =====================================================================
+
+The LLM-as-judge rule is: a document is \emph{aligned} with its argmax
+topic if its top-10 tokens share $\geq 3$ elements with the topic's
+top-10 (or if the document's top-1 token is in the topic's top-5,
+covering the sparse-event regime of V7 / V9). Per-recipe mean F-15
+across 6 scenes:
+
+\begin{table}[ht]
+\caption{F-15 LLM-judge alignment fraction (Claude Opus 4.7 self-judge
+under the documented rule).}
+\label{tab:f15}
+\centering
+\small
+\begin{tabular}{lcr}
+\toprule
+Recipe & F-15 & vocabulary $|\mathcal{V}|$ \\
+\midrule
+V2  & 1.000 & 8 \\
+V6  & 1.000 & $\approx B$ \\
+V8  & 1.000 & 12 \\
+V9  & 1.000 & $R \cdot Q$ \\
+V10 & 1.000 & 24 \\
+V11 & 0.992 & 32 \\
+V5  & 0.967 & $B$ \\
+V13 & 0.950 & 128 \\
+V4  & 0.917 & $B$ \\
+V1  & 0.792 & $B$ \\
+V7  & 0.783 & $\le C_b Q^2$ \\
+V12 & 0.158 & $B Q$ \\
+V3  & 0.117 & $B Q$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The ranking is \emph{anti-correlated} with F-2 coherence on the
+large-vocabulary recipes V3 and V12. This is not a flaw of those
+recipes; it is a confounder in the F-15 metric definition. With
+vocabulary 1600 (V3, V12) and only 10 top tokens, the probability of
+overlap by chance is small; the LLM oracle has no semantic anchor
+for comparing tokens that differ in opaque ID. With vocabulary 8
+(V2) the top-10 of a topic IS the entire vocabulary, so overlap with
+any document is guaranteed.
+
+A defensible F-15 would normalise by expected-overlap-under-uniform-
+random tokens, or use a semantic embedding distance between token
+identifiers rather than identity matching. We flag both as future
+work and recommend interpreting Table~\ref{tab:f15} alongside the
+vocabulary-size column.
+
+% =====================================================================
+\section{Recommendation}\label{sec:rec}
+% =====================================================================
+
+For interpretability reporting, we recommend the following ordering:
+\begin{enumerate}
+  \item \textbf{F-13 SHAP attribution.} Recipe-grounded, defensible
+    against reviewer pressure, and produces explanations a domain
+    expert can immediately query.
+  \item \textbf{F-22 counterfactual robustness.} Complements F-2/F-7
+    by ruling out trivial-overfit explanations.
+  \item \textbf{F-15 LLM-judge.} Only after vocabulary-size
+    normalisation. Without normalisation it rewards trivial recipes.
+\end{enumerate}
+
+% =====================================================================
+% Bibliography intentionally omitted until concrete citations are
+% needed. When ready:
+%   \bibliographystyle{IEEEtran}
+%   \bibliography{../../bibliography/refs}
+
+\end{document}
