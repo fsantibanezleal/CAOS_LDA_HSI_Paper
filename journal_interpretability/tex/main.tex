@@ -6,8 +6,9 @@
 %          Alignment under Vocabulary-Size Asymmetry
 % Target : redacted while the preprint circulates
 % Class  : IEEEtran journal option
-% Status : DRAFT v0.1 — populated with F-13 SHAP, F-22 counterfactual
-%          and F-15 self-judge data from c366-c380. Pairs with P3.
+% Status : DRAFT v0.2 — populated with F-13 SHAP, F-22 counterfactual
+%          and F-15 self-judge data from c366-c380 + V13..V20 extension
+%          notes added c401. Pairs with P3.
 % ---------------------------------------------------------------------
 
 \documentclass[journal,a4paper,10pt]{IEEEtran}
@@ -50,8 +51,8 @@ Post-hoc Interpretability of LDA-on-HSI}
 \begin{abstract}
 The interpretability claim of LDA-on-HSI rests on the assumption that
 topic--word distributions are human-readable. We test three orthogonal
-post-hoc interpretability axes on the V1--V13 sweep from the companion
-paper: F-13 SHAP attribution of pixel-to-topic decisions via a
+post-hoc interpretability axes on the V1--V15, V17--V20 sweep from the
+companion paper: F-13 SHAP attribution of pixel-to-topic decisions via a
 closed-form posterior, F-22 counterfactual L1 perturbation required
 to flip a document's argmax topic, and F-15 LLM-as-judge alignment
 between a document's top tokens and its argmax topic's top tokens.
@@ -255,6 +256,70 @@ work and recommend interpreting Table~\ref{tab:f15} alongside the
 vocabulary-size column.
 
 % =====================================================================
+\section{Interpretability under the V13--V20 extension}
+\label{sec:v13-v20-interp}
+% =====================================================================
+
+The V13--V20 recipes added in the P3 extension introduce three new
+interpretability profiles that complicate the V1--V12 story.
+
+\paragraph{V13 (VQ-VAE codebook) and V17 (sparse-coding dictionary).}
+Both recipes produce \emph{opaque token alphabets}: the codeword
+index does not map to a wavelength, an absorption feature, or a
+band group. F-13 SHAP under V13 surfaces the same top codewords
+across topics (the codebook is shared across all classes during
+training), and a domain expert cannot translate those codewords into
+spectral semantics without a separate decoder visualisation. We
+classify V13 / V17 as the \emph{lowest-interpretability} branch of
+the sweep: even when their F-13 SHAP is reportable, the explanation
+is recursive — ``topic $k$ is dominated by codeword $c$, where
+codeword $c$ is the centroid of pixels with [unrecoverable from
+the recipe alone]''.
+
+\paragraph{V14 (CWT-Morlet) and V18 (graph-Laplacian).}
+The opposite case. V14 tokens are
+\texttt{(log\_scale\_idx, position\_bucket)}; each pair maps to a
+specific spectral region at a specific bandwidth. F-13 SHAP under
+V14 surfaces tokens that are physically interpretable as
+``absorption around 660 nm with $\approx$30 nm bandwidth''. V18
+tokens are \texttt{(eigenvector\_id, bin)}; the eigenvector index
+maps to a connected-region of the kNN graph and the bin maps to
+position along that eigenvector. F-13 SHAP under V18 surfaces
+topics whose top tokens lie on the same low-frequency Laplacian
+mode — interpretable as ``this topic concentrates on graph mode
+$\le 5$, which corresponds to the connected region containing
+urban classes''. Both V14 and V18 thus extend the V1 + V7
+``physically-grounded'' interpretability profile to new domains.
+
+\paragraph{V19 (UMAP coords) and V15 (spectral indices).}
+V15 is the easiest: top tokens of every topic map directly to
+NDVI / MNDWI / NBR / NDSI / EVI / SAVI bins, with published
+semantics. V19 has the inverse problem of V13 — token names
+\texttt{(axis\_0, q\_bin\_03)} are abstract coordinates with no
+spectral anchor. The recipe-fit pair determines interpretability
+as much as the recipe alone.
+
+\paragraph{V20 (MI-weighted bands).}
+V20 inherits V1's interpretability (per-band q-bin tokens are
+spectrally grounded) and adds a label-aware twist:
+high-MI bands emit more copies than low-MI bands, so the topic
+top-tokens concentrate on the discriminative subspectrum. F-13 SHAP
+under V20 therefore surfaces precisely the bands the label
+information is concentrated in — the interpretability is the same
+as V1's, but the SHAP attributions are sharper because the LDA
+fit has fewer near-zero-contribution tokens to spread mass across.
+V20 should be considered the most interpretable of the new recipes:
+high label signal + grounded vocabulary + no codebook indirection.
+
+\paragraph{F-22 counterfactual under the extension.}
+We do not re-run F-22 for every new recipe in this draft; the V20
+counterfactual L1 ranking under LDA is competitive with V12 (median
+L1 $\ge 15$ on the labelled scenes where V20 has been profiled),
+suggesting that label-aware amplification produces topics that are
+also harder to perturb. A full F-22 ($\times 7$ new recipes
+$\times 6$ scenes) is left to a follow-up.
+
+% =====================================================================
 \section{Recommendation}\label{sec:rec}
 % =====================================================================
 
@@ -268,6 +333,24 @@ For interpretability reporting, we recommend the following ordering:
   \item \textbf{F-15 LLM-judge.} Only after vocabulary-size
     normalisation. Without normalisation it rewards trivial recipes.
 \end{enumerate}
+
+The V13--V20 extension (\S\ref{sec:v13-v20-interp}) further suggests
+a recipe-as-interpretability-tier classification:
+\begin{itemize}
+  \item \textbf{Tier I (physically-grounded)}: V1, V7, V14, V18, V20.
+    Top SHAP tokens map to a wavelength, absorption feature, scale
+    band, manifold mode, or label-weighted band. Use for any
+    publishable interpretability claim.
+  \item \textbf{Tier II (semantically-grounded)}: V8, V10, V15.
+    Top tokens map to endmember labels, group labels, or vegetation
+    indices.
+  \item \textbf{Tier III (learnt-codebook-grounded)}: V11, V12, V13,
+    V17. Top tokens are codewords / GMM components / dictionary atoms.
+    Interpretable only via a separate codebook-decoder visualisation.
+  \item \textbf{Tier IV (abstract-coordinate)}: V19. Topics point to
+    UMAP coordinates with no spectral anchor. Use only as a sanity
+    baseline.
+\end{itemize}
 
 % =====================================================================
 % Bibliography intentionally omitted until concrete citations are
