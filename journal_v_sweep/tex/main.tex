@@ -66,9 +66,11 @@ P1. The headline finding is that \emph{there is no universal winner}:
 V1 wins F-2 coherence on 2/6 scenes; V3, a joint (band, bin) Cartesian
 vocabulary, wins F-7 topic--label normalised MI on 2/6 scenes; V12
 (Gaussian-mixture tokens) wins F-2 on 2/6 and F-7 on 2/6;
-V20 (mutual-information-weighted bands, new to this revision) wins both
-F-2 and F-7 on Indian Pines and is within $0.014$ of the leader on the
-remaining five F-7 cells. V13 (vector-quantised VAE) underperforms
+V20 (mutual-information-weighted bands, new to this revision) achieves
+the first \emph{triple-axis win} of the sweep — F-1 macro-F1 (0.858),
+F-2 coherence (0.88) and F-7 NMI (0.44) all three on Indian Pines —
+and is within $0.014$ NMI of the leader on the remaining five F-7
+cells. V13 (vector-quantised VAE) underperforms
 sharply; V18 (graph-Laplacian eigenvector tokens) places third on F-7
 mean. The per-axis winner depends both on the scene and on which
 property of the topic basis the axis measures. We report the full
