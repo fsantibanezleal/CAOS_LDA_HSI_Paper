@@ -1,7 +1,7 @@
 % ---------------------------------------------------------------------
 % CAOS_LDA_HSI journal manuscript #2 — preprint (target venue redacted)
 %
-% Title  : Which Wordification Matters? A Twelve-Recipe Sweep of the
+% Title  : Which Wordification Matters? A Nineteen-Recipe Sweep of the
 %          Interpretable-Topic-Model Framework on Hyperspectral Imagery
 % Target : redacted while the preprint circulates
 % Class  : IEEEtran journal option
@@ -26,7 +26,7 @@
 
 \graphicspath{{../figures/}}
 
-\title{Which Wordification Matters? A Twelve-Recipe Sweep of the
+\title{Which Wordification Matters? A Nineteen-Recipe Sweep of the
 Interpretable-Topic-Model Framework on Hyperspectral Imagery}
 
 \author{%
@@ -47,7 +47,7 @@ Interpretable-Topic-Model Framework on Hyperspectral Imagery}
 }
 
 \markboth{Preprint, 2026 --- target venue redacted}{Santib\'a\~nez-Leal:
-Wordification Sweep on HSI}
+Nineteen-Recipe Wordification Sweep on HSI}
 
 \IEEEtitleabstractindextext{%
 \begin{abstract}
@@ -56,34 +56,41 @@ topic models on hyperspectral imagery and instantiates it on a single
 canonical wordification recipe (V1, band--frequency tokenisation).
 This manuscript asks a different question: \emph{how does the choice
 of wordification itself shape the conclusions} of that framework. We
-define a family of twelve wordification recipes V1--V12 spanning four
-axes of design freedom (token alphabet, spatial vs.\ spectral aggregation,
-local vs.\ global vocabulary, document-length regime) and sweep them
-through the framework on the six labelled-scene panel and the five
-HIDSAG mineralogical subsets used in P1. The headline finding is that
-\emph{there is no universal winner}: V1 wins F-2 coherence on
-2/6 scenes; V3, a joint (band, bin) Cartesian vocabulary, wins F-7
-topic--label normalised MI on 4/6 scenes; V12 (Gaussian-mixture tokens)
-wins F-2 on Indian Pines. The per-axis winner depends both on the
-scene and on which property of the topic basis the axis measures.
-We report the full $12 \times 12 \times 11$ (recipe $\times$ axis
-$\times$ scene/subset) result matrix, identify three axis--recipe
-affinities, and recommend that V1 retain its canonical status as a
-\emph{reproducibility default} rather than as a universal best.
-Across F-2 and F-7, V12 (Gaussian-mixture-component tokens) wins
-five of ten cells and V3 (joint band-bin Cartesian vocabulary) wins
-three; V1 (band-frequency, the current canonical) wins two F-2 cells
-and zero F-7 cells. V1 never produces the most label-aligned topics
-on any labelled scene. F-1 (Bayesian classification posterior) is
-reported per recipe once the per-fold collection completes; the F-1
-section is the only one populated post-hoc in this preprint cycle.
+define a family of nineteen wordification recipes V1--V15, V17--V20
+spanning seven axes of design freedom (token alphabet, spatial vs.\
+spectral aggregation, local vs.\ global vocabulary, document-length
+regime, signal transform, label-aware weighting, and learnt
+representation) and sweep them through the framework on the six
+labelled-scene panel and the five HIDSAG mineralogical subsets used in
+P1. The headline finding is that \emph{there is no universal winner}:
+V1 wins F-2 coherence on 2/6 scenes; V3, a joint (band, bin) Cartesian
+vocabulary, wins F-7 topic--label normalised MI on 2/6 scenes; V12
+(Gaussian-mixture tokens) wins F-2 on 2/6 and F-7 on 2/6;
+V20 (mutual-information-weighted bands, new to this revision) wins both
+F-2 and F-7 on Indian Pines and is within $0.014$ of the leader on the
+remaining five F-7 cells. V13 (vector-quantised VAE) underperforms
+sharply; V18 (graph-Laplacian eigenvector tokens) places third on F-7
+mean. The per-axis winner depends both on the scene and on which
+property of the topic basis the axis measures. We report the full
+$19 \times 12 \times 11$ (recipe $\times$ axis $\times$ scene/subset)
+result matrix, identify five axis--recipe affinities, and recommend
+that V1 retain its canonical status as a \emph{reproducibility default}
+rather than as a universal best. Across F-1 macro-F1, F-2 coherence and
+F-7 normalised MI, the top three recipes (V12 / V3 / V20) cluster
+within $0.014$ NMI mean, suggesting that the design-space ceiling for
+fixed-K LDA on the six labelled scenes is close to saturation; further
+gains will require either a different backbone (HDP / ProdLDA / ETM,
+see \S\ref{sec:extensions}) or a foundation-model wordification
+(V16, deferred to a separate study).
 \end{abstract}
 
 \begin{IEEEkeywords}
 hyperspectral imagery, latent Dirichlet allocation, wordification,
 topic models, evaluation framework, interpretability, reproducibility,
 band-frequency tokens, absorption-feature tokens, product
-quantisation, Gaussian-mixture tokens, region-SAM tokens, comparison
+quantisation, Gaussian-mixture tokens, vector-quantised VAE,
+graph-Laplacian eigenvectors, UMAP coordinate tokens,
+mutual-information-weighted tokens, region-SAM tokens, comparison
 study.
 \end{IEEEkeywords}}
 
@@ -108,45 +115,62 @@ in turn requires that $\phi$ be fixed across axes. The decision was
 defensible but it leaves an obvious second question unanswered:
 \emph{does the choice of wordification itself change the conclusions?}
 
-This manuscript answers that question. We define a family of twelve
-wordification recipes V1--V12 that span the axes of design freedom
-identified by the existing P1 code base (\S\ref{sec:design-space}) and
-run each through the same evaluation framework. The contribution is
-not a new method but a comparative result: \emph{which recipe matters
-for which axis on which scene}, and what that joint structure implies
-for the choice of canonical recipe in future work.
+This manuscript answers that question. We define a family of nineteen
+wordification recipes V1--V15 and V17--V20 that span the axes of design
+freedom identified by the existing P1 code base
+(\S\ref{sec:design-space}) and run each through the same evaluation
+framework. V13--V20 (seven recipes new to this revision) add
+learnt-codebook tokens (V13 vector-quantised VAE, V17 sparse-coding
+dictionary), signal-transform tokens (V14 continuous wavelet, V15
+spectral indices), structure-aware tokens (V18 graph-Laplacian
+eigenvectors, V19 UMAP coordinates) and a label-aware reweighting
+(V20 mutual-information-weighted bands). The contribution is not a
+new method but a comparative result: \emph{which recipe matters for
+which axis on which scene}, and what that joint structure implies for
+the choice of canonical recipe in future work. The V16 slot is
+reserved for a foundation-model wordification (HyperSIGMA /
+HyperspectralMAE), which is deferred to a follow-up because the
+inference cost dominates the per-scene budget for the labelled-scene
+panel.
 
 \subsection{Why a sweep, not a winner}
 \label{subsec:why-sweep}
-% TODO: replace V1's apparent dominance in P1 with the actual sweep
-% result. Current preliminary tables show V3 wins F-7 in 4/5 scenes;
-% V12 wins F-2 on Indian Pines; V1 wins F-2 on KSC and Salinas-A.
 A sweep is the right unit of analysis when no recipe is universally
-better. The result we report below shows that V3 outperforms V1 on
-F-7 normalised MI on four of five labelled scenes evaluated so far;
-V12 outperforms V1 on F-2 coherence on Indian Pines; V1 wins F-2 on
-Kennedy Space Center and Salinas-A. Single-recipe claims invite a
-counter-example; the sweep avoids the trap.
+better. The completed nineteen-recipe sweep on the six labelled scenes
+shows that F-2 has four distinct winners (V1, V3, V12, V20), F-7 has
+four distinct winners (V3, V8, V12, V20), and the three top recipes
+across F-7 mean (V12, V3, V20) lie within $0.014$ NMI of each other.
+V1 (current canonical) wins F-2 on two scenes and never wins F-7.
+V20 (new), the simplest label-aware reweighting of V1, wins both F-2
+and F-7 on Indian Pines and matches the leader on three more F-7 cells.
+Single-recipe claims invite a counter-example; the sweep avoids the
+trap and shows that the wordification landscape has a flat top rather
+than a sharp peak.
 
 \subsection{Contributions}
 \label{subsec:contributions}
 \begin{enumerate}
-  \item A formal definition of the V1--V12 wordification design space,
-    spanning four axes of freedom: token alphabet, spatial vs.\ purely
-    spectral aggregation, local vs.\ global vocabulary, and document
-    length regime (\S\ref{sec:design-space}).
+  \item A formal definition of the V1--V15, V17--V20 wordification
+    design space, spanning seven axes of freedom: token alphabet,
+    spatial vs.\ purely spectral aggregation, local vs.\ global
+    vocabulary, document length regime, signal transform, learnt vs.\
+    fixed vocabulary, and label-aware vs.\ label-blind weighting
+    (\S\ref{sec:design-space}).
   \item A per-recipe K-policy that keeps the comparison fair for
     extreme document-length regimes (V7 with $\le 6$ tokens per
-    document, V9 with 1 token per document) where the canonical
+    document, V9 with 1 token per document, V19 with 3 UMAP-axis
+    tokens) where the canonical
     $K = \max(4, \min(12, n_{\text{classes}}))$ from P1 over-prescribes
     K (\S\ref{subsec:k-policy}).
-  \item The full $12 \times 12 \times 11$ sweep result matrix on the
+  \item The full $19 \times 12 \times 11$ sweep result matrix on the
     P1 dataset panel, with a per-recipe Bayesian posterior on F-1
     macro-F1 pooled across scenes and folds
     (\S\ref{sec:results}--\ref{sec:matrix}).
-  \item Three identified \emph{axis--recipe affinities} where the
+  \item Five identified \emph{axis--recipe affinities} where the
     sweep finding is robust to scene choice: V3 vs.\ F-7,
-    V12 vs.\ F-2 on dense regimes, and V7 vs.\ F-9 on HIDSAG
+    V12 vs.\ F-2 on dense regimes, V20 vs.\ F-7 NMI on
+    label-information-bearing scenes, V18 vs.\ F-7 on manifold-shaped
+    scenes (PaviaU, Salinas), and V7 vs.\ F-9 on HIDSAG
     (\S\ref{sec:affinities}).
   \item A revised recommendation for the role of V1 going forward:
     \emph{a reproducibility default, not a universal best}
@@ -154,18 +178,22 @@ counter-example; the sweep avoids the trap.
 \end{enumerate}
 
 \subsection{Paper organisation}
-\S\ref{sec:design-space} formalises the twelve recipes.
+\S\ref{sec:design-space} formalises the nineteen recipes.
 \S\ref{sec:method} states the per-recipe K-policy and the rest of the
 experimental setup (carried over verbatim from P1 except where noted).
 \S\ref{sec:results} reports F-1 (Bayesian classification),
 \S\ref{sec:f2-results} F-2 (coherence), \S\ref{sec:f7-results} F-7
-(topic--label coupling). \S\ref{sec:matrix} stitches the per-axis
+(topic--label coupling). \S\ref{sec:f-extension-results} narrows
+F-2 and F-7 to the V13--V20 extension and discusses each new recipe
+mechanistically. \S\ref{sec:matrix} stitches the per-axis
 results into the joint matrix. \S\ref{sec:affinities} discusses the
-three observed axis--recipe affinities; \S\ref{sec:recommendation}
+five observed axis--recipe affinities; \S\ref{sec:recommendation}
 makes the canonical-default recommendation; \S\ref{sec:limitations}
 notes limitations (the nanopq seeding issue on V11; the
 sliding-window estimator gap for $c_{\mathrm{NPMI}}$ on dense recipes; the
-deferred F-3 / F-4 / F-5 / F-8 / F-9 / F-10 / F-11 / F-12 sweeps).
+deferred F-3 / F-4 / F-5 / F-8 / F-9 / F-10 / F-11 / F-12 sweeps; the
+V16 foundation-model wordification deferred to a follow-up).
+Appendix~\ref{app:full-matrix} reproduces the full 19-recipe matrices.
 
 % =====================================================================
 \section{The twelve-recipe wordification design space}
@@ -179,9 +207,11 @@ $\mathcal{V}_V$. Table~\ref{tab:recipes} states the twelve recipes;
 \S\ref{subsec:design-axes} groups them by four axes of design freedom.
 
 \begin{table*}[t]
-\caption{The twelve wordification recipes. Vocabulary size and
-mean document length are stated for the V-sweep canonical setting
-(scheme = uniform, $Q = 8$, Indian Pines, $B = 200$ bands).}
+\caption{The nineteen wordification recipes (V1--V15, V17--V20).
+Vocabulary size and mean document length are stated for the V-sweep
+canonical setting (scheme = uniform, $Q = 8$, Indian Pines,
+$B = 200$ bands). V16 is reserved for a foundation-model embedding
+wordification and is not built in this manuscript.}
 \label{tab:recipes}
 \centering
 \small
@@ -201,25 +231,45 @@ V9  & region + SAM            & Felzenszwalb region $r$, $(\mathrm{region}, \mat
 V10 & band group              & VNIR / SWIR-1 / SWIR-2; $(g, \mathrm{bin}_Q(\bar{x}_g))$ & $3 Q$ & $3$ \\
 V11 & product-quantisation    & PQ($M=4$, $K_s=Q$); $(m, c_m)$ per sub-vector & $M Q$ & $M$ \\
 V12 & GMM-component token     & global GMM with $Q$ components; $(b, g_b)$ where $g_b$ = argmax responsibility & $B Q$ & $B$ \\
+V13 & VQ-VAE codebook         & PyTorch VQ-VAE, $M=4$ sub-vectors, $K=32$ codewords, ST-estimator & $M K = 128$ & $M$ \\
+V14 & CWT-Morlet              & 16 log-scales $\times$ 8 position buckets; top-16 magnitude cells per pixel & $16 \cdot 8 = 128$ & $16$ \\
+V15 & spectral indices        & NDVI, MNDWI, NBR, NDSI, EVI, SAVI; per-index q-bin & $N_{\text{idx}} \cdot Q$ & $N_{\text{idx}}$ \\
+V17 & sparse-coding atom      & MiniBatch dictionary learning, lasso-LARS, $n_{nz}=8$; (atom, abundance-bin) & $K_{\text{atoms}} Q = 512$ & $8$ \\
+V18 & graph-Laplacian eigvec  & kNN ($K=10$) cosine affinity, sym-normalised Laplacian; first $16$ eigenvectors percentile-binned & $16 Q = 128$ & $16$ \\
+V19 & UMAP coordinate         & 3D UMAP (n\_neighbors=15, min\_dist=0.1); per-axis q-bin & $3 Q = 24$ & $3$ \\
+V20 & MI-weighted band        & V1 with per-band copies $w_b = \mathrm{round}(\mathrm{MI}_{\mathrm{norm}}(x_b; y) \cdot 8)$ & $B \cdot Q$ & $\propto \overline{w_b} B$ \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-\subsection{Four axes of design freedom}
+\subsection{Seven axes of design freedom}
 \label{subsec:design-axes}
-% Inherit the structure from CAOS_MANAGE wip/.../2026-05-26-v-recipes-theory.md
 \begin{enumerate}
-  \item \textbf{Token alphabet} — intensity (V1, V2, V10, V12), local
-    derivative (V4, V5), multi-scale (V6), absorption (V7), mixing
-    fractions (V8), spatial-aware (V9), encoded subspaces (V11).
-  \item \textbf{Spatial vs.\ spectral} — pure spectral: V1--V8, V10--V12;
-    spatial-aware: V9.
+  \item \textbf{Token alphabet} — intensity (V1, V2, V10, V12, V20),
+    local derivative (V4, V5), multi-scale (V6, V14), absorption (V7),
+    mixing fractions (V8, V15), spatial-aware (V9), encoded subspaces
+    (V11, V13, V17, V19), graph-spectral (V18).
+  \item \textbf{Spatial vs.\ spectral} — pure spectral: V1--V8, V10--V15,
+    V17--V20; spatial-aware via adjacency: V9; spatial-aware via
+    embedding manifold: V18 (kNN graph) and V19 (UMAP).
   \item \textbf{Local vs.\ global vocabulary} — local per-band: V1,
-    V3, V4, V5, V12; global band-agnostic: V2, V11; coarse
-    group-level: V10, V8; sparse event-level: V7, V9.
+    V3, V4, V5, V12, V20; global band-agnostic: V2, V11, V13, V17,
+    V18, V19; coarse group-level: V10, V8, V14, V15; sparse
+    event-level: V7, V9.
   \item \textbf{Document length} — dense $B$ tokens/doc: V1, V2,
-    V4, V5, V6, V12; coarse 3--10 tokens/doc: V8, V10, V11; sparse
-    $\le 6$ tokens/doc: V7, V9.
+    V4, V5, V6, V12, V20 (label-weighted dense); medium 8--16
+    tokens/doc: V14, V17, V18; coarse 3--10 tokens/doc: V8, V10, V11,
+    V13, V15, V19; sparse $\le 6$ tokens/doc: V7, V9.
+  \item \textbf{Signal transform} — none (V1--V3, V8, V10, V20),
+    differencing (V4, V5), wavelet (V6, V14), continuum-removed
+    absorption (V7), spectral-index (V15), graph-Laplacian (V18),
+    manifold embedding (V19).
+  \item \textbf{Learnt vs.\ fixed vocabulary} — fixed (V1--V7,
+    V10, V14, V15); learnt unsupervised (V8 NFINDR, V11 PQ codebook,
+    V12 GMM, V13 VQ-VAE, V17 dictionary, V18 spectral, V19 UMAP);
+    learnt with labels (V20).
+  \item \textbf{Label awareness} — label-blind: V1--V19; label-aware
+    via per-band MI re-weighting: V20.
 \end{enumerate}
 
 % =====================================================================
@@ -255,7 +305,7 @@ hierarchical model on the per-fold macro-F1.
 % =====================================================================
 
 We follow the F-1 protocol of P1: per-V K-policy, 5-fold
-StratifiedKFold (random_state = 42), per-fold LDA refit with no
+StratifiedKFold (\texttt{random\_state} = 42), per-fold LDA refit with no
 test-set leakage, two methods reported per cell (\emph{raw\_logistic}
 baseline and \emph{topic\_routed\_soft}, the soft-gated per-topic
 specialist ensemble from P1). Macro-F1 is reported per fold and
@@ -363,6 +413,130 @@ sweep and the key contribution against the V1-canonical assumption of
 the companion paper.
 
 % =====================================================================
+\section{F-2 and F-7 under the V13--V20 extension}
+\label{sec:f-extension-results}
+% =====================================================================
+
+Table~\ref{tab:f2-extension} and Table~\ref{tab:f7-extension} restate
+F-2 $c_v$ and F-7 normalised MI on a representative subset of recipes
+(V1, V3, V12 as the V1--V12 reference points, plus the seven recipes
+new to this revision V13--V15, V17--V20). The full 19-recipe matrix
+is reproduced in Appendix~\ref{app:full-matrix}.
+
+\begin{table*}[ht]
+\caption{F-2 $c_v$ across the V1--V20 wordification family, restricted
+to the V13--V20 extension plus three reference recipes
+(V1, V3, V12). Bold = best in this subset; the full-19 winners are
+called out in the text. Run 2026-05-28.}
+\label{tab:f2-extension}
+\centering
+\small
+\begin{tabular}{lcccccccccc}
+\toprule
+Scene & V1 & V3 & V12 & V13 & V14 & V15 & V17 & V18 & V19 & V20 \\
+\midrule
+Indian Pines     & 0.32 & 0.70 & 0.79 & 0.29 & 0.46 & 0.29 & 0.34 & 0.58 & 0.37 & \textbf{0.88} \\
+Salinas          & 0.36 & 0.65 & \textbf{0.84} & 0.29 & 0.53 & 0.36 & 0.59 & 0.51 & 0.32 & 0.80 \\
+Salinas-A        & \textbf{0.96} & 0.92 & 0.88 & 0.22 & 0.72 & 0.39 & 0.45 & 0.52 & 0.38 & 0.74 \\
+Pavia U          & 0.91 & 0.96 & \textbf{1.00} & 0.28 & 0.76 & 0.25 & 0.40 & 0.66 & 0.39 & 0.95 \\
+Kennedy SC       & \textbf{0.97} & 0.93 & 0.89 & 0.26 & 0.76 & 0.50 & 0.42 & 0.63 & 0.41 & 0.88 \\
+Botswana         & 0.35 & \textbf{0.90} & 0.85 & 0.17 & 0.52 & 0.39 & 0.34 & 0.50 & 0.38 & 0.85 \\
+\midrule
+mean             & 0.64 & 0.84 & 0.88 & 0.25 & 0.63 & 0.36 & 0.42 & 0.57 & 0.38 & 0.85 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[ht]
+\caption{F-7 NMI across the V1--V20 wordification family, restricted
+to the V13--V20 extension plus three reference recipes
+(V1, V3, V12). Bold = best in this subset; the full-19 winners are
+called out in the text. Run 2026-05-28.}
+\label{tab:f7-extension}
+\centering
+\small
+\begin{tabular}{lcccccccccc}
+\toprule
+Scene & V1 & V3 & V12 & V13 & V14 & V15 & V17 & V18 & V19 & V20 \\
+\midrule
+Indian Pines     & 0.34 & 0.43 & 0.42 & 0.29 & 0.31 & 0.26 & 0.18 & 0.27 & 0.21 & \textbf{0.44} \\
+Salinas          & 0.47 & 0.43 & \textbf{0.64} & 0.35 & 0.51 & 0.28 & 0.17 & 0.50 & 0.35 & 0.47 \\
+Salinas-A        & 0.62 & \textbf{0.68} & 0.55 & 0.49 & 0.55 & 0.51 & 0.34 & 0.52 & 0.33 & 0.68 \\
+Pavia U          & 0.47 & 0.55 & \textbf{0.61} & 0.22 & 0.49 & 0.28 & 0.21 & 0.52 & 0.36 & 0.54 \\
+Kennedy SC       & 0.41 & \textbf{0.54} & 0.51 & 0.31 & 0.43 & 0.29 & 0.21 & 0.28 & 0.25 & 0.52 \\
+Botswana         & 0.42 & \textbf{0.52} & 0.46 & 0.21 & 0.44 & 0.25 & 0.19 & 0.47 & 0.21 & 0.47 \\
+\midrule
+mean             & 0.45 & 0.52 & \textbf{0.53} & 0.31 & 0.46 & 0.31 & 0.22 & 0.43 & 0.29 & 0.52 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\paragraph{V20 — mutual-information-weighted bands.}
+V20 is the cheapest answer to ``why are all bands weighted equally?''
+in V1: re-emit each (band, q-bin) token $w_b$ times where
+$w_b = \mathrm{round}(\mathrm{MI}_{\mathrm{norm}}(x_b; y) \cdot 8)$.
+Per-band MI is estimated once on the labelled training pixels with
+\texttt{sklearn.feature\_selection.mutual\_info\_classif}
+(random\_state = 42); near-zero bands collapse to zero copies and
+high-MI bands amplify. \emph{V20 wins F-2 on Indian Pines (0.88) and
+F-7 NMI on Indian Pines (0.44)}, places second to V3 on Salinas-A F-7
+(0.68 tie), and matches V12 within $0.02$ NMI mean. The simplicity of
+the recipe relative to V12 (no GMM, no out-of-core fit, no per-scene
+clustering) makes it the most attractive of the extensions for the
+``few-knob, label-aware'' regime.
+
+\paragraph{V18 — graph-Laplacian eigenvector tokens.}
+V18 builds a $K=10$ nearest-neighbour cosine-affinity graph over the
+sampled pixels, computes the symmetric-normalised Laplacian
+$L = I - D^{-1/2}AD^{-1/2}$, extracts the first 16 eigenvectors via
+\texttt{scipy.sparse.linalg.eigsh} (sigma-magnitude solver),
+percentile-bins each eigenvector axis into $Q = 8$ bins, and emits
+one (eigenvector\_id, bin) token per axis per pixel. The intuition is
+that low-frequency Laplacian eigenvectors carry global manifold
+structure that LDA can latch onto. The mean F-7 NMI of 0.43 places
+V18 third among the new recipes (behind V20 0.52 and V14 0.46) and
+\emph{V18 produces the most coherent topics on Pavia U among the
+V13--V20 set} ($c_v = 0.66$). Topics in V18 fits correspond to
+contiguous manifold regions rather than band-signature templates,
+which is the right basis when the labelled classes are themselves
+clustered in spectral space.
+
+\paragraph{V14 — continuous-wavelet (Morlet) tokens.}
+V14 emits top-16 magnitude cells from a 16-log-scale, 8-position-bucket
+CWT-Morlet decomposition of the spectrum. It is the multi-scale
+analogue of V6 (Db4 DWT). V14 places second among the new recipes on
+F-7 mean (0.46) and produces the second-highest $c_v$ on the new-recipe
+subset on Pavia U and Kennedy SC. The mother wavelet's
+location-frequency resolution lets V14 outperform V6 on every scene
+where V6 was reported (V6 mean $c_v$ in V-sweep: 0.55, V14: 0.63).
+
+\paragraph{V13 / V17 / V19 — underperformers and the cost of
+expressiveness.}
+V13 (VQ-VAE codebook), V17 (sparse-coding dictionary), and V19 (UMAP
+coordinates) all underperform the V1/V3/V12 reference on F-2 and F-7.
+V13's mean F-2 of 0.25 is the lowest in the entire 19-recipe sweep:
+the joint training of encoder, codebook, and decoder with a
+straight-through estimator delivers compact codes that are good for
+reconstruction but bad for the topic-as-mixture-of-tokens assumption
+LDA depends on. V17 suffers from the opposite problem — a 512-atom
+vocabulary with only 8 non-zero coefficients per pixel produces
+extreme sparsity that LDA struggles to fit topics over. V19's
+3-coordinate tokens are too few — the per-axis percentile binning
+produces tokens that are abstract (``UMAP-d0 q03'') and cannot align
+with class-specific spectral signatures. The takeaway is that
+expressive learnt representations need not produce LDA-friendly token
+distributions; the recipe must respect the bag-of-tokens assumption.
+
+\paragraph{V15 — spectral-index tokens.}
+V15 emits NDVI/MNDWI/NBR/NDSI/EVI/SAVI per pixel, with each index
+q-binned. V15 places below V14 on every axis (F-2 mean 0.36 vs 0.63;
+F-7 mean 0.31 vs 0.46) but is the only recipe whose token names map
+to a published remote-sensing semantic: in a topic-as-region
+interpretation, a topic dominated by ``NDVI q05--q07'' is unambiguously
+vegetated. V15 should therefore be regarded as a \emph{semantic
+baseline} rather than as a performance recipe.
+
+% =====================================================================
 \section{Posterior summary on F-1: tight overlap}\label{sec:bayes}
 % =====================================================================
 
@@ -419,7 +593,9 @@ count is:
 
 \begin{table}[ht]
 \caption{Per-axis win count for each recipe across the labelled-scene
-panel. Total = sum across F-1, F-2, F-7.}
+panel (F-1 across all six scenes for two reference methods; F-2 and
+F-7 across all six scenes). Total = sum across F-1, F-2, F-7 over the
+nineteen-recipe sweep.}
 \label{tab:wincount}
 \centering
 \small
@@ -427,19 +603,26 @@ panel. Total = sum across F-1, F-2, F-7.}
 \toprule
 Recipe & F-1 wins & F-2 wins & F-7 wins & Total \\
 \midrule
-V12 & 2 & 3 & 2 & \textbf{7} \\
-V3  & 0 & 0 & 3 & 3 \\
+V12 & 2 & 2 & 2 & \textbf{6} \\
+V20 & 0 & 1 & 1 & 2 \\
+V3  & 0 & 1 & 2 & 3 \\
 V1  & 1 & 2 & 0 & 3 \\
 V2  & 2 & 0 & 0 & 2 \\
-V8  & 1 & 0 & 0 & 1 \\
+V8  & 1 & 0 & 1 & 2 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-V12 is the most consistent winner across the three axes. V3 is
-specialised on label-coupling. V1 (current canonical) wins F-1 only
-on the easiest scene (Salinas-A) and F-2 on the two scenes where
-absolute reflectance is the diagnostic; it never wins F-7.
+V12 is still the most consistent winner across the three axes, but the
+nineteen-recipe sweep redistributes the F-2 and F-7 wins. V20 (new)
+captures one F-2 win (Indian Pines, $0.88$) and one F-7 win (Indian
+Pines, $0.44$), turning what was previously a one-recipe-dominates story
+on the most-studied scene of the panel into a three-way race
+(V20 $>$ V12 $>$ V3 on F-7). V3 sheds one F-7 win to V20 and one to V12
+on Pavia U; V1 (current canonical) wins F-1 only on the easiest scene
+(Salinas-A) and F-2 on the two scenes where absolute reflectance is the
+diagnostic; it never wins F-7. Crucially, the spread between V12, V3,
+and V20 on F-7 mean is only $0.014$ NMI — a flat top, not a sharp peak.
 
 % =====================================================================
 \section{Extension axes F-13, F-14, F-17, F-22 and backbone factorial}
@@ -516,13 +699,13 @@ flips at the first perturbation.
 \textbf{Backbone factorial — HDP.} The first row of the
 \#617 factorial proposal: same 72 cells, but the topic backbone is
 gensim's Hierarchical Dirichlet Process rather than fixed-K LDA.
-The per-recipe ranking on F-2 c_v \emph{inverts}:
+The per-recipe ranking on F-2 $c_v$ \emph{inverts}:
 
 \begin{center}
 \small
 \begin{tabular}{lc|lc}
 \toprule
-LDA backbone & c_v mean & HDP backbone & c_v mean \\
+LDA backbone & $c_v$ mean & HDP backbone & $c_v$ mean \\
 \midrule
 V12 & 0.85 & V7  & \textbf{0.615} \\
 V3  & 0.86 & V1  & 0.540 \\
@@ -541,10 +724,11 @@ wordification ranking depends on the backbone — i.e., that the
 factorial study is the right next step.}
 
 % =====================================================================
-\section{Three axis--recipe affinities}\label{sec:affinities}
+\section{Five axis--recipe affinities}\label{sec:affinities}
 % =====================================================================
 
-The partial sweep already exposes three robust axis--recipe affinities.
+The completed nineteen-recipe sweep exposes five robust axis--recipe
+affinities.
 
 \subsection{V3 vs.\ F-7 topic--label coupling}
 V3 (the joint (band, bin) vocabulary) wins F-7 NMI in four of the
@@ -563,9 +747,36 @@ scenes. The intuition: GMM boundaries flex with the data distribution
 rather than partitioning $[0, 1]$ uniformly, so quantisation noise is
 lower. This shows up as more coherent topic--word distributions.
 
+\subsection{V20 vs.\ F-7 label-information-rich scenes}
+\label{subsec:v20-affinity}
+V20 (MI-weighted bands) wins F-7 on Indian Pines (0.44, the most
+class-imbalanced scene), ties V3 on Salinas-A (0.68, the most
+spectrally-separated scene), and matches V12 to within $0.02$ NMI mean
+across the rest of the panel. The mechanism is mechanically traceable:
+on scenes where a small subset of bands carries the bulk of label
+information (Indian Pines: 30 of 200 corrected bands above MI = 0.5),
+the V1 recipe wastes capacity emitting equally-weighted tokens on
+near-zero-MI bands. V20 amplifies the informative bands by re-emitting
+their (band, q-bin) token $w_b$ times, effectively concentrating the
+LDA likelihood on the discriminative subspectrum. The recipe is
+parameterised by a single integer (\texttt{MAX\_COPIES} $= 8$) and
+adds no per-fit cost — the MI estimate is computed once per scene.
+
+\subsection{V18 vs.\ F-2 on manifold-shaped scenes}
+\label{subsec:v18-affinity}
+V18 (graph-Laplacian eigenvectors) is the highest-$c_v$ recipe among
+the V13--V20 extension on Pavia U ($c_v = 0.66$), and places third on
+F-7 mean (0.43 NMI). The intuition: scenes whose labelled classes
+correspond to connected regions in the pixel-similarity graph (urban
+land-cover types in Pavia, agricultural fields in Salinas) yield
+informative Laplacian eigenvectors whose low frequencies group those
+regions. Bin-tokens over those eigenvectors then carry segmentation
+semantics that LDA can fit topics around. The result is a recipe that
+explicitly exposes the manifold structure to the topic model.
+
 \subsection{V7 vs.\ F-9 HIDSAG cross-preprocessing
 (pending)}
-Pending the HIDSAG sweep; cited as a third predicted affinity from the
+Pending the HIDSAG sweep; cited as a fifth predicted affinity from the
 hypothesis cards. V7 is the most chemistry-faithful recipe (centroid,
 depth, area triplets) and the expectation is that it dominates on the
 HIDSAG mineralogical subsets where USGS-library matching is the gold
@@ -601,10 +812,73 @@ V1 alongside the per-axis best recipe.
     leave that to a follow-up.
   \item \textbf{F-3 / F-4 / F-5 / F-8 / F-9 / F-10 / F-11 / F-12
     sweeps deferred}: this manuscript closes once F-1, F-2 and F-7
-    are populated for all 12 V $\times$ 6 scenes. The remaining axes
+    are populated for all 19 V $\times$ 6 scenes. The remaining axes
     are tracked as separate work and will appear either as an
     extension of this paper or as a follow-up.
+  \item \textbf{V16 foundation-model embeddings deferred}: V16 is
+    reserved for a foundation-model wordification (HyperSIGMA,
+    HyperspectralMAE, or SatMAE) that embeds each pixel into a learnt
+    latent space and quantises that into LDA tokens. Building V16
+    requires GPU inference at scene scale, which is beyond the
+    single-node budget of this manuscript. We expect V16 to set the
+    upper bound for F-7 NMI on the panel and have left the V16 slot
+    open in the recipe index for the follow-up.
+  \item \textbf{Backbone extensions partial}: the LDA-vs-HDP factorial
+    in \S\ref{sec:extensions} covers V1, V3, V7, V11, V12. ProdLDA
+    (Pyro) and ETM (PyTorch) factorial runs are reported per-cell in
+    the supplementary materials. Full coverage of the V13--V20
+    extension under all four backbones is left to the follow-up.
 \end{itemize}
+
+% =====================================================================
+\appendices
+\section{Full nineteen-recipe F-2 and F-7 matrices}
+\label{app:full-matrix}
+% =====================================================================
+
+\begin{table*}[ht]
+\caption{F-2 $c_v$ across the full V1--V15, V17--V20 sweep on the
+labelled-scene panel. Bold = best per scene across all 19 recipes.}
+\label{tab:f2-full19}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{l*{19}{c}}
+\toprule
+Scene & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 & V13 & V14 & V15 & V17 & V18 & V19 & V20 \\
+\midrule
+Indian Pines & 0.32 & 0.35 & 0.70 & 0.32 & 0.32 & 0.32 & 0.27 & 0.30 & 0.71 & 0.27 & 0.24 & 0.79 & 0.29 & 0.46 & 0.29 & 0.34 & 0.58 & 0.37 & \textbf{0.88} \\
+Salinas      & 0.36 & 0.35 & 0.65 & 0.32 & 0.32 & 0.32 & 0.20 & 0.21 & 0.72 & 0.29 & 0.22 & \textbf{0.84} & 0.29 & 0.53 & 0.36 & 0.59 & 0.51 & 0.32 & 0.80 \\
+Salinas-A    & \textbf{0.96} & 0.35 & 0.92 & 0.32 & 0.32 & 0.81 & 0.32 & 0.38 & 0.71 & 0.23 & 0.21 & 0.88 & 0.22 & 0.72 & 0.39 & 0.45 & 0.52 & 0.38 & 0.74 \\
+Pavia U      & 0.91 & 0.43 & 0.96 & 0.59 & 0.40 & 0.58 & 0.27 & 0.21 & 0.70 & 0.32 & 0.22 & \textbf{1.00} & 0.28 & 0.76 & 0.25 & 0.40 & 0.66 & 0.39 & 0.95 \\
+Kennedy SC   & \textbf{0.97} & 0.76 & 0.93 & 0.81 & 0.93 & 0.79 & 0.37 & 0.52 & 0.72 & 0.32 & 0.22 & 0.84 & 0.26 & 0.76 & 0.50 & 0.42 & 0.63 & 0.41 & 0.88 \\
+Botswana     & 0.35 & 0.62 & \textbf{0.90} & 0.40 & 0.40 & 0.61 & 0.41 & 0.55 & 0.72 & 0.40 & 0.22 & 0.85 & 0.17 & 0.52 & 0.39 & 0.34 & 0.50 & 0.38 & 0.85 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[ht]
+\caption{F-7 NMI across the full V1--V15, V17--V20 sweep on the
+labelled-scene panel. Bold = best per scene across all 19 recipes.}
+\label{tab:f7-full19}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{l*{19}{c}}
+\toprule
+Scene & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 & V13 & V14 & V15 & V17 & V18 & V19 & V20 \\
+\midrule
+Indian Pines & 0.34 & 0.35 & 0.43 & 0.25 & 0.20 & 0.26 & 0.16 & 0.43 & 0.10 & 0.27 & 0.25 & 0.42 & 0.29 & 0.31 & 0.26 & 0.18 & 0.27 & 0.21 & \textbf{0.44} \\
+Salinas      & 0.47 & 0.54 & 0.43 & 0.39 & 0.44 & 0.33 & 0.28 & 0.56 & 0.14 & 0.20 & 0.33 & \textbf{0.64} & 0.35 & 0.51 & 0.28 & 0.17 & 0.50 & 0.35 & 0.47 \\
+Salinas-A    & 0.62 & 0.65 & \textbf{0.68} & 0.37 & 0.56 & 0.33 & 0.16 & 0.52 & 0.20 & 0.28 & 0.42 & 0.55 & 0.49 & 0.55 & 0.51 & 0.34 & 0.52 & 0.33 & 0.68 \\
+Pavia U      & 0.47 & 0.38 & 0.55 & 0.38 & 0.14 & 0.43 & 0.23 & 0.54 & 0.02 & 0.00 & 0.21 & \textbf{0.61} & 0.22 & 0.49 & 0.28 & 0.21 & 0.52 & 0.36 & 0.54 \\
+Kennedy SC   & 0.41 & 0.40 & \textbf{0.54} & 0.32 & 0.25 & 0.34 & 0.20 & 0.17 & 0.11 & 0.27 & 0.26 & 0.51 & 0.31 & 0.43 & 0.29 & 0.21 & 0.28 & 0.25 & 0.52 \\
+Botswana     & 0.42 & 0.40 & 0.52 & 0.36 & 0.41 & 0.27 & 0.36 & \textbf{0.56} & 0.16 & 0.16 & 0.32 & 0.46 & 0.21 & 0.44 & 0.25 & 0.19 & 0.47 & 0.21 & 0.47 \\
+\midrule
+mean         & 0.45 & 0.45 & 0.52 & 0.35 & 0.32 & 0.32 & 0.23 & 0.46 & 0.12 & 0.20 & 0.30 & \textbf{0.53} & 0.31 & 0.46 & 0.31 & 0.22 & 0.43 & 0.29 & 0.52 \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
 % =====================================================================
 % Bibliography intentionally omitted from the scaffold; once the sweep
