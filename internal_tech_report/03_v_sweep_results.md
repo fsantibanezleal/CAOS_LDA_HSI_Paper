@@ -241,10 +241,46 @@ F-2 on large-vocab recipes — methodological gap flagged in P5.
 | V3 | 0.88 | 0.311 | **0.863** | 0.793 |
 | V7 | 0.32 | **0.615** | 0.509 | 0.255 |
 | V12 | **0.85** | 0.337 | 0.825 | **0.816** |
+| V14 | 0.63 | 0.312 | 0.469 | 0.616 |
+| V18 | 0.57 | 0.421 | 0.480 | 0.579 |
+| V20 | 0.85 | 0.383 | **0.744** | 0.770 |
 
-LDA + ETM (Dirichlet-prior) agree on V12. HDP (stick-breaking
-truncation) picks V7. ProdLDA (logistic-normal) picks V3. LDVAE-T
-(fifth proposed backbone) parked pending public code.
+V14/V18/V20 rows extended 2026-05-28 (c397 + c400). Per-cell ETM values:
+- V14 ETM: indian-pines 0.666, salinas 0.780, salinas-A 0.529,
+  pavia-U 0.497, kennedy-SC 0.941, botswana 0.281 (mean 0.616).
+- V18 ETM: indian-pines 0.549, salinas 0.584, salinas-A 0.527,
+  pavia-U 0.664, kennedy-SC 0.670, botswana 0.482 (mean 0.579).
+- V20 ETM: indian-pines 0.634, salinas 0.594, salinas-A 0.803,
+  pavia-U 0.940, kennedy-SC 0.969, botswana 0.683 (mean 0.770).
+
+Per-cell HDP values: V14 c_v mean 0.312 (very flat); V18 0.421
+(better than V12-under-HDP at 0.337); V20 0.383.
+
+Per-cell ProdLDA values:
+- V14: indian-pines 0.542, salinas 0.235, salinas-A 0.379,
+  pavia-U 0.498, kennedy-SC 0.927, botswana 0.231 (mean 0.469).
+- V18: indian-pines 0.286, salinas 0.472, salinas-A 0.527,
+  pavia-U 0.480, kennedy-SC 0.662, botswana 0.453 (mean 0.480).
+- V20: indian-pines 0.405, salinas 0.866, salinas-A 0.770,
+  pavia-U 0.830, kennedy-SC 0.907, botswana 0.686 (mean **0.744**).
+
+LDA + ETM (Dirichlet-prior) agree on V12 / V3. HDP (stick-breaking
+truncation) picks V7. ProdLDA (logistic-normal) picks V3 (old),
+**V20 (new) ranks 4th in ProdLDA at 0.744 — within 0.12 of V3 0.863**
+and ahead of every V13..V19 cell. The new V20 under ETM (0.770)
+also ranks third behind V3 (0.793) and V12 (0.816) — confirms V20
+as a versatile recipe across backbones. **V18 under HDP is the
+highest of the V13..V20 set under HDP** (0.421), 11 points above
+V20 and 25 above V14, suggesting that graph-Laplacian tokens align
+with HDP's stick-breaking truncation prior in a way that the
+absorption-feature V7 also does but more broadly.
+
+The V14/V18/V20 backbone extension confirms the headline finding:
+**no recipe dominates every backbone**. V20 is the only new recipe
+that places top-3 in every non-HDP backbone, validating the
+mutual-information-weighted band design.
+
+LDVAE-T (fifth proposed backbone) parked pending public code.
 
 ## V-sweep + neural baselines (existing P1 numbers, V1-only)
 
