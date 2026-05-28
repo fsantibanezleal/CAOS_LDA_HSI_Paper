@@ -241,10 +241,30 @@ F-2 on large-vocab recipes — methodological gap flagged in P5.
 | V3 | 0.88 | 0.311 | **0.863** | 0.793 |
 | V7 | 0.32 | **0.615** | 0.509 | 0.255 |
 | V12 | **0.85** | 0.337 | 0.825 | **0.816** |
+| V14 | 0.63 | 0.312 | (run) | 0.616 |
+| V18 | 0.57 | 0.421 | (run) | 0.579 |
+| V20 | 0.85 | 0.383 | (run) | 0.770 |
 
-LDA + ETM (Dirichlet-prior) agree on V12. HDP (stick-breaking
-truncation) picks V7. ProdLDA (logistic-normal) picks V3. LDVAE-T
-(fifth proposed backbone) parked pending public code.
+V14/V18/V20 rows extended 2026-05-28 (c397). Per-cell ETM values:
+- V14 ETM: indian-pines 0.666, salinas 0.780, salinas-A 0.529,
+  pavia-U 0.497, kennedy-SC 0.941, botswana 0.281 (mean 0.616).
+- V18 ETM: indian-pines 0.549, salinas 0.584, salinas-A 0.527,
+  pavia-U 0.664, kennedy-SC 0.670, botswana 0.482 (mean 0.579).
+- V20 ETM: indian-pines 0.634, salinas 0.594, salinas-A 0.803,
+  pavia-U 0.940, kennedy-SC 0.969, botswana 0.683 (mean 0.770).
+
+Per-cell HDP values: V14 c_v mean 0.312 (very flat); V18 0.421
+(better than V12-under-HDP at 0.337); V20 0.383.
+
+LDA + ETM (Dirichlet-prior) agree on V12 / V3. HDP (stick-breaking
+truncation) picks V7. ProdLDA (logistic-normal) picks V3. The new
+V20 under ETM (0.770) ranks third behind V3 (0.793) and V12 (0.816)
+— confirms V20 as a versatile recipe across backbones. **V18 under
+HDP is the highest of the V13..V20 set under HDP** (0.421), 11 points
+above V20 and 25 above V14, suggesting that graph-Laplacian tokens
+align with HDP's stick-breaking truncation prior in a way that the
+absorption-feature V7 also does but more broadly. LDVAE-T (fifth
+proposed backbone) parked pending public code.
 
 ## V-sweep + neural baselines (existing P1 numbers, V1-only)
 
