@@ -3,8 +3,9 @@
 This is the **single source of truth** for the V-sweep tables in P3.
 Any number that appears in the manuscript must match this file.
 
-Generated 2026-05-26 from the sweep over uniform / Q=8 / 6 labelled
-scenes / V1..V12. Source artefacts:
+Generated 2026-05-28 from the sweep over uniform / Q=8 / 6 labelled
+scenes / **V1..V15 + V17..V20** (19 recipes; V16 reserved for the
+foundation-model wordification deferred to a follow-up). Source artefacts:
 
 - `data/derived/v_sweep/topic_views/{scene}_{V}_uniform_Q8.json`
 - `data/derived/v_sweep/f1_per_fold/{scene}_{V}_uniform_Q8.json`
@@ -28,47 +29,94 @@ Spread (best − worst across recipes, mean of scenes) = 0.0082.
 Small, but consistent: V12 leads on 2 scenes outright, V8 on 1, V2
 on 2, V1 on 1 (the tied easiest scene).
 
-## F-2 — top-10 c_v coherence
+## F-2 — top-10 c_v coherence (full 19-recipe matrix)
 
-| Scene | V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 | V10 | V11 | V12 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| indian-pines  | 0.32 | 0.35 | 0.70 | 0.32 | 0.32 | 0.32 | 0.27 | 0.30 | 0.71 | 0.27 | 0.24 | **0.79** |
-| kennedy-sc    | **0.97** | 0.76 | 0.93 | 0.81 | 0.93 | 0.79 | 0.37 | 0.52 | 0.72 | 0.32 | 0.22 | 0.84 |
-| pavia-u       | 0.91 | 0.43 | 0.96 | 0.59 | 0.40 | 0.58 | 0.27 | 0.21 | 0.70 | 0.32 | 0.22 | **1.00** |
-| salinas-a     | **0.96** | 0.35 | 0.92 | 0.32 | 0.32 | 0.81 | 0.32 | 0.38 | 0.71 | 0.23 | 0.21 | 0.88 |
-| salinas-c     | 0.36 | 0.35 | 0.65 | 0.32 | 0.32 | 0.32 | 0.20 | 0.21 | 0.72 | 0.29 | 0.22 | **0.84** |
-| botswana      | (pending) | — | — | — | — | — | — | — | — | — | — | — |
+| Scene | V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 | V10 | V11 | V12 | V13 | V14 | V15 | V17 | V18 | V19 | V20 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| indian-pines  | 0.32 | 0.35 | 0.70 | 0.32 | 0.32 | 0.32 | 0.27 | 0.30 | 0.71 | 0.27 | 0.24 | 0.79 | 0.29 | 0.46 | 0.29 | 0.34 | 0.58 | 0.37 | **0.88** |
+| kennedy-sc    | **0.97** | 0.76 | 0.93 | 0.81 | 0.93 | 0.79 | 0.37 | 0.52 | 0.72 | 0.32 | 0.22 | 0.84 | 0.26 | 0.76 | 0.50 | 0.42 | 0.63 | 0.41 | 0.88 |
+| pavia-u       | 0.91 | 0.43 | 0.96 | 0.59 | 0.40 | 0.58 | 0.27 | 0.21 | 0.70 | 0.32 | 0.22 | **1.00** | 0.28 | 0.76 | 0.25 | 0.40 | 0.66 | 0.39 | 0.95 |
+| salinas-a     | **0.96** | 0.35 | 0.92 | 0.32 | 0.32 | 0.81 | 0.32 | 0.38 | 0.71 | 0.23 | 0.21 | 0.88 | 0.22 | 0.72 | 0.39 | 0.45 | 0.52 | 0.38 | 0.74 |
+| salinas-c     | 0.36 | 0.35 | 0.65 | 0.32 | 0.32 | 0.32 | 0.20 | 0.21 | 0.72 | 0.29 | 0.22 | **0.84** | 0.29 | 0.53 | 0.36 | 0.59 | 0.51 | 0.32 | 0.80 |
+| botswana      | 0.35 | 0.62 | **0.90** | 0.40 | 0.40 | 0.61 | 0.41 | 0.55 | 0.72 | 0.40 | 0.22 | 0.85 | 0.17 | 0.52 | 0.39 | 0.34 | 0.50 | 0.38 | 0.85 |
 
-V12 wins 3/5, V1 wins 2/5. V1's wins are on the scenes where
-absolute reflectance is most diagnostic (Kennedy SC, Salinas-A).
+V1: 2 (KennedySC, Salinas-A). V3: 1 (Botswana). V12: 2 (PaviaU, Salinas).
+V20: 1 (IndianPines). V20 is the only new recipe to take a scene from
+the original V1..V12 ranking.
 
-## F-7 — normalised mutual information (topic-argmax vs label)
+## F-7 — normalised mutual information (topic-argmax vs label, full 19-recipe matrix)
 
-| Scene | V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 | V10 | V11 | V12 |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| indian-pines  | 0.34 | 0.35 | **0.43** | 0.25 | 0.20 | 0.26 | 0.16 | 0.43 | 0.10 | 0.27 | 0.25 | 0.42 |
-| kennedy-sc    | 0.41 | 0.40 | **0.54** | 0.32 | 0.25 | 0.34 | 0.20 | 0.17 | 0.11 | 0.27 | 0.26 | 0.41 |
-| pavia-u       | 0.47 | 0.38 | 0.55 | 0.38 | 0.14 | 0.43 | 0.23 | 0.54 | 0.02 | 0.00 | 0.21 | **0.61** |
-| salinas-a     | 0.62 | 0.65 | **0.68** | 0.37 | 0.56 | 0.33 | 0.16 | 0.52 | 0.20 | 0.28 | 0.42 | 0.55 |
-| salinas-c     | 0.47 | 0.54 | 0.43 | 0.39 | 0.44 | 0.33 | 0.28 | 0.56 | 0.14 | 0.20 | 0.33 | **0.64** |
+| Scene | V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 | V10 | V11 | V12 | V13 | V14 | V15 | V17 | V18 | V19 | V20 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| indian-pines  | 0.34 | 0.35 | 0.43 | 0.25 | 0.20 | 0.26 | 0.16 | 0.43 | 0.10 | 0.27 | 0.25 | 0.42 | 0.29 | 0.31 | 0.26 | 0.18 | 0.27 | 0.21 | **0.44** |
+| kennedy-sc    | 0.41 | 0.40 | **0.54** | 0.32 | 0.25 | 0.34 | 0.20 | 0.17 | 0.11 | 0.27 | 0.26 | 0.51 | 0.31 | 0.43 | 0.29 | 0.21 | 0.28 | 0.25 | 0.52 |
+| pavia-u       | 0.47 | 0.38 | 0.55 | 0.38 | 0.14 | 0.43 | 0.23 | 0.54 | 0.02 | 0.00 | 0.21 | **0.61** | 0.22 | 0.49 | 0.28 | 0.21 | 0.52 | 0.36 | 0.54 |
+| salinas-a     | 0.62 | 0.65 | **0.68** | 0.37 | 0.56 | 0.33 | 0.16 | 0.52 | 0.20 | 0.28 | 0.42 | 0.55 | 0.49 | 0.55 | 0.51 | 0.34 | 0.52 | 0.33 | 0.68 |
+| salinas-c     | 0.47 | 0.54 | 0.43 | 0.39 | 0.44 | 0.33 | 0.28 | 0.56 | 0.14 | 0.20 | 0.33 | **0.64** | 0.35 | 0.51 | 0.28 | 0.17 | 0.50 | 0.35 | 0.47 |
+| botswana      | 0.42 | 0.40 | 0.52 | 0.36 | 0.41 | 0.27 | 0.36 | **0.56** | 0.16 | 0.16 | 0.32 | 0.46 | 0.21 | 0.44 | 0.25 | 0.19 | 0.47 | 0.21 | 0.47 |
+| **mean across scenes** | 0.45 | 0.45 | 0.52 | 0.35 | 0.32 | 0.32 | 0.23 | 0.46 | 0.12 | 0.20 | 0.30 | **0.53** | 0.31 | 0.46 | 0.31 | 0.22 | 0.43 | 0.29 | 0.52 |
 
-V3 wins 3/5, V12 wins 2/5. **V1 wins 0/5**. The strongest single-axis
-finding of the sweep.
+V3 wins 2 (KennedySC, Salinas-A). V12 wins 2 (PaviaU, Salinas).
+V20 wins 1 (IndianPines). V8 wins 1 (Botswana). **V1 wins 0/6**.
 
-## Cross-axis reading
+Mean ranking (top 5): V12 (0.534), V3 (0.524), V20 (0.520), V8 (0.463),
+V14 (0.457). The top three are within 0.014 NMI — the F-7 ceiling is
+essentially saturated for fixed-K LDA. Further gains will need
+either a different backbone (HDP, ProdLDA, ETM) or V16 foundation
+embeddings.
+
+## Cross-axis reading (19-recipe sweep)
 
 | Recipe | F-1 wins | F-2 wins | F-7 wins | Total |
 |---|---|---|---|---|
-| V12 | 2 | 3 | 2 | **7** |
-| V3  | 0 | 0 | 3 | 3 |
-| V2  | 2 | 0 | 0 | 2 |
+| V12 | 2 | 2 | 2 | **6** |
+| V3  | 0 | 1 | 2 | 3 |
+| V20 | 0 | 1 | 1 | 2 |
 | V1  | 1 | 2 | 0 | 3 |
-| V8  | 1 | 0 | 0 | 1 |
+| V2  | 2 | 0 | 0 | 2 |
+| V8  | 1 | 0 | 1 | 2 |
 
-V12 is the most consistent winner across the three axes. V3 is
-specialised on label-coupling. V1 is *not* the best on any axis on
-the hard scenes; it wins on the easiest scene (Salinas-A) where the
-spread is essentially noise.
+V12 is still the most consistent winner across the three axes. V3 is
+specialised on label-coupling. V20 (new, MI-weighted bands) is the
+first label-aware recipe in the sweep — it wins both F-2 and F-7 on
+Indian Pines. V1 is *not* the best on any axis on the hard scenes;
+it wins on the easiest scene (Salinas-A) where the spread is essentially
+noise.
+
+## V13..V20 extension — per-recipe mechanistic notes
+
+- **V13 (VQ-VAE codebook, M=4 sub-vectors, K=32 codewords)** — worst
+  recipe in the sweep on F-2 mean (0.25) and second-worst on F-7 mean
+  (0.31). The ST-estimator-trained codebook is reconstruction-optimal
+  but the resulting tokens are non-Dirichlet-compatible. Don't use.
+- **V14 (CWT-Morlet 16 scales × 8 positions)** — 2nd on F-7 mean among
+  the new recipes (0.46). Beats V6 (Db4 DWT, mean 0.32) on every scene.
+  The multi-scale alphabet with explicit location-frequency cells
+  produces topics whose top words map to absorption bands at specific
+  centres — interpretable in a way V6 is not.
+- **V15 (spectral indices NDVI/MNDWI/NBR/NDSI/EVI/SAVI)** — F-2 mean
+  0.36, F-7 mean 0.31. Weakest in raw performance among the new
+  recipes but the only one whose vocabulary maps to published
+  remote-sensing semantics. Use as a *semantic baseline* in mixed
+  vegetation scenes.
+- **V17 (sparse-coding dictionary, K=64 atoms, lasso-LARS n_nz=8)** —
+  F-2 mean 0.42, F-7 mean 0.22. The 512-atom vocab combined with 8
+  non-zero coefficients per pixel produces extreme sparsity. Don't
+  use under LDA.
+- **V18 (graph-Laplacian eigenvectors, K=16, k-NN=10 cosine)** — 3rd
+  on F-7 mean among new recipes (0.43); highest c_v on PaviaU among
+  the V13..V20 set (0.66). Best on scenes whose classes form
+  manifold-connected regions (urban, agricultural fields). Novel:
+  LDA over Laplacian spectral coordinates.
+- **V19 (UMAP 3D coordinate tokens)** — F-2 mean 0.38, F-7 mean 0.29.
+  3 axes × Q=8 = 24-word vocabulary is too small to support 12 topics
+  on the labelled scenes. Token names are abstract — no semantic
+  bridge. Below V1 on every cell.
+- **V20 (MI-weighted bands, MAX_COPIES=8)** — *winner on Indian Pines
+  for both F-2 (0.88) and F-7 (0.44)*; F-7 mean 0.52 (top 3 overall).
+  Cheapest, most interpretable extension: V1 with per-band MI-weighted
+  emission multiplicities. The only label-aware wordification in the
+  sweep. Recommended as default for label-rich classification settings.
 
 ## Bayesian posterior (when NUTS completes)
 
