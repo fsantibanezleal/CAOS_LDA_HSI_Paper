@@ -24,7 +24,7 @@
 \usepackage{url}
 \usepackage[hidelinks]{hyperref}
 
-\graphicspath{{../figures/}}
+\graphicspath{{../../figures/}}
 
 \title{Which Wordification Matters? A Nineteen-Recipe Sweep of the
 Interpretable-Topic-Model Framework on Hyperspectral Imagery}
@@ -101,6 +101,20 @@ study.
 \maketitle
 \IEEEdisplaynontitleabstractindextext
 \IEEEpeerreviewmaketitle
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{p3-winners-headline.pdf}
+\caption{Headline. Per-axis winners on six labelled HSI scenes for
+F-1 (5-fold macro-F1), F-2 ($c_v$ coherence) and F-7 (topic--label
+NMI). Bars: green $\star$ = winner per cell; purple = V20 (MI-weighted
+bands, new to this revision). Indian Pines (left column): V20 wins
+all three axes outright --- the first triple-axis win in the sweep.
+F-7 mean ranking across the six scenes is V12 0.534 / V3 0.524 /
+V20 0.520, within 0.014 NMI of each other --- a flat top, not a
+sharp peak.}
+\label{fig:headline}
+\end{figure*}
 
 % =====================================================================
 \section{Introduction}\label{sec:intro}
@@ -198,15 +212,29 @@ V16 foundation-model wordification deferred to a follow-up).
 Appendix~\ref{app:full-matrix} reproduces the full 19-recipe matrices.
 
 % =====================================================================
-\section{The twelve-recipe wordification design space}
+\section{The nineteen-recipe wordification design space}
 \label{sec:design-space}
 % =====================================================================
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.95\textwidth]{wordification-taxonomy.pdf}
+\caption{The wordification taxonomy. Twenty recipes are grouped into
+seven families by token-alphabet semantics. V20 (purple, $\star$) is the
+only label-aware recipe in the sweep and the only one to achieve a
+triple-axis win on a single labelled scene (Indian Pines: F-1, F-2
+and F-7). V16 (HyperSIGMA foundation-model embedding) is scaffolded
+only; its weights are not yet vendored.}
+\label{fig:taxonomy}
+\end{figure*}
 
 We define each recipe as a map $\mathrm{wordify}_V : \mathbb{R}^B \to
 \mathbb{N}^{|\mathcal{V}_V|}$ from a normalised pixel spectrum to a
 non-negative count vector over a recipe-specific vocabulary
-$\mathcal{V}_V$. Table~\ref{tab:recipes} states the twelve recipes;
-\S\ref{subsec:design-axes} groups them by four axes of design freedom.
+$\mathcal{V}_V$. Figure~\ref{fig:taxonomy} groups the nineteen built
+recipes (V1--V15, V17--V20) into seven semantic families;
+Table~\ref{tab:recipes} states each recipe formally and
+\S\ref{subsec:design-axes} groups them by seven axes of design freedom.
 
 \begin{table*}[t]
 \caption{The nineteen wordification recipes (V1--V15, V17--V20).
@@ -697,6 +725,20 @@ median $L_1$ & 4.75 & 5.50 & 6.00 & 2.00 & 2.50 & 1.75 & 5.00 & 3.00 & 1.00 & 1.
 
 V12's topics are very hard to flip; V9 (one token per document)
 flips at the first perturbation.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.99\textwidth]{p4-backbone-factorial.pdf}
+\caption{Backbone $\times$ wordification factorial. Each cell shows
+the mean F-2 $c_v$ across the six labelled scenes for one
+(backbone, recipe) pair. Green border + $\star$ = per-backbone winner;
+purple cell label = V20 (the label-aware recipe). Hatched cells
+indicate the (HDP, \{V13, V15, V17, V19\}) cells that were not
+re-run in this cycle. No recipe dominates every backbone: LDA + ETM
+agree on V12 / V3 / V20 ties; HDP picks V7 (sparse absorption
+tokens); ProdLDA picks V3 with V20 close behind.}
+\label{fig:backbone-factorial}
+\end{figure*}
 
 \textbf{Backbone factorial — HDP.} The first row of the
 \#617 factorial proposal: same 72 cells, but the topic backbone is
