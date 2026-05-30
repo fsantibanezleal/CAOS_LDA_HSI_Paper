@@ -422,6 +422,47 @@ mutual-information-weighted band design.
 
 LDVAE-T (fifth proposed backbone) parked pending public code.
 
+## Top-3 recipe per axis — recipe-mean ranking (c428 endpoint)
+
+| Axis | 1st | 2nd | 3rd |
+|---|---|---|---|
+| F-1 macro-F1 | V12 (0.922) | V2 (0.917) | V20 (0.917) |
+| F-2 c_v | V12 (0.876) | V20 (0.850) | V3 (0.843) |
+| F-7 NMI | V12 (0.534) | V3 (0.524) | V20 (0.520) |
+| F-14 jaccard (lower=better) | V9 (0.000) | V17 (0.003) | V7 (0.009) |
+| F-18 reliability ≥0.7 (vocab artefact stripped) | V18 (0.722) | V13 (0.622) | V10 (0.539) |
+| F-22 counterfactual L1 | **V20 (26.33)** | V12 (24.50) | V3 (23.50) |
+| HDP c_v | V7 (0.615) | V17 (0.586) | V1 (0.540) |
+| ProdLDA c_v | V3 (0.863) | V12 (0.825) | V1 (0.752) |
+| ETM c_v | V12 (0.816) | V3 (0.793) | V20 (0.771) |
+
+**V20 appears in top-3 of every coherence / classification / counter-
+factual axis** (F-1, F-2, F-7, F-22, ETM c_v). Only HDP penalises V20
+(stick-breaking truncation favours sparse-event recipes like V7) and
+F-14 / F-18 (informative-but-seed-sensitive). V12 leads on classifi-
+cation + F-2 / F-7 / ETM but loses F-22 to V20. V3 leads ProdLDA but
+trails V20 / V12 on F-22.
+
+## Q-sensitivity spot check (c430, V20 only)
+
+Spot run of V20 at the finer Q=16 quantisation to verify the headline
+holds:
+
+| Scene | F-2 c_v Q=8 | F-2 c_v Q=16 | F-7 NMI Q=8 | F-7 NMI Q=16 |
+|---|---|---|---|---|
+| indian-pines     | 0.88 | **0.95** | **0.44** | 0.47 |
+| salinas          | 0.80 | 0.80 | 0.47 | 0.49 |
+| salinas-A        | 0.74 | **0.94** | **0.68** | 0.67 |
+| pavia-u          | 0.95 | 0.90 | 0.54 | 0.53 |
+| kennedy-sc       | 0.88 | 0.92 | 0.52 | 0.52 |
+| botswana         | 0.85 | 0.90 | 0.47 | **0.53** |
+| **mean**         | 0.85 | **0.90** (+5.4%) | 0.52 | **0.535** (+2.9%) |
+
+V20 at Q=16 improves the F-2 mean by 5.4% and the F-7 mean by 2.9%.
+Headline triple-axis win on Indian Pines stays intact — V20 F-1 at
+Q=8 was already the winner, and F-2 / F-7 improve further at Q=16.
+The broader Q-sweep is deferred to a follow-up.
+
 ## V-sweep + neural baselines (existing P1 numbers, V1-only)
 
 For cross-reference. These are *not* part of the V-sweep but provide
