@@ -744,6 +744,29 @@ soft GMM responsibilities.
 
 \begin{figure*}[!t]
 \centering
+\includegraphics[width=0.95\textwidth]{p3-radar-top-recipes.pdf}
+\caption{Per-recipe radar across the eight evaluation axes, normalised
+to $[0, 1]$ across the 19-recipe set. F-14 (jaccard) is sign-inverted
+so ``1'' always means ``best on this axis''. V20 (purple) and V12
+(orange) cover the most surface area; V18 (cyan) tops the F-18
+reliability axis; V1 (grey) is mid-pack on every axis.}
+\label{fig:radar}
+\end{figure*}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.95\columnwidth]{p3-axis-correlation.pdf}
+\caption{Spearman rank correlation across the 114 (recipe, scene)
+cells. F-14 inverted so all axes read ``higher = better''.
+F-2 / ETM and F-2 / ProdLDA cluster tightly ($\rho \ge 0.76$);
+F-14 anti-correlates with F-18 ($\rho = -0.74$, the vocabulary-size
+confounder); F-22 / F-7 correlate at $\rho = 0.58$ (robust topics tend
+to be label-aligned).}
+\label{fig:corr}
+\end{figure}
+
+\begin{figure*}[!t]
+\centering
 \includegraphics[width=0.99\textwidth]{p4-backbone-factorial.pdf}
 \caption{Backbone $\times$ wordification factorial. Each cell shows
 the mean F-2 $c_v$ across the six labelled scenes for one
