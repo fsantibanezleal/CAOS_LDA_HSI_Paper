@@ -69,8 +69,10 @@ vocabulary, wins F-7 topic--label normalised MI on 2/6 scenes; V12
 V20 (mutual-information-weighted bands, new to this revision) achieves
 the first \emph{triple-axis win} of the sweep — F-1 macro-F1 (0.858),
 F-2 coherence (0.88) and F-7 NMI (0.44) all three on Indian Pines —
-and is within $0.014$ NMI of the leader on the remaining five F-7
-cells. V13 (vector-quantised VAE) underperforms
+is within $0.014$ NMI of the leader on the remaining five F-7
+cells, and additionally produces the \emph{most counterfactually
+robust topic basis} of the sweep
+($L_1 = 26.3$ vs $24.5$ for the previous leader V12). V13 (vector-quantised VAE) underperforms
 sharply; V18 (graph-Laplacian eigenvector tokens) places third on F-7
 mean. The per-axis winner depends both on the scene and on which
 property of the topic basis the axis measures. We report the full
@@ -709,22 +711,36 @@ its canonical status \emph{even when V12 wins all other axes}: V1 is
 the most reliable wordification with informative vocabulary.
 
 \textbf{F-22 counterfactual.} Coordinate-descent search for minimum
-$L_1$ perturbation that flips $\arg\max \theta_d$. Higher = more
-robust topic boundary. Per-recipe means:
+$L_1$ perturbation that flips $\arg\max \theta_d$, capped at
+$\text{MAX\_STEPS} = 50$ token-flips. Cells where every sampled
+document fails to flip persist with the sentinel value $50$ rather
+than being dropped. Higher = more robust topic boundary. Per-recipe
+mean of the per-scene medians across the 19-recipe sweep:
 
 \begin{center}
-\small
-\begin{tabular}{lcccccccccccc}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{l*{19}{c}}
 \toprule
-& V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 \\
+recipe & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 & V13 & V14 & V15 & V17 & V18 & V19 & V20 \\
 \midrule
-median $L_1$ & 4.75 & 5.50 & 6.00 & 2.00 & 2.50 & 1.75 & 5.00 & 3.00 & 1.00 & 1.00 & 3.50 & \textbf{23.50} \\
+$L_1$ & 6.1 & 7.8 & 23.5 & 2.5 & 2.5 & 1.9 & 5.2 & 3.6 & 1.0 & 1.2 & 3.3 & 24.5 & 2.7 & 7.7 & 4.0 & 2.6 & 3.7 & 2.1 & \textbf{26.3} \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-V12's topics are very hard to flip; V9 (one token per document)
-flips at the first perturbation.
+\textbf{V20 has the most robust topic basis} in the sweep
+($L_1 = 26.3$), surpassing the previous leader V12 (24.5) and the
+joint (band, q-bin) vocabulary V3 (23.5). On three scenes (Salinas-A,
+Pavia U, Botswana) every sampled document under V20 failed to flip
+within 50 perturbations; the sentinel value $50$ caps that
+observation. The interpretation: V20's per-band MI re-weighting
+concentrates token mass on the discriminative subspectrum, so small
+perturbations of low-MI bands do not move the argmax topic and
+perturbations of high-MI bands require many simultaneous flips to
+exit the recipe's amplification basin. V9 (one token per document)
+flips at the first perturbation, V12 inherits robustness from its
+soft GMM responsibilities.
 
 \begin{figure*}[!t]
 \centering
