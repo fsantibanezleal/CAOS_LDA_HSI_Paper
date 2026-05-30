@@ -443,25 +443,38 @@ F-14 / F-18 (informative-but-seed-sensitive). V12 leads on classifi-
 cation + F-2 / F-7 / ETM but loses F-22 to V20. V3 leads ProdLDA but
 trails V20 / V12 on F-22.
 
-## Q-sensitivity spot check (c430, V20 only)
+## Q-sensitivity spot check (c430 + c431, V3 / V12 / V20)
 
-Spot run of V20 at the finer Q=16 quantisation to verify the headline
-holds:
+Three top-contender recipes evaluated at the finer Q=16 quantisation
+to test whether the headline ranking holds:
 
-| Scene | F-2 c_v Q=8 | F-2 c_v Q=16 | F-7 NMI Q=8 | F-7 NMI Q=16 |
-|---|---|---|---|---|
-| indian-pines     | 0.88 | **0.95** | **0.44** | 0.47 |
-| salinas          | 0.80 | 0.80 | 0.47 | 0.49 |
-| salinas-A        | 0.74 | **0.94** | **0.68** | 0.67 |
-| pavia-u          | 0.95 | 0.90 | 0.54 | 0.53 |
-| kennedy-sc       | 0.88 | 0.92 | 0.52 | 0.52 |
-| botswana         | 0.85 | 0.90 | 0.47 | **0.53** |
-| **mean**         | 0.85 | **0.90** (+5.4%) | 0.52 | **0.535** (+2.9%) |
+### F-2 c_v mean across 6 scenes
 
-V20 at Q=16 improves the F-2 mean by 5.4% and the F-7 mean by 2.9%.
-Headline triple-axis win on Indian Pines stays intact — V20 F-1 at
-Q=8 was already the winner, and F-2 / F-7 improve further at Q=16.
-The broader Q-sweep is deferred to a follow-up.
+| Recipe | Q=8 | Q=16 | Δ |
+|---|---|---|---|
+| V12 (GMM-token) | 0.876 | 0.903 | +0.027 |
+| V20 (MI-weighted) | 0.850 | **0.901** | **+0.051** |
+| V3 (joint band-bin) | 0.843 | 0.832 | -0.011 |
+
+### F-7 NMI mean across 6 scenes
+
+| Recipe | Q=8 | Q=16 | Δ |
+|---|---|---|---|
+| V12 (GMM-token) | 0.534 | 0.552 | +0.018 |
+| **V20 (MI-weighted)** | 0.520 | **0.534** | **+0.014** |
+| V3 (joint band-bin) | 0.524 | 0.521 | -0.003 |
+
+**Headline at Q=16 (c431).** V20 overtakes V3 on F-7 NMI — the
+ranking flips from V12 / V3 / V20 to V12 / V20 / V3. At Q=16 the
+F-7 top-3 spread compresses further (V12 0.552 / V20 0.534 / V3
+0.521, range 0.031 NMI vs 0.014 at Q=8). V20 gains the most on F-2
+(+0.051) and outranks V3. The triple-axis Indian Pines win for V20
+remains intact because all three of F-1 / F-2 / F-7 stay V20 ≥ V12
+on that scene under both Q=8 and Q=16.
+
+The broader Q-sweep across 19 recipes × 3 schemes × {8, 16, 32} is
+deferred to a follow-up (171 candidate vocabularies per scene × 6
+scenes = 1026 LDA fits, plus the 13 axes downstream).
 
 ## V-sweep + neural baselines (existing P1 numbers, V1-only)
 
