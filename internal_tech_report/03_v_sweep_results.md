@@ -20,23 +20,27 @@ deferred to a follow-up). Source artefacts:
 - `data/derived/v_sweep/{hdp,prodlda,etm}_backbone/{scene}_{V}_uniform_Q8.json`
 - `data/derived/v_sweep/f1_bayesian_posterior.json` (pending NUTS run)
 
-## Coverage matrix (as of 2026-05-30 / c423)
+## Coverage matrix (as of 2026-05-30 / c426 — **all 10 axes at 100%**)
 
 | Axis | Cells | Target (19 × 6) | Status |
 |---|---|---|---|
-| F-1 macro-F1 | 96 | 114 | 84% — V15/V17/V19 running |
+| F-1 macro-F1 | **114** | 114 | **100%** ✅ |
 | F-2 c_v | 114 | 114 | **100%** ✅ |
 | F-7 NMI | 114 | 114 | **100%** ✅ |
 | F-13 SHAP | 114 | 114 | **100%** ✅ |
 | F-14 jaccard | 114 | 114 | **100%** ✅ |
-| F-18 reliability | 73 | 114 | 64% — V13..V20 running |
-| F-22 counterfactual | **114** | **114** | **100%** ✅ (sentinel patch c423) |
+| F-18 reliability | **114** | 114 | **100%** ✅ |
+| F-22 counterfactual | 114 | 114 | **100%** ✅ |
 | F-17 cross-scene | 120 pairs | 120 portable | **100%** ✅ |
 | HDP backbone | 114 | 114 | **100%** ✅ |
 | ProdLDA backbone | 114 | 114 | **100%** ✅ |
 | ETM backbone | 114 | 114 | **100%** ✅ |
 | B-12 LLM tea-leaves | 6 scenes | 6 | **100%** ✅ |
 | F-15 LLM-judge | 114 | 114 | **100%** ✅ |
+
+**Total grid coverage: 1140 / 1140 cells (10 numeric axes × 19 recipes
+× 6 scenes), plus the cross-scene transfer matrix (120 portable pairs)
+and the per-scene B-12 / F-15 LLM-judge cells.**
 
 ## F-1 — topic-routed-soft macro-F1 (5-fold mean)
 
@@ -257,17 +261,38 @@ portable because their vocabularies are either scene-specific
 
 ## F-18 reliability (Maier 2024: fraction top-10 cosine >= 0.7)
 
-| V | F-18 |
-|---|---|
-| V2/V6/V8/V9/V10 | 1.000 (vocab-limited artefact) |
-| V11 | 0.992 |
-| V5 | 0.967 |
-| V13 | 0.950 |
-| V4 | 0.917 |
-| V1 | 0.792 (canonical mid-pack with non-trivial vocab) |
-| V7 | 0.783 |
-| V12 | 0.158 (tradeoff with F-1/F-2/F-7 dominance) |
-| V3 | 0.117 |
+Full 19-recipe ranking after c426 (re-run across all V13..V20 with
+five-seed reproduction):
+
+| V | F-18 mean | Note |
+|---|---|---|
+| V2 | 1.000 | vocab-limited artefact (Q=8 forces top-10 overlap) |
+| V8 | 1.000 | vocab-limited (K_endmember×Q small) |
+| V6 | 0.952 | vocab-limited (Db4 levels small) |
+| V18 | **0.722** | **best non-trivial-vocab recipe** — graph-Laplacian topics survive reseeds robustly |
+| V13 | 0.622 | VQ-VAE codebook surprisingly stable across seeds |
+| V10 | 0.539 | VNIR/SWIR coarse groups (vocab 24) |
+| V14 | 0.492 | CWT-Morlet (vocab 128) |
+| V15 | 0.433 | spectral indices (vocab ≤ 48) |
+| V19 | 0.372 | UMAP 3-coord (vocab 24) |
+| V11 | 0.283 | product quantisation |
+| V1 | 0.255 | canonical band-frequency |
+| V20 | 0.221 | informative-but-seed-sensitive |
+| V4 | 0.201 | derivative-bin |
+| V3 | 0.195 | joint (band, q-bin) — large vocab penalty |
+| V7 | 0.150 | absorption triplet |
+| V5 | 0.149 | second-derivative |
+| V12 | 0.141 | GMM-token — large vocab penalty |
+| V17 | 0.139 | sparse-coding dict (vocab 512) |
+| V9 | 0.000 | one token per doc — undefined |
+
+**Reading.** V18 (graph-Laplacian eigenvectors) is now the most
+reliable recipe in the sweep among those with non-trivial
+(>=128-token) vocabularies — its topics survive reseeds with top-10
+cosine >= 0.7 on 72.2% of (scene, seed-pair) cells. V20 reliability
+0.221 is on par with V1 (0.255) and competitive with V3 / V12
+(~0.13–0.20). The vocabulary-size confounder noted in the F-15
+methodology gap is visible here too (V2/V6/V8 trivially 1.0).
 
 ## F-22 counterfactual L1 (median, higher is more robust)
 
