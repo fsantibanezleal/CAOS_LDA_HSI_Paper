@@ -242,6 +242,37 @@ vocabularies make top-10 overlap rare even when topics are coherent.
 **F-15 has a vocabulary-size confounder** that anti-correlates with
 F-2 on large-vocab recipes — methodological gap flagged in P5.
 
+## B-12 LLM tea-leaves (word-intrusion + label generation)
+
+Stammbach et al. 2023 EMNLP word-intrusion + coherent-label probes,
+run as Claude Opus 4.7 self-judgment with deterministic spectral-
+region rules over the V1 canonical topics (the same setup as the
+API-driven builder, but without per-call cost). Per-scene intrusion
+accuracy across 12 topics each (Salinas-A has 6):
+
+| Scene             | Topics | Intrusion accuracy | Note                           |
+|-------------------|--------|--------------------|--------------------------------|
+| botswana          | 12     | **0.75** (9/12)    | Diverse SWIR-1/SWIR-2 mix      |
+| pavia-university  | 9      | 0.56 (5/9)         | VNIR-only — clean visible split |
+| indian-pines      | 12     | 0.25 (3/12)        | SWIR-2 dominated, weak split    |
+| salinas-corrected | 12     | 0.17 (2/12)        | Tight SWIR-2 cluster            |
+| salinas-a-corr.   | 6      | 0.00               | Too few topics, near-identical  |
+| kennedy-sc        | 12     | 0.00               | Very tight SWIR-2 spread        |
+
+Headline: **B-12 intrusion accuracy varies 0% to 75% across scenes
+under V1**. Scenes whose V1 topics span multiple spectral regions
+(Botswana with both VNIR red-edge and SWIR-2 carbonate topics) score
+above 50%; scenes whose V1 topics all cluster in SWIR-2 score near
+zero. This is a *coherence* diagnostic that confirms the F-2 / F-7
+finding from a different angle: V1 produces a narrow topic basis on
+the corrected scenes (Indian Pines, Salinas, KSC) where label-aware
+or manifold-based recipes (V18, V20) would distribute topics across
+wider spectral regions.
+
+The per-topic LLM labels are available in the web app's
+`/benchmarks` page (B-12 panel) and the raw JSONs at
+`data/derived/llm_tea_leaves/<scene>.json`.
+
 ## Backbone factorial (F-2 c_v mean across scenes)
 
 | V | LDA | HDP | ProdLDA | ETM |
