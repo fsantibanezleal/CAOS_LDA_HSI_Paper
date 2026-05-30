@@ -24,7 +24,7 @@
 \usepackage{url}
 \usepackage[hidelinks]{hyperref}
 
-\graphicspath{{../figures/}}
+\graphicspath{{../../figures/}}
 
 \title{Which Backbone Picks Which Wordification? A Factorial Study of
 Topic-Model Families on Hyperspectral Imagery}
@@ -398,6 +398,18 @@ discriminate strongly between topics. V3's joint (band, bin) vocab
 consider with no spatial or learned structure --- and it wins ProdLDA.
 
 % =====================================================================
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.95\textwidth]{p4-backbone-scene-winners.pdf}
+\caption{Per-scene F-7 NMI winner under each backbone. Tile colour
+encodes the winning recipe's family from the wordification taxonomy.
+HDP is dominated by V11 (5/6 scenes, including V19 on Salinas — both
+learnt-unsupervised codebook family); ETM also picks V11 on 4/6
+scenes. LDA has the most diverse per-scene winners. ProdLDA favours
+V8 / V12 / V2 — the absorption / intensity-bin family.}
+\label{fig:per-scene-backbone-winners}
+\end{figure*}
+
 \subsection{Why V11 wins HDP and ETM but bombs LDA and ProdLDA}
 \label{subsec:v11-mechanism}
 
