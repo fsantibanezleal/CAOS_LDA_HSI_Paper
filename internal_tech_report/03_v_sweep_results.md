@@ -517,6 +517,27 @@ trajectory:
 | V8 | 0.319 | 0.321 | 0.341 | mono ↑ (+0.022) |
 | V6 | 0.526 | 0.506 | 0.470 | mono ↓ (−0.056) |
 
+### F-14 jaccard (topic diversity) of the mono-↑ recipes (c446)
+
+The F-14 refresh after the Q-sweep extension shows the three mono-↑
+recipes also become more diverse at finer Q:
+
+| Recipe | F-14 Q=8 | F-14 Q=16 | F-14 Q=32 | Diversity gain |
+|---|---|---|---|---|
+| **V20** | 0.030 | 0.018 | **0.009** | **3.3× more diverse** |
+| V2  | 1.000 | 0.505 | 0.261 | 3.8× more diverse (was trivially redundant at Q=8) |
+| V8  | 0.868 | 0.858 | 0.841 | modest improvement |
+
+V20 at $Q=32$ has the **lowest F-14 jaccard of any recipe in the
+sweep** (0.009) AND the highest F-2 c_v AND the highest F-7 NMI.
+This is the strongest single-recipe result the matrix produces:
+V20 lands at the top of all three quality axes simultaneously
+at finer quantisation. The mechanism is the MI-weighted band
+amplification — high-MI bands emit more copies, which gives the
+LDA likelihood enough signal to produce both coherent AND
+discriminative AND diverse topics, while low-MI bands stay
+zero-copy and so do not pollute the diversity calculation.
+
 ### Headline (corrected)
 
 **Three recipes** climb monotonically with Q on both F-2 and F-7:
