@@ -950,21 +950,23 @@ labelled scenes:
 \toprule
 Recipe & Q=8 & Q=16 & Q=32 \\
 \midrule
-\textbf{V8} & 0.957 & \textbf{0.962} & \textbf{0.965} \\
-V2 & 1.000 & 0.875 & 0.788 \\
-V20 & 0.451 & 0.450 & 0.453 \\
+\textbf{V8} & 0.957 & \textbf{0.962} & 0.959 \\
+V2 & 1.000 & 0.875 & 0.781 \\
+V20 & 0.451 & 0.450 & 0.443 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\textbf{V8 is the only recipe whose reseed reliability rises
-monotonically as quantisation refines.} The mechanism is geometric:
-the NFINDR endmember basis is invariant under quantisation of the
-NNLS abundance fractions, so finer $Q$ only sharpens the rank-ordering
-of fractions without introducing new seed-dependent splits in the
-top-10 indicator vectors. V20 stays in the informative-but-seed-
-sensitive regime ($\sim 0.45$) at every $Q$, mirroring V12. V2
-collapses with $Q$ as its vocabulary grows from 8 to 32 word types,
+\textbf{V8 stays above $0.95$ on the F-18 mean matched cosine
+across all three Q levels} — the only recipe in the sweep whose
+reseed reliability remains in the very-high regime under quantisation
+refinement. The mechanism is geometric: the NFINDR endmember basis
+is invariant under quantisation of the NNLS abundance fractions, so
+finer $Q$ only sharpens the rank-ordering of fractions without
+introducing new seed-dependent splits in the top-10 indicator vectors.
+V20 stays in the informative-but-seed-sensitive regime ($\sim 0.45$)
+at every $Q$, mirroring V12. V2 collapses with $Q$ ($1.000 \to 0.875
+\to 0.781$) as its vocabulary grows from 8 to 32 word types,
 confirming that V2's $Q=8$ reliability of $1.0$ was the vocabulary-
 size artefact previously flagged.
 

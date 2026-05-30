@@ -301,9 +301,11 @@ threshold) across the top-3 contenders at Q=8, Q=16 and Q=32:
 
 | Recipe | Q=8 mean cos | Q=16 mean cos | Q=32 mean cos | Trajectory |
 |---|---|---|---|---|
-| **V8** | 0.957 | **0.962** | **0.965** | **monotonic UP** |
-| V2 | 1.000 | 0.875 | 0.788 | monotonic DOWN (vocab grows) |
-| V20 | 0.451 | 0.450 | 0.453 | flat (low) |
+| **V8** | 0.9565 | **0.9621** | 0.9592 | high across Q, slight peak Q=16 |
+| V2 | 1.0000 | 0.8754 | 0.7809 | monotonic DOWN (vocab grows from 8 to 32) |
+| V20 | 0.4511 | 0.4501 | 0.4430 | flat (informative-but-seed-sensitive) |
+
+All measured across 6 scenes at each Q (n=6, full coverage).
 
 **Headline.** V8 (NFINDR endmember-fraction) is the new F-18 leader
 under the mean-cosine metric, and its reliability rises
