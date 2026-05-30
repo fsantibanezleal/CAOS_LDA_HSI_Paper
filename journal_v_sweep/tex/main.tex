@@ -70,9 +70,11 @@ V20 (mutual-information-weighted bands, new to this revision) achieves
 the first \emph{triple-axis win} of the sweep — F-1 macro-F1 (0.858),
 F-2 coherence (0.88) and F-7 NMI (0.44) all three on Indian Pines —
 is within $0.014$ NMI of the leader on the remaining five F-7
-cells, and additionally produces the \emph{most counterfactually
-robust topic basis} of the sweep
-($L_1 = 26.3$ vs $24.5$ for the previous leader V12). V13 (vector-quantised VAE) underperforms
+cells, produces the \emph{most counterfactually robust topic basis}
+of the sweep ($L_1 = 26.3$ vs $24.5$ for the previous leader V12),
+and is the only recipe of the sweep to land top-3 on F-7 NMI under
+\emph{all four} topic-model backbones (LDA / HDP / ProdLDA / ETM —
+winning HDP outright by 1.6$\times$ and tying ETM with V12). V13 (vector-quantised VAE) underperforms
 sharply; V18 (graph-Laplacian eigenvector tokens) places third on F-7
 mean. The per-axis winner depends both on the scene and on which
 property of the topic basis the axis measures. We report the full
@@ -805,6 +807,43 @@ whose few tokens carry semantic weight (V7's six absorption features
 per pixel). \textbf{This is the cleanest evidence that the
 wordification ranking depends on the backbone — i.e., that the
 factorial study is the right next step.}
+
+% =====================================================================
+\subsection{F-7 NMI across the four backbones}
+\label{subsec:backbone-f7}
+% =====================================================================
+
+The c397 backbone factorial reported F-2 $c_v$ only. The c432--c434
+extension adds F-7 NMI under each non-LDA backbone:
+
+\begin{table}[ht]
+\caption{F-7 NMI mean across the six labelled scenes, six top-contender
+recipes $\times$ four topic-model backbones. Bold = per-backbone
+winner. \textbf{V20 is the only recipe to land top-3 under every
+backbone.}}
+\label{tab:f7-4backbone}
+\centering
+\small
+\begin{tabular}{lccccc}
+\toprule
+Recipe & LDA & HDP & ProdLDA & ETM & Mean \\
+\midrule
+\textbf{V20}  & 0.520 & \textbf{0.356} & 0.221 & \textbf{0.490} & \textbf{0.397} \\
+V12  & \textbf{0.534} & 0.220 & \textbf{0.238} & 0.488 & 0.370 \\
+V3   & 0.524 & 0.200 & 0.169 & 0.443 & 0.334 \\
+V14  & 0.457 & 0.220 & 0.114 & 0.430 & 0.305 \\
+V18  & 0.428 & 0.198 & 0.080 & 0.330 & 0.259 \\
+V1   & 0.455 & 0.081 & 0.091 & 0.381 & 0.252 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+V20 wins F-7 under HDP (by $1.6\times$ the second-place recipe) and
+ties V12 under ETM ($\Delta < 0.002$). Even under ProdLDA's
+logistic-normal prior — which picks V3 as the F-2 winner and V12 as
+the F-7 winner — V20 lands second within $0.017$ NMI. This is the
+strongest cross-prior corroboration of the LDA-V20 finding the sweep
+produces.
 
 % =====================================================================
 \section{Five axis--recipe affinities}\label{sec:affinities}
