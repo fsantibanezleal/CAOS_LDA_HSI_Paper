@@ -455,6 +455,8 @@ to test whether the headline ranking holds:
 | V12 (GMM-token) | 0.876 | 0.903 | +0.027 |
 | V20 (MI-weighted) | 0.850 | **0.901** | **+0.051** |
 | V3 (joint band-bin) | 0.843 | 0.832 | -0.011 |
+| V14 (CWT-Morlet) | 0.626 | 0.668 | +0.042 |
+| V18 (graph-Laplacian) | 0.572 | 0.572 | +0.000 |
 
 ### F-7 NMI mean across 6 scenes
 
@@ -463,6 +465,8 @@ to test whether the headline ranking holds:
 | V12 (GMM-token) | 0.534 | 0.552 | +0.018 |
 | **V20 (MI-weighted)** | 0.520 | **0.534** | **+0.014** |
 | V3 (joint band-bin) | 0.524 | 0.521 | -0.003 |
+| V14 (CWT-Morlet) | 0.457 | 0.458 | +0.001 |
+| V18 (graph-Laplacian) | 0.428 | 0.413 | -0.015 |
 
 **Headline at Q=16 (c431).** V20 overtakes V3 on F-7 NMI — the
 ranking flips from V12 / V3 / V20 to V12 / V20 / V3. At Q=16 the
@@ -475,6 +479,30 @@ on that scene under both Q=8 and Q=16.
 The broader Q-sweep across 19 recipes × 3 schemes × {8, 16, 32} is
 deferred to a follow-up (171 candidate vocabularies per scene × 6
 scenes = 1026 LDA fits, plus the 13 axes downstream).
+
+## Backbone F-7 NMI extension — V20 wins under HDP too (c432)
+
+Until c432 the backbone factorial only carried F-2 c_v. Adding F-7 NMI
+under each non-LDA backbone changes the headline:
+
+### HDP backbone — F-7 NMI mean across 6 scenes
+
+| Recipe | F-7 NMI under HDP |
+|---|---|
+| **V20 (MI-weighted)** | **0.356** |
+| V14 (CWT-Morlet) | 0.220 |
+| V12 (GMM-token) | 0.220 |
+| V3 (joint band-bin) | 0.200 |
+| V18 (graph-Laplacian) | 0.198 |
+| V1 (band-frequency) | 0.081 |
+
+**Headline.** V20 has the highest F-7 NMI under HDP by a wide margin
+(1.6× the second-place recipe), even though HDP's stick-breaking
+prior penalises V20 on F-2 c_v (where V7 wins under HDP). This is a
+strong corroboration of the LDA F-7 finding from a different prior
+class: even when HDP picks a different recipe for *coherence*, the
+*label-aligned* topics come from V20's MI-weighted vocabulary. The
+extension of F-7 NMI to ProdLDA / ETM backbones is queued.
 
 ## V-sweep + neural baselines (existing P1 numbers, V1-only)
 
