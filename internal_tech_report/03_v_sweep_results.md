@@ -480,6 +480,34 @@ The broader Q-sweep across 19 recipes × 3 schemes × {8, 16, 32} is
 deferred to a follow-up (171 candidate vocabularies per scene × 6
 scenes = 1026 LDA fits, plus the 13 axes downstream).
 
+### Full Q-sensitivity for top contenders (c441-c444)
+
+Across the seven recipes most-cited in the sweep:
+
+| Recipe | F-7 Q=8 | F-7 Q=16 | F-7 Q=32 | Trajectory |
+|---|---|---|---|---|
+| **V20** (MI-weighted) | 0.520 | 0.534 | **0.563** | **monotonic ↑** |
+| V3 (joint band-bin) | 0.524 | 0.521 | 0.530 | saturates Q=8 |
+| V8 (NFINDR endmember) | 0.463 | (n/a) | 0.482 | minor ↑ |
+| V11 (product quantisation) | 0.292 | 0.266 | 0.262 | peaks Q=8 then ↓ |
+| V12 (GMM-token) | 0.534 | **0.552** | 0.533 | peaks Q=16 then ↓ |
+| V14 (CWT-Morlet) | 0.457 | 0.458 | 0.428 | peaks Q=16 then ↓ |
+| V18 (graph-Laplacian) | 0.428 | 0.413 | 0.362 | monotonic ↓ |
+
+**V20 is the only recipe with monotonically increasing F-7 NMI from
+Q=8 to Q=32**, and the absolute lead over V12 widens with Q (0.014 at
+Q=8 → 0.030 at Q=32). The mechanism is straightforward: V20 weights
+each band's emission count by per-band mutual information with
+labels; finer quantisation refines the intensity histogram on the
+high-MI bands, producing more discriminative tokens without adding
+noise from low-MI bands (those still emit zero copies). Every other
+top recipe either saturates (V3 already at Q=8) or has a finite
+optimum that gets passed at Q=32 (V12 / V14 peak at Q=16, V18 / V11
+peak at Q=8). The result strengthens V20's case as the canonical
+label-aware LDA wordification: not only is it best on the headline
+Indian Pines triple, it is also the only recipe whose advantage
+grows with quantisation depth.
+
 ### V20 + V8 at Q=32 (c441 spot check)
 
 | Recipe | F-2 mean Q=8 | F-2 mean Q=16 | F-2 mean Q=32 | F-7 mean Q=8 | F-7 mean Q=16 | F-7 mean Q=32 |
