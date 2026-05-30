@@ -307,6 +307,23 @@ threshold) across the top-3 contenders at Q=8, Q=16 and Q=32:
 
 All measured across 6 scenes at each Q (n=6, full coverage).
 
+### F-1 macro-F1 (5-fold) Q-trajectory — saturation observation
+
+| Recipe | Q=8 | Q=16 | Q=32 (partial) |
+|---|---|---|---|
+| V20 | 0.917 | 0.916 | 0.909 |
+| V8 | 0.916 | 0.916 | 0.910 |
+| V2 | 0.917 | 0.918 | 0.924 |
+| V12 (reference) | 0.922 | — | — |
+
+**F-1 saturates near 0.91-0.92 across all three top-3 recipes and
+all three Q levels** — five-fold logistic on enough topics solves
+the macro-F1 task regardless of recipe. F-1 is therefore *not* the
+axis that differentiates V20 from V8 from V2 from V12; the
+differentiation lives in F-2 (coherence), F-7 (label coupling),
+F-18 (reliability) and F-22 (counterfactual robustness), all of
+which show the cleaner Q-trajectories tabulated above.
+
 **Headline.** V8 (NFINDR endmember-fraction) is the new F-18 leader
 under the mean-cosine metric, and its reliability rises
 *monotonically* with Q: 0.957 → 0.962 → 0.965. **V8 is the only
