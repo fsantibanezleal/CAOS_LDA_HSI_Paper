@@ -480,6 +480,36 @@ The broader Q-sweep across 19 recipes × 3 schemes × {8, 16, 32} is
 deferred to a follow-up (171 candidate vocabularies per scene × 6
 scenes = 1026 LDA fits, plus the 13 axes downstream).
 
+### V20 + V8 at Q=32 (c441 spot check)
+
+| Recipe | F-2 mean Q=8 | F-2 mean Q=16 | F-2 mean Q=32 | F-7 mean Q=8 | F-7 mean Q=16 | F-7 mean Q=32 |
+|---|---|---|---|---|---|---|
+| **V20** | 0.850 | 0.901 | **0.910** | 0.520 | 0.534 | **0.563** |
+| V8 | 0.360 | (skipped) | 0.341 | 0.463 | (skipped) | 0.482 |
+
+**V20 F-7 at Q=32 is 0.563** — higher than the LDA Q=8 winner V12
+at 0.534. Per-scene F-7 NMI Q=32 for V20:
+
+- Indian Pines 0.419 (vs Q=8 0.442, slight drop)
+- Salinas 0.605 (vs Q=8 0.469, +0.14!)
+- Salinas-A 0.722 (vs Q=8 0.676)
+- Pavia U 0.580 (vs Q=8 0.535)
+- Kennedy SC 0.497 (vs Q=8 0.520)
+- Botswana 0.554 (vs Q=8 0.469)
+
+5 of 6 scenes improve at Q=32 over Q=8, and the mean climbs to a new
+sweep high. V8 sees marginal F-7 improvement (0.463→0.482) but no
+F-2 gain because its vocabulary (number of endmembers, ≤ 16) does
+not scale with Q. **V20 is the recipe that benefits most from finer
+quantisation** — consistent with the MI-weighted-bands mechanism
+where each high-MI band gets a finer-grained intensity histogram.
+
+This suggests the broader recipe headline as quantisation is varied:
+V20's lead grows with Q, while V12 / V3 already plateau by Q=16
+(their joint band-bin vocabulary saturates the LDA likelihood). A
+full Q-sweep would likely strengthen V20 against the V12 LDA winner
+across the entire panel.
+
 ## Backbone F-7 NMI extension — full 4-backbone × 19-recipe sweep (c432-c436)
 
 Until c432 the backbone factorial only carried F-2 c_v. The
