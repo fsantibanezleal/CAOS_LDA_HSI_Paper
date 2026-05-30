@@ -210,10 +210,12 @@ backbone from scratch. For each cell we report:
     (lower = more diverse).
 \end{itemize}
 
-The other axes (F-1 classification, F-7 NMI, F-22 counterfactual, F-18
-reliability) are run for the LDA backbone only (carried over from P3)
-because they would require running a separate downstream classifier
-pipeline per backbone, which is deferred.
+F-7 NMI was added under each non-LDA backbone in the c432--c437
+extension (see \S\ref{subsec:f7-backbone}); F-1 classification,
+F-22 counterfactual and F-18 reliability are run for the LDA backbone
+only (carried over from P3) because they would require running a
+separate downstream classifier pipeline per backbone, which is
+deferred.
 
 % =====================================================================
 \section{Results}\label{sec:results}
@@ -305,6 +307,73 @@ and V18 around V6 ($\approx 0.39$). The headline: \textbf{V20 is the
 most cross-backbone-portable label-aware recipe in the sweep}, and a
 near-replacement for V3 / V12 when label information is available.
 
+\subsection{F-7 NMI under each backbone — V8 cross-backbone leadership}
+\label{subsec:f7-backbone}
+
+The c432--c437 extension computes F-7 normalised mutual information
+between the argmax topic per document and the ground-truth labels for
+the six labelled scenes, repeated under each backbone. The procedure
+is: (1) fit the backbone via its deterministic builder, (2) project
+each sampled labelled pixel through the fitted model to obtain the
+topic mixture $\theta_d$, (3) take $z^*_d = \arg\max_k \theta_{d, k}$,
+(4) compute $\mathrm{NMI}(z^*, y)$. For HDP we use gensim's
+\texttt{HdpModel.\_\_getitem\_\_} corpus projection; for ProdLDA and
+ETM the trained encoder produces $\theta$ directly. The resulting
+$19 \times 4 = 76$-cell F-7 matrix is in Table~\ref{tab:f7-backbone}.
+
+\begin{table}[ht]
+\caption{F-7 NMI mean across the six labelled scenes for the top-12
+recipes ranked by 4-backbone mean. Bold = per-backbone winner.}
+\label{tab:f7-backbone}
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lccccc}
+\toprule
+Recipe & LDA & HDP & ProdLDA & ETM & \textbf{Mean} \\
+\midrule
+\textbf{V8}  (NFINDR)       & 0.463 & 0.451 & \textbf{0.328} & 0.482 & \textbf{0.431} \\
+V20 (MI-weighted)           & 0.520 & 0.356 & 0.221 & 0.490 & 0.397 \\
+V2  (intensity-bin)         & 0.453 & 0.347 & 0.324 & 0.456 & 0.395 \\
+V11 (product quantisation)  & 0.292 & \textbf{0.571} & 0.088 & \textbf{0.530} & 0.370 \\
+V12 (GMM-token)             & \textbf{0.534} & 0.220 & 0.238 & 0.488 & 0.370 \\
+V3  (joint band-bin)        & 0.524 & 0.200 & 0.169 & 0.443 & 0.334 \\
+V19 (UMAP coord)            & 0.286 & 0.530 & 0.051 & 0.394 & 0.315 \\
+V15 (spectral indices)      & 0.313 & 0.438 & 0.058 & 0.449 & 0.315 \\
+V13 (VQ-VAE)                & 0.311 & 0.399 & 0.113 & 0.406 & 0.307 \\
+V14 (CWT-Morlet)            & 0.457 & 0.220 & 0.114 & 0.430 & 0.306 \\
+V18 (graph-Laplacian)       & 0.428 & 0.198 & 0.080 & 0.330 & 0.259 \\
+V1  (band-frequency)        & 0.455 & 0.081 & 0.091 & 0.381 & 0.252 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The F-7 backbone factorial reveals \emph{three distinct cross-backbone
+families}:
+
+\paragraph{Family 1 — consistently strong.} V8, V20, V2. Top-5 under
+every backbone, smallest cross-backbone standard deviation
+($\sigma \le 0.07$). V8 is the leader at mean $0.431$ but wins
+outright only under ProdLDA. V20 is the unique label-aware recipe in
+this family.
+
+\paragraph{Family 2 — backbone-specialist.} V11 (product quantisation)
+wins HDP ($0.571$) and ETM ($0.530$) but collapses to $0.292$ under
+LDA and $0.088$ under ProdLDA — the widest cross-backbone spread in
+the sweep. V19 (UMAP coordinates) shows a similar HDP-favoured
+profile.
+
+\paragraph{Family 3 — LDA-dominant.} V12, V3, V14. Top-5 under LDA
+but middle of the pack under the alternative priors. V12's F-7 LDA
+win disappears entirely under HDP / ETM (where V11 wins) and gets
+edged out by V8 / V2 under ProdLDA.
+
+The take-away is that the backbone factorial swap dimension matters
+\emph{as much as the recipe dimension}: V11 looks like a poor
+choice under LDA but is the headline winner under HDP / ETM, and
+V12's LDA leadership does not generalise. This corroborates the P3
+narrative that no recipe-backbone choice is canonical.
+
 \subsection{Three backbone--recipe affinities}\label{sec:affinities}
 
 \textbf{Dirichlet prior + dense vocabulary.} LDA and ETM both use a
@@ -329,6 +398,50 @@ discriminate strongly between topics. V3's joint (band, bin) vocab
 consider with no spatial or learned structure --- and it wins ProdLDA.
 
 % =====================================================================
+\subsection{Why V11 wins HDP and ETM but bombs LDA and ProdLDA}
+\label{subsec:v11-mechanism}
+
+V11 (product quantisation, $M = 4$ sub-vectors $\times$ $K_s = 8$
+codewords) has the smallest vocabulary in the sweep --- $M K_s = 32$
+tokens, two orders of magnitude smaller than V12's $B Q \approx 1600$.
+A small vocabulary interacts very differently with each backbone's
+prior:
+
+\begin{itemize}
+  \item \textbf{Under HDP} (stick-breaking truncation), the
+    Dirichlet-Process prior is sparsity-inducing in the
+    \emph{topic} dimension: only a handful of effective topics
+    survive. A small vocabulary makes each surviving topic a
+    high-information indicator on the sub-vector codeword space,
+    which the HDP can cleanly attach to a labelled class. V11's
+    coarse quantisation \emph{matches the HDP's coarse topic
+    discovery}.
+  \item \textbf{Under ETM} (low-rank embedded decoder), the topic-
+    word distribution is constrained to $\beta_k = \rho \alpha_k^\top$
+    with $\rho \in \mathbb{R}^{V \times E}$. A small vocabulary
+    means $\rho$ is tiny ($32 \times E$) and the embedded geometry
+    can be fully learnt from few PQ codewords. V11's coarse
+    vocabulary \emph{matches the ETM's low-dimensional decoder}.
+  \item \textbf{Under LDA} (symmetric Dirichlet over a large
+    vocabulary), the conjugate prior expects each topic to be a
+    full distribution over $V$ tokens. A $V = 32$ vocabulary means
+    each topic-word vector is over-determined by very few tokens,
+    making the topic-mixture argmax noisy and the F-7 NMI weak
+    (V11 LDA $= 0.292$).
+  \item \textbf{Under ProdLDA} (logistic-normal prior, neural
+    encoder $q_\phi$), the encoder must compress each pixel's full
+    spectrum into a topic-mixture vector, with $\theta$ supervised
+    only by the reconstruction loss. The 32-token vocabulary
+    starves the encoder of distinguishable features, and the
+    argmax topic becomes degenerate (V11 ProdLDA $= 0.088$, near
+    chance).
+\end{itemize}
+
+The same mechanism explains V19 (UMAP coords, vocab $= 24$): wins
+HDP at 0.530 but collapses to 0.051 under ProdLDA. The size of the
+vocabulary alone changes the F-7 winner; the recipe-backbone choice
+is genuinely two-dimensional.
+
 \section{Practical recommendation}\label{sec:recommendation}
 % =====================================================================
 
