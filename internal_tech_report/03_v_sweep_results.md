@@ -327,28 +327,32 @@ F-18 (reliability) and F-22 (counterfactual robustness), all of
 which show the cleaner Q-trajectories tabulated above.
 
 **Headline.** V8 (NFINDR endmember-fraction) is the new F-18 leader
-under the mean-cosine metric, and its reliability rises
-*monotonically* with Q: 0.957 → 0.962 → 0.965. **V8 is the only
-recipe in the sweep whose reproducibility improves as quantisation
-refines.** The geometric origin of V8's vocabulary (NFINDR convex
-hull endmembers, with NNLS abundance fractions discretised by Q) is
-the mechanism: the endmember basis is invariant under quantisation
-refinement, so finer Q only sharpens the rank-ordering of fractions
-without introducing new seed-dependent splits.
+under the mean-cosine metric, **staying above 0.95 across all three Q
+levels with a slight peak at Q=16**: 0.957 → 0.962 → 0.959. V8 is
+the only recipe in the sweep whose reproducibility remains in the
+very-high regime under quantisation refinement, and one of only two
+where Q=16 outperforms Q=8 (the other is V18 in the original sweep).
+The geometric origin of V8's vocabulary (NFINDR convex hull endmembers
+with NNLS abundance fractions discretised by Q) is the mechanism: the
+endmember basis is invariant under quantisation refinement, so finer
+Q only sharpens the rank-ordering of fractions without introducing
+new seed-dependent splits — until Q=32 oversaturates the discretisation
+and a small portion of the cross-seed alignment is lost.
 
 V20 stays flat in the low-reliability regime (~0.45 across Q=8/16/32),
 mirroring V12's "informative-but-seed-sensitive" profile — V20's
 MI-reweighting flattens the topic-word distribution in low-MI regions,
 leaving room for seed-dependent refinement that is invariant to Q.
 
-V2 collapses with Q (1.000 → 0.875 → 0.788) — the vocabulary-size
+V2 collapses with Q (1.000 → 0.875 → 0.781) — the vocabulary-size
 artefact that propped it up at Q=8 disappears as vocab grows to 32.
 
 **V8 therefore becomes the cross-axis recommendation when both
 reproducibility and informativeness matter under uncertain backbones**:
-top-3 cross-backbone F-7 NMI, F-18 monotonic UP with Q, F-22
-monotonic UP with Q. V20 remains the LDA-specific peak on F-7 / F-22
-(Q=8/16) / F-2 (Q=32) but pays for it in reseed reliability.
+top-3 cross-backbone F-7 NMI, F-18 stable high across Q (0.96 mean),
+F-22 monotonic UP with Q (3.58 → 9.58 → 20.25). V20 remains the
+LDA-specific peak on F-7 / F-22 (Q=8/16) / F-2 (Q=32) but pays for
+it in reseed reliability (~0.45 flat across Q).
 
 ## F-22 counterfactual L1 (median, higher is more robust)
 
@@ -605,12 +609,15 @@ recipes also become more diverse at finer Q:
 | V2  | 1.000 | 0.505 | 0.261 | 3.8× more diverse (was trivially redundant at Q=8) |
 | V8  | 0.868 | 0.858 | 0.841 | modest improvement |
 
-V20 at $Q=32$ has the **lowest F-14 jaccard of any recipe in the
-sweep** (0.009) AND the highest F-2 c_v AND the highest F-7 NMI.
-This is the strongest single-recipe result the matrix produces:
-V20 lands at the top of all three quality axes simultaneously
-at finer quantisation. The mechanism is the MI-weighted band
-amplification — high-MI bands emit more copies, which gives the
+V20 at $Q=32$ has the **lowest F-14 jaccard of any informative-
+vocabulary recipe** (0.009) AND the highest F-2 c_v AND the
+highest F-7 NMI. (V9, V11 and V17 hit 0.000 trivially because their
+vocabularies are too small to sustain top-10 collisions across
+topics; V20's 0.009 is among recipes with vocabularies >= 200 word
+types.) This is the strongest single-recipe result the matrix
+produces: V20 lands at the top of all three quality axes
+simultaneously at finer quantisation. The mechanism is the MI-
+weighted band amplification — high-MI bands emit more copies, which gives the
 LDA likelihood enough signal to produce both coherent AND
 discriminative AND diverse topics, while low-MI bands stay
 zero-copy and so do not pollute the diversity calculation.
