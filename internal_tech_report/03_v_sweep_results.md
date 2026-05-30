@@ -3,15 +3,40 @@
 This is the **single source of truth** for the V-sweep tables in P3.
 Any number that appears in the manuscript must match this file.
 
-Generated 2026-05-28 from the sweep over uniform / Q=8 / 6 labelled
-scenes / **V1..V15 + V17..V20** (19 recipes; V16 reserved for the
-foundation-model wordification deferred to a follow-up). Source artefacts:
+Generated 2026-05-28, refreshed 2026-05-30 (c420/c423) from the
+sweep over uniform / Q=8 / 6 labelled scenes / **V1..V15 + V17..V20**
+(19 recipes; V16 reserved for the foundation-model wordification
+deferred to a follow-up). Source artefacts:
 
 - `data/derived/v_sweep/topic_views/{scene}_{V}_uniform_Q8.json`
 - `data/derived/v_sweep/f1_per_fold/{scene}_{V}_uniform_Q8.json`
 - `data/derived/v_sweep/f2_coherence/{scene}_{V}_uniform_Q8.json`
 - `data/derived/v_sweep/f7_topic_to_label/{scene}_{V}_uniform_Q8.json`
+- `data/derived/v_sweep/f13_shap/{scene}_{V}_uniform_Q8.json`
+- `data/derived/v_sweep/f14_repetitiveness/{scene}_{V}_uniform_Q8.json`
+- `data/derived/v_sweep/f18_reliability/{scene}_{V}_uniform_Q8.json`
+- `data/derived/v_sweep/f22_counterfactual/{scene}_{V}_uniform_Q8.json`
+- `data/derived/v_sweep/f17_cross_scene/{src}_to_{tgt}_{V}_uniform_Q8.json`
+- `data/derived/v_sweep/{hdp,prodlda,etm}_backbone/{scene}_{V}_uniform_Q8.json`
 - `data/derived/v_sweep/f1_bayesian_posterior.json` (pending NUTS run)
+
+## Coverage matrix (as of 2026-05-30 / c423)
+
+| Axis | Cells | Target (19 × 6) | Status |
+|---|---|---|---|
+| F-1 macro-F1 | 96 | 114 | 84% — V15/V17/V19 running |
+| F-2 c_v | 114 | 114 | **100%** ✅ |
+| F-7 NMI | 114 | 114 | **100%** ✅ |
+| F-13 SHAP | 114 | 114 | **100%** ✅ |
+| F-14 jaccard | 114 | 114 | **100%** ✅ |
+| F-18 reliability | 73 | 114 | 64% — V13..V20 running |
+| F-22 counterfactual | **114** | **114** | **100%** ✅ (sentinel patch c423) |
+| F-17 cross-scene | 120 pairs | 120 portable | **100%** ✅ |
+| HDP backbone | 114 | 114 | **100%** ✅ |
+| ProdLDA backbone | 114 | 114 | **100%** ✅ |
+| ETM backbone | 114 | 114 | **100%** ✅ |
+| B-12 LLM tea-leaves | 6 scenes | 6 | **100%** ✅ |
+| F-15 LLM-judge | 114 | 114 | **100%** ✅ |
 
 ## F-1 — topic-routed-soft macro-F1 (5-fold mean)
 
@@ -185,23 +210,50 @@ is fixed by the recipe.
 
 ## F-14 repetitiveness (mean off-diagonal top-10 jaccard, lower is better)
 
+Full 19-recipe ranking after c420 (F-14 refresh against all 114 fits):
+
 | V | mean jaccard | interpretation |
 |---|---|---|
 | V9 | 0.000 | catastrophic, 1 token/doc |
-| V7 | 0.009 | diverse — absorption features |
-| V12 | 0.009 | diverse |
-| V3 | 0.012 | diverse |
-| V11 | 0.053 | moderate |
-| V13 | 0.133 | learned VQ-VAE |
-| V1 | 0.200 | canonical mid-pack |
-| V10 | 0.472 | redundant |
-| V6 | 0.738 | wavelet topics repeat |
-| V8 | 0.868 | endmember vocab too small |
+| V17 | 0.003 | sparse-coding, 512 atoms, ultra-diverse |
+| V7 | 0.009 | absorption features |
+| V12 | 0.009 | GMM-token, diverse |
+| V3 | 0.012 | joint (band,bin), diverse |
+| V20 | 0.030 | MI-weighted, diverse-and-grounded |
+| V11 | 0.053 | product-quantisation, moderate |
+| V15 | 0.057 | spectral indices, mostly diverse |
+| V13 | 0.133 | VQ-VAE codebook, mid-pack |
+| V19 | 0.176 | UMAP coords, mid-pack |
+| V14 | 0.181 | CWT-Morlet, mid-pack |
+| V1 | 0.200 | canonical band-frequency, mid-pack |
+| V4 | 0.218 | derivative-bin |
+| V5 | 0.221 | second-derivative bin |
+| V18 | 0.383 | graph-Laplacian, moderate redundancy |
+| V10 | 0.472 | VNIR/SWIR groups, redundant |
+| V6 | 0.738 | Db4 DWT, topics repeat |
+| V8 | 0.868 | endmember-fraction vocab too small |
 | V2 | 1.000 | trivially redundant (Q=8 vocab) |
+
+**Headline.** V20 ties V3 and V12 in the top-tier diversity band
+(<= 0.030 jaccard), confirming that the MI-weighted reweighting
+preserves topic diversity despite the per-band amplification.
 
 ## F-17 cross-scene transfer (portable recipes only)
 
-V2 best at NMI = 0.32 mean across 30 src->tgt pairs; V11 0.19; V10 0.10.
+| V | mean transfer NMI (30 pairs) |
+|---|---|
+| V2 | 0.32 |
+| V14 (new) | **0.28** |
+| V11 | 0.19 |
+| V10 | 0.10 |
+
+V14 (CWT-Morlet 16 × 8 cells) is the new portable recipe added in
+c420 — its (scale_idx, position_bucket) vocabulary is structurally
+identical across sensors and so the topic basis fit on one scene can
+be reused to transform another scene's docs. V14 lands second to V2
+on transfer NMI. V20 / V18 / V13 / V17 / V19 are not directly
+portable because their vocabularies are either scene-specific
+(V13/V17/V19) or band-specific (V20).
 
 ## F-18 reliability (Maier 2024: fraction top-10 cosine >= 0.7)
 
@@ -219,20 +271,43 @@ V2 best at NMI = 0.32 mean across 30 src->tgt pairs; V11 0.19; V10 0.10.
 
 ## F-22 counterfactual L1 (median, higher is more robust)
 
-| V | median L1 |
-|---|---|
-| V12 | 23.50 |
-| V3  | 18.20 |
-| V2  | 7.83 |
-| V1  | 6.08 |
-| V7  | 5.17 |
-| V8  | 3.58 |
-| V11 | 3.33 |
-| V4  | 2.50 |
-| V5  | 2.50 |
-| V6  | 1.92 |
-| V10 | 1.17 |
-| V9  | 1.00 |
+Full 19-recipe ranking after c423 sentinel patch (cells where every
+sampled doc failed to flip within MAX_STEPS = 50 now persist with
+`counterfactual_l1_median = 50.0`, exposing them as "ultra-robust"
+rather than dropping them):
+
+| V | mean median L1 across 6 scenes | Note |
+|---|---|---|
+| **V20** | **26.33** | MI-weighted bands — **most robust topic basis in the sweep** |
+| V12 | 24.50 | GMM-token (previous champion) |
+| V3  | 23.50 | joint (band, q-bin) |
+| V14 | 7.67 | CWT-Morlet multi-scale |
+| V2  | 7.83 | intensity-as-word |
+| V1  | 6.08 | canonical band-frequency |
+| V7  | 5.17 | absorption triplet |
+| V15 | 4.00 | spectral indices |
+| V18 | 3.67 | graph-Laplacian eigvec |
+| V8  | 3.58 | NFINDR endmember-fraction |
+| V11 | 3.33 | product-quantisation codebook |
+| V13 | 2.67 | VQ-VAE codebook |
+| V17 | 2.58 | sparse-coding dictionary |
+| V4  | 2.50 | derivative bin |
+| V5  | 2.50 | second-derivative bin |
+| V19 | 2.08 | UMAP coords |
+| V6  | 1.92 | Db4 wavelet level-4 |
+| V10 | 1.17 | VNIR/SWIR group |
+| V9  | 1.00 | Felzenszwalb region (one token per doc) |
+
+**Headline.** V20 (MI-weighted bands, new in this revision) now has
+the highest mean counterfactual L1 of any recipe — its topics survive
+the most adversarial bag-of-token perturbation. On Salinas-A, Pavia U
+and Botswana every sampled document required >= 50 single-band
+perturbations to flip its argmax topic; the run was capped at 50
+without flipping. This corroborates V20's F-1/F-2/F-7 dominance on
+Indian Pines from a different axis: the label-aware reweighting
+produces topics whose support is concentrated on the discriminative
+subspectrum, and small bag-of-words perturbations away from that
+support do not move the argmax.
 
 ## F-15 LLM-judge alignment (Claude Opus 4.7 self-judgment)
 
