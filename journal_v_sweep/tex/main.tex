@@ -723,6 +723,25 @@ reliable of the informative recipes that have non-trivial vocabulary
 its canonical status \emph{even when V12 wins all other axes}: V1 is
 the most reliable wordification with informative vocabulary.
 
+\paragraph{V20 falls on the V12 side of the reliability axis.}
+The extended F-18 sweep with the label-aware recipe yields
+mean matched-cosine $0.451$ at $Q=8$ and $0.450$ at $Q=16$ across
+the six labelled scenes — squarely in the V12 / V3 / V4 informative-
+but-seed-sensitive regime, despite V20's strong F-2 / F-7 / F-22
+performance. The MI-reweighting in V20 produces a relatively flat
+topic-word matrix in regions of low MI, so different LDA seeds find
+different sparse refinements of the high-MI bands. \textbf{V8
+(NFINDR endmember-fraction)} is the new F-18 leader at $0.957$ ($Q=8$)
+and $0.962$ ($Q=16$): the endmember basis is determined geometrically
+(convex hull, not stochastic), so refits land on the same top-10
+indicators across seeds. Critically, V8's high reliability is
+\emph{not} the vocab-size artefact that drove V2 / V6: V8 inherits
+its information from convex-hull geometry over the spectral simplex,
+which is itself a label-correlated structure. \textbf{V8 therefore
+combines the cross-backbone-portability finding (top-3 mean F-7 NMI
+across LDA / HDP / ProdLDA / ETM) with reseed reliability at the
+$0.95$ level — a previously unrecognised composite recommendation.}
+
 \textbf{F-22 counterfactual.} Coordinate-descent search for minimum
 $L_1$ perturbation that flips $\arg\max \theta_d$, capped at
 $\text{MAX\_STEPS} = 50$ token-flips. Cells where every sampled
@@ -754,6 +773,18 @@ perturbations of high-MI bands require many simultaneous flips to
 exit the recipe's amplification basin. V9 (one token per document)
 flips at the first perturbation, V12 inherits robustness from its
 soft GMM responsibilities.
+
+\paragraph{F-22 Q-trajectory.} Re-running the four top contenders at
+$Q \in \{8, 16, 32\}$ reveals a non-monotonic peak for V20 at $Q=16$
+($L_1 = 41.83$, $+59\%$ over Q=8), with the gain collapsing back to
+$26.17$ at $Q=32$ as the discriminative subspectrum splits across
+more codewords. V12 reclaims the lead at $Q=32$ ($L_1 = 30.00$),
+matching its F-7 peak at $Q=16$ but extending it on F-22. V8 is the
+only top-contender whose adversarial robustness rises monotonically
+with $Q$ ($3.58 \to 9.58 \to 20.25$), consistent with its
+cross-backbone F-7 portability — V8's endmember-fraction vocabulary
+preserves discriminative structure across both finer quantisation and
+across topic-model backbones.
 
 \begin{figure*}[!t]
 \centering
@@ -899,6 +930,48 @@ family; V8 and V11 are label-unaware compressions of the spectrum.
 The cross-backbone story is therefore not ``one recipe wins
 everywhere'' but ``three recipes lead under different priors, all
 above the canonical V1 baseline''.
+
+\paragraph{HDP backbone at $Q=16$.} Re-running HDP F-7 NMI for the
+top-3 contenders at the finer quantisation level reveals that V8's
+cross-backbone dominance is preserved under quantisation refinement:
+HDP $Q=16$ gives V8 $0.454$, V20 $0.403$, V2 $0.249$, mirroring the
+$Q=8$ HDP ranking ($V8 = 0.471$, $V20 = 0.397$, V2 $0.231$). V8's
+endmember-fraction vocabulary is robust both across topic-model
+priors and across quantisation levels, while V20's gains from finer
+$Q$ are LDA-specific.
+
+\paragraph{V8 monotonic on F-18 across Q.} Extending F-18 to Q=16/32
+on the V20 / V8 / V2 trio yields mean matched cosine across the six
+labelled scenes:
+
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+Recipe & Q=8 & Q=16 & Q=32 \\
+\midrule
+\textbf{V8} & 0.957 & \textbf{0.962} & \textbf{0.965} \\
+V2 & 1.000 & 0.875 & 0.788 \\
+V20 & 0.451 & 0.450 & 0.453 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{V8 is the only recipe whose reseed reliability rises
+monotonically as quantisation refines.} The mechanism is geometric:
+the NFINDR endmember basis is invariant under quantisation of the
+NNLS abundance fractions, so finer $Q$ only sharpens the rank-ordering
+of fractions without introducing new seed-dependent splits in the
+top-10 indicator vectors. V20 stays in the informative-but-seed-
+sensitive regime ($\sim 0.45$) at every $Q$, mirroring V12. V2
+collapses with $Q$ as its vocabulary grows from 8 to 32 word types,
+confirming that V2's $Q=8$ reliability of $1.0$ was the vocabulary-
+size artefact previously flagged.
+
+This sharpens the recommendation: \textbf{V8 is the recipe of choice
+when the topic-model backbone is uncertain or reseed reliability is
+required}; V20 is the recipe of choice when LDA is fixed and one can
+afford $Q \geq 16$ and accept the seed-sensitivity tradeoff.
 
 % =====================================================================
 \section{Five axis--recipe affinities}\label{sec:affinities}
