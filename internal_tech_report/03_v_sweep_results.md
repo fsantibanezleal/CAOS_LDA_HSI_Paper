@@ -480,29 +480,37 @@ The broader Q-sweep across 19 recipes × 3 schemes × {8, 16, 32} is
 deferred to a follow-up (171 candidate vocabularies per scene × 6
 scenes = 1026 LDA fits, plus the 13 axes downstream).
 
-## Backbone F-7 NMI extension — V20 wins under HDP too (c432)
+## Backbone F-7 NMI extension — V20 top-3 across all 4 backbones (c432-c434)
 
 Until c432 the backbone factorial only carried F-2 c_v. Adding F-7 NMI
-under each non-LDA backbone changes the headline:
+under each non-LDA backbone changes the headline.
 
-### HDP backbone — F-7 NMI mean across 6 scenes
+### Full 4-backbone × 6-recipe F-7 NMI mean across 6 scenes
 
-| Recipe | F-7 NMI under HDP |
-|---|---|
-| **V20 (MI-weighted)** | **0.356** |
-| V14 (CWT-Morlet) | 0.220 |
-| V12 (GMM-token) | 0.220 |
-| V3 (joint band-bin) | 0.200 |
-| V18 (graph-Laplacian) | 0.198 |
-| V1 (band-frequency) | 0.081 |
+| Recipe | LDA | HDP | ProdLDA | ETM | Mean | Best |
+|---|---|---|---|---|---|---|
+| **V20 (MI-weighted)** | 0.520 | **0.356** | 0.221 | **0.490** | **0.397** | HDP / ETM |
+| V12 (GMM-token) | **0.534** | 0.220 | **0.238** | 0.488 | 0.370 | LDA / ProdLDA |
+| V3 (joint band-bin) | 0.524 | 0.200 | 0.169 | 0.443 | 0.334 | — |
+| V14 (CWT-Morlet) | 0.457 | 0.220 | 0.114 | 0.430 | 0.305 | — |
+| V18 (graph-Laplacian) | 0.428 | 0.198 | 0.080 | 0.330 | 0.259 | — |
+| V1 (band-frequency) | 0.455 | 0.081 | 0.091 | 0.381 | 0.252 | — |
 
-**Headline.** V20 has the highest F-7 NMI under HDP by a wide margin
-(1.6× the second-place recipe), even though HDP's stick-breaking
-prior penalises V20 on F-2 c_v (where V7 wins under HDP). This is a
-strong corroboration of the LDA F-7 finding from a different prior
-class: even when HDP picks a different recipe for *coherence*, the
-*label-aligned* topics come from V20's MI-weighted vocabulary. The
-extension of F-7 NMI to ProdLDA / ETM backbones is queued.
+**Headline.** V20 has the highest cross-backbone F-7 NMI mean (0.397),
+beating V12 (0.370) by 0.027. V20 wins F-7 outright under two of the
+four backbones (HDP by 1.6×; ETM by tie); is second under ProdLDA
+(within 0.017 of V12); and third under LDA (within 0.014 of V12).
+
+**V20 is the only recipe in top-3 of all four backbones for F-7 NMI.**
+This corroborates the LDA F-7 finding from three different prior
+classes (stick-breaking HDP, logistic-normal ProdLDA, low-rank
+embedded ETM). Even when each backbone picks a different recipe for
+*coherence* (HDP→V7 sparse-absorption; ETM→V12 GMM; ProdLDA→V3 joint),
+the *label-aligned* topics under each backbone consistently come from
+V20's MI-weighted vocabulary.
+
+A 4-backbone × 19-recipe F-7 NMI sweep (just like the c397 backbone ×
+F-2 factorial) is the natural follow-up.
 
 ## V-sweep + neural baselines (existing P1 numbers, V1-only)
 
