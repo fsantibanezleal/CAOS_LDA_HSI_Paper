@@ -70,11 +70,14 @@ V20 (mutual-information-weighted bands, new to this revision) achieves
 the first \emph{triple-axis win} of the sweep — F-1 macro-F1 (0.858),
 F-2 coherence (0.88) and F-7 NMI (0.44) all three on Indian Pines —
 is within $0.014$ NMI of the leader on the remaining five F-7
-cells, produces the \emph{most counterfactually robust topic basis}
-of the sweep ($L_1 = 26.3$ vs $24.5$ for the previous leader V12),
-and is the only recipe of the sweep to land top-3 on F-7 NMI under
-\emph{all four} topic-model backbones (LDA / HDP / ProdLDA / ETM —
-winning HDP outright by 1.6$\times$ and tying ETM with V12). V13 (vector-quantised VAE) underperforms
+cells, and produces the \emph{most counterfactually robust topic basis}
+of the sweep ($L_1 = 26.3$ vs $24.5$ for the previous leader V12).
+A four-backbone $\times$ nineteen-recipe extension of F-7 NMI
+identifies V8 (NFINDR endmember-fraction) as the most cross-backbone-
+consistent recipe (mean 0.431) and V20 as the second-most consistent
+(0.397) — the only \emph{label-aware} recipe in the consistently-
+strong family. The per-backbone F-7 winners are V12 (LDA, 0.534),
+V11 (HDP, 0.571), V8 (ProdLDA, 0.328) and V11 (ETM, 0.530). V13 (vector-quantised VAE) underperforms
 sharply; V18 (graph-Laplacian eigenvector tokens) places third on F-7
 mean. The per-axis winner depends both on the scene and on which
 property of the topic basis the axis measures. We report the full
@@ -817,33 +820,47 @@ The c397 backbone factorial reported F-2 $c_v$ only. The c432--c434
 extension adds F-7 NMI under each non-LDA backbone:
 
 \begin{table}[ht]
-\caption{F-7 NMI mean across the six labelled scenes, six top-contender
-recipes $\times$ four topic-model backbones. Bold = per-backbone
-winner. \textbf{V20 is the only recipe to land top-3 under every
-backbone.}}
+\caption{F-7 NMI mean across the six labelled scenes, top-12 recipes
+$\times$ four topic-model backbones (c436 full sweep, 456/456 cells).
+Bold = per-backbone winner. Recipes sorted by 4-backbone mean.}
 \label{tab:f7-4backbone}
 \centering
-\small
+\scriptsize
+\setlength{\tabcolsep}{4pt}
 \begin{tabular}{lccccc}
 \toprule
-Recipe & LDA & HDP & ProdLDA & ETM & Mean \\
+Recipe & LDA & HDP & ProdLDA & ETM & \textbf{Mean} \\
 \midrule
-\textbf{V20}  & 0.520 & \textbf{0.356} & 0.221 & \textbf{0.490} & \textbf{0.397} \\
-V12  & \textbf{0.534} & 0.220 & \textbf{0.238} & 0.488 & 0.370 \\
-V3   & 0.524 & 0.200 & 0.169 & 0.443 & 0.334 \\
-V14  & 0.457 & 0.220 & 0.114 & 0.430 & 0.305 \\
-V18  & 0.428 & 0.198 & 0.080 & 0.330 & 0.259 \\
-V1   & 0.455 & 0.081 & 0.091 & 0.381 & 0.252 \\
+\textbf{V8}  (NFINDR)       & 0.463 & 0.451 & \textbf{0.328} & 0.482 & \textbf{0.431} \\
+V20 (MI-weighted)           & 0.520 & 0.356 & 0.221 & 0.490 & 0.397 \\
+V2  (intensity-bin)         & 0.453 & 0.347 & 0.324 & 0.456 & 0.395 \\
+V11 (product quantisation)  & 0.292 & \textbf{0.571} & 0.088 & \textbf{0.530} & 0.370 \\
+V12 (GMM-token)             & \textbf{0.534} & 0.220 & 0.238 & 0.488 & 0.370 \\
+V3  (joint band-bin)        & 0.524 & 0.200 & 0.169 & 0.443 & 0.334 \\
+V19 (UMAP coord)            & 0.286 & 0.530 & 0.051 & 0.394 & 0.315 \\
+V15 (spectral indices)      & 0.313 & 0.438 & 0.058 & 0.449 & 0.315 \\
+V13 (VQ-VAE)                & 0.311 & 0.399 & 0.113 & 0.406 & 0.307 \\
+V14 (CWT-Morlet)            & 0.457 & 0.220 & 0.114 & 0.430 & 0.306 \\
+V18 (graph-Laplacian)       & 0.428 & 0.198 & 0.080 & 0.330 & 0.259 \\
+V1  (band-frequency)        & 0.455 & 0.081 & 0.091 & 0.381 & 0.252 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-V20 wins F-7 under HDP (by $1.6\times$ the second-place recipe) and
-ties V12 under ETM ($\Delta < 0.002$). Even under ProdLDA's
-logistic-normal prior — which picks V3 as the F-2 winner and V12 as
-the F-7 winner — V20 lands second within $0.017$ NMI. This is the
-strongest cross-prior corroboration of the LDA-V20 finding the sweep
-produces.
+\textbf{V8 (NFINDR endmember-fraction)} is the most cross-backbone-
+consistent recipe at mean F-7 NMI $= 0.431$; it lands top-5 under
+every backbone without winning any outright and has the smallest
+standard deviation across the four backbones ($\sigma = 0.06$). V20
+is the second-most consistent at $0.397$, retaining LDA strength
+($0.520$) and tying ETM ($0.490$) with V12 / V11. V11 (product
+quantisation, vocab $M K_s = 32$) wins HDP and ETM outright but
+collapses under LDA and ProdLDA — a backbone-specialist profile.
+V20's interpretability advantage relative to V8 and V11 is that it
+is the only \emph{label-aware} recipe in the consistently-strong
+family; V8 and V11 are label-unaware compressions of the spectrum.
+The cross-backbone story is therefore not ``one recipe wins
+everywhere'' but ``three recipes lead under different priors, all
+above the canonical V1 baseline''.
 
 % =====================================================================
 \section{Five axis--recipe affinities}\label{sec:affinities}
