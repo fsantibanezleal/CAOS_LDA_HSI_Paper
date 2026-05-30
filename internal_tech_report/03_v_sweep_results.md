@@ -480,33 +480,86 @@ The broader Q-sweep across 19 recipes × 3 schemes × {8, 16, 32} is
 deferred to a follow-up (171 candidate vocabularies per scene × 6
 scenes = 1026 LDA fits, plus the 13 axes downstream).
 
-### Full Q-sensitivity for top contenders (c441-c444)
+### Full 19-recipe Q-sensitivity (c441-c445, corrected)
 
-Across the seven recipes most-cited in the sweep:
+After extending the Q-sweep to every recipe (V13 excluded — VQ-VAE
+codebook is structurally Q-insensitive; the only knob is the codebook
+size K which trains separately), the full F-7 NMI ranking by
+trajectory:
 
 | Recipe | F-7 Q=8 | F-7 Q=16 | F-7 Q=32 | Trajectory |
 |---|---|---|---|---|
-| **V20** (MI-weighted) | 0.520 | 0.534 | **0.563** | **monotonic ↑** |
-| V3 (joint band-bin) | 0.524 | 0.521 | 0.530 | saturates Q=8 |
-| V8 (NFINDR endmember) | 0.463 | (n/a) | 0.482 | minor ↑ |
-| V11 (product quantisation) | 0.292 | 0.266 | 0.262 | peaks Q=8 then ↓ |
-| V12 (GMM-token) | 0.534 | **0.552** | 0.533 | peaks Q=16 then ↓ |
-| V14 (CWT-Morlet) | 0.457 | 0.458 | 0.428 | peaks Q=16 then ↓ |
-| V18 (graph-Laplacian) | 0.428 | 0.413 | 0.362 | monotonic ↓ |
+| **V20** (MI-weighted) | 0.520 | 0.534 | **0.563** | **mono ↑** (+0.043) |
+| V2 (intensity-bin) | 0.453 | 0.483 | 0.497 | **mono ↑** (+0.044) |
+| V8 (NFINDR endmember) | 0.463 | 0.476 | 0.482 | **mono ↑** (+0.019) |
+| V6 (Db4 wavelet) | 0.320 | 0.327 | 0.343 | **mono ↑** (+0.023) |
+| V3 (joint band-bin) | 0.524 | 0.521 | 0.530 | mixed |
+| V12 (GMM-token) | 0.534 | **0.552** | 0.533 | peak Q=16 |
+| V4 (derivative bin) | 0.345 | 0.373 | 0.371 | peak Q=16 |
+| V10 (band-group) | 0.149 | 0.204 | 0.152 | peak Q=16 |
+| V14 (CWT-Morlet) | 0.457 | 0.458 | 0.428 | peak Q=16 |
+| V5 (2nd-derivative) | 0.298 | 0.231 | 0.235 | peak Q=8 |
+| V15 (spectral indices) | 0.313 | 0.275 | 0.291 | peak Q=8 |
+| V1 (band-frequency) | 0.455 | 0.418 | 0.376 | mono ↓ |
+| V7 (absorption triplet) | 0.200 | 0.146 | 0.099 | mono ↓ |
+| V9 (Felzenszwalb) | 0.116 | 0.064 | 0.035 | mono ↓ |
+| V11 (product quantisation) | 0.292 | 0.266 | 0.263 | mono ↓ |
+| V17 (sparse-coding) | 0.216 | 0.140 | 0.058 | mono ↓ |
+| V18 (graph-Laplacian) | 0.428 | 0.413 | 0.362 | mono ↓ |
+| V19 (UMAP coord) | 0.286 | 0.235 | 0.169 | mono ↓ |
 
-**V20 is the only recipe with monotonically increasing F-7 NMI from
-Q=8 to Q=32**, and the absolute lead over V12 widens with Q (0.014 at
-Q=8 → 0.030 at Q=32). The mechanism is straightforward: V20 weights
-each band's emission count by per-band mutual information with
-labels; finer quantisation refines the intensity histogram on the
-high-MI bands, producing more discriminative tokens without adding
-noise from low-MI bands (those still emit zero copies). Every other
-top recipe either saturates (V3 already at Q=8) or has a finite
-optimum that gets passed at Q=32 (V12 / V14 peak at Q=16, V18 / V11
-peak at Q=8). The result strengthens V20's case as the canonical
-label-aware LDA wordification: not only is it best on the headline
-Indian Pines triple, it is also the only recipe whose advantage
-grows with quantisation depth.
+### F-2 trajectory of the four monotonic-F-7-↑ recipes
+
+| Recipe | F-2 Q=8 | F-2 Q=16 | F-2 Q=32 | F-2 Trajectory |
+|---|---|---|---|---|
+| **V20** | 0.850 | 0.901 | **0.910** | mono ↑ (+0.060) |
+| V2 | 0.435 | 0.439 | 0.442 | mono ↑ (+0.007) |
+| V8 | 0.319 | 0.321 | 0.341 | mono ↑ (+0.022) |
+| V6 | 0.526 | 0.506 | 0.470 | mono ↓ (−0.056) |
+
+### Headline (corrected)
+
+**Three recipes** climb monotonically with Q on both F-2 and F-7:
+V20, V2, V8. V6 is monotonic-↑ on F-7 only (F-2 regresses). Of the
+three universal monotonic improvers:
+
+- **V20** has the steepest gains on both axes (F-2 +0.060, F-7
+  +0.043), the highest absolute values at Q=32 (F-2 0.910, F-7
+  0.563), and is the only label-aware recipe in the family.
+- V2 (intensity-bin, vocab Q) and V8 (NFINDR endmember, vocab ≤ K_e)
+  are simpler label-unaware compressions whose monotonic gain is
+  modest because their vocabulary capacity is small.
+
+**V20 retains its lead over V12 at Q=32 (0.030 NMI gap, doubled
+from 0.014 at Q=8) and becomes the LDA F-7 winner at Q=32**, as
+originally claimed. The earlier "V20 monotonic-only" framing was an
+artefact of testing only seven top contenders at finer Q levels;
+the full 19-recipe sweep shows it shares the monotonic-↑ property
+with V2 and V8 but dominates in absolute terms.
+
+### Recipes that decline at finer Q
+
+The eight monotonically-↓ recipes (V1, V7, V9, V11, V17, V18, V19,
+plus partial V5/V15) all share a structural limitation:
+
+- **V1**: each q-bin partitions a fixed reflectance range; finer Q
+  produces smaller per-bin counts on noisy bands, increasing
+  per-document variance without improving the discriminative
+  signal.
+- **V7 / V9**: sparse recipes whose document length does not scale
+  with Q (≤ 6 absorption features for V7, 1 token per doc for V9),
+  so finer binning fragments rather than enriches the topic prior.
+- **V11**: product-quantisation codebook size is M·K_s, with Q only
+  changing K_s — structural ceiling at K_s = 32 codewords.
+- **V17**: sparse-coding atom vocab K_atoms·Q grows with Q, but
+  per-pixel non-zero count stays at 8, increasing token rarity and
+  starving the LDA likelihood.
+- **V18**: graph-Laplacian eigenvector vocab K_e·Q grows with Q
+  while the K_e = 16 manifold modes provide the same discriminative
+  signal — finer Q just fragments topics across more bins.
+- **V19**: 3-axis UMAP with 3Q tokens per doc — the manifold has
+  ~constant intrinsic dimension, so finer Q dilutes the per-bin
+  information.
 
 ### V20 + V8 at Q=32 (c441 spot check)
 
