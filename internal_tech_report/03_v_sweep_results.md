@@ -309,12 +309,14 @@ All measured across 6 scenes at each Q (n=6, full coverage).
 
 ### F-1 macro-F1 (5-fold) Q-trajectory — saturation observation
 
-| Recipe | Q=8 | Q=16 | Q=32 (partial) |
+| Recipe | Q=8 | Q=16 | Q=32 |
 |---|---|---|---|
-| V20 | 0.917 | 0.916 | 0.909 |
-| V8 | 0.916 | 0.916 | 0.910 |
-| V2 | 0.917 | 0.918 | 0.924 |
-| V12 (reference) | 0.922 | — | — |
+| V20 | 0.9168 | 0.9161 | 0.9156 |
+| V8 | 0.9163 | 0.9158 | 0.9172 |
+| V2 | 0.9173 | 0.9175 | 0.9180 |
+| V12 (reference) | 0.9216 | — | — |
+
+(n=6 scenes at every Q.)
 
 **F-1 saturates near 0.91-0.92 across all three top-3 recipes and
 all three Q levels** — five-fold logistic on enough topics solves
