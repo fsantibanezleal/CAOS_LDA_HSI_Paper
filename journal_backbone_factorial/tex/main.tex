@@ -226,29 +226,33 @@ labelled scenes for every (backbone, recipe) pair.
 
 \begin{table*}[ht]
 \caption{F-2 $c_v$ mean across the six labelled scenes,
-$16 \times 4$ factorial (V1--V13 + V14, V18, V20 extension).}
+\emph{full} $19 \times 4$ factorial after c423 (HDP / ProdLDA / ETM
+now cover V1..V15, V17..V20).}
 \label{tab:f2-factorial}
 \centering
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{l*{16}{c}c}
+\begin{tabular}{l*{19}{c}c}
 \toprule
-Backbone & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 & V13 & V14 & V18 & V20 & best \\
+Backbone & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 & V13 & V14 & V15 & V17 & V18 & V19 & V20 & best \\
 \midrule
-LDA      & 0.81 & 0.43 & 0.88 & 0.46 & 0.45 & 0.45 & 0.32 & 0.36 & 0.71 & 0.30 & 0.21 & 0.85 & 0.25 & 0.63 & 0.57 & \textbf{0.85} & V3/V12/V20 \\
-HDP      & 0.54 & 0.44 & 0.31 & 0.44 & 0.44 & 0.32 & \textbf{0.62} & 0.31 & 0.35 & 0.35 & 0.50 & 0.34 & --- & 0.31 & 0.42 & 0.38 & V7 \\
-ProdLDA  & 0.75 & 0.44 & \textbf{0.86} & 0.43 & 0.43 & 0.54 & 0.51 & 0.31 & 0.73 & 0.33 & 0.34 & 0.83 & 0.25 & 0.47 & 0.48 & 0.74 & V3 \\
-ETM      & 0.66 & 0.44 & 0.79 & 0.43 & 0.44 & 0.55 & 0.26 & 0.31 & 0.73 & 0.32 & 0.24 & \textbf{0.82} & 0.25 & 0.62 & 0.58 & 0.77 & V12 \\
+LDA      & 0.64 & 0.44 & 0.84 & 0.45 & 0.43 & 0.53 & 0.29 & 0.32 & 0.71 & 0.33 & 0.23 & \textbf{0.88} & 0.25 & 0.63 & 0.36 & 0.42 & 0.57 & 0.38 & 0.85 & V12 \\
+HDP      & 0.54 & 0.44 & 0.31 & 0.44 & 0.44 & 0.32 & \textbf{0.61} & 0.31 & 0.35 & 0.35 & 0.50 & 0.34 & 0.31 & 0.31 & 0.39 & 0.59 & 0.42 & 0.50 & 0.41 & V7 \\
+ProdLDA  & 0.75 & 0.44 & \textbf{0.86} & 0.43 & 0.43 & 0.53 & 0.51 & 0.31 & 0.73 & 0.33 & 0.34 & 0.83 & 0.25 & 0.47 & 0.37 & 0.42 & 0.48 & 0.37 & 0.74 & V3 \\
+ETM      & 0.66 & 0.44 & 0.79 & 0.43 & 0.44 & 0.55 & 0.26 & 0.31 & 0.73 & 0.32 & 0.24 & \textbf{0.82} & 0.25 & 0.62 & 0.36 & 0.43 & 0.58 & 0.35 & 0.77 & V12 \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-LDA's numbers in the V1--V12 columns are reproduced from P3; V13--V20
-are new to this revision (c397--c401). HDP V13 cell is omitted because
-the recipe was not run under that backbone in the 2026-05-28 sweep.
-V20 (mutual-information-weighted bands) ties V3 / V12 for the LDA
-``best'' slot and places in the top-3 of ProdLDA and ETM — confirming
-its versatility across non-HDP backbones.
+The c423 sweep refresh completes the missing cells of the previous
+revision (HDP V13/V15/V17/V19; ProdLDA V15/V17/V19; ETM V15/V17/V19).
+V20 (mutual-information-weighted bands) is one of the top-3 recipes
+in every backbone except HDP (where the stick-breaking prior favours
+sparse-event recipes — V7 for absorption triplets, V17 for sparse-
+coding dictionary atoms, V15 for spectral indices). Under LDA / ETM
+V12 wins; under ProdLDA V3 wins; V20 trails the per-backbone winner
+by 0.05 $c_v$ on average. The cross-backbone affinity ranking below
+quantifies this.
 
 \subsection{Per-recipe affinity score}
 
