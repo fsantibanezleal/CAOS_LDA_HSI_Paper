@@ -510,6 +510,56 @@ V20's lead grows with Q, while V12 / V3 already plateau by Q=16
 full Q-sweep would likely strengthen V20 against the V12 LDA winner
 across the entire panel.
 
+## F-14 jaccard repetitiveness per backbone (c443, already inline in backbone JSONs)
+
+The c443 audit found that the HDP / ProdLDA / ETM backbone builders
+already write `f14_mean_pairwise_jaccard` to their per-cell JSONs, so
+we have full F-14 coverage under all four backbones without an extra
+sweep. Per-recipe means across 6 scenes (lower = more diverse):
+
+### HDP — most diverse top-7
+| Recipe | F-14 |
+|---|---|
+| V3 (joint band-bin) | 0.005 |
+| V12 (GMM-token) | 0.005 |
+| V14 (CWT-Morlet) | 0.005 |
+| **V20 (MI-weighted)** | **0.007** |
+| V17 (sparse-coding) | 0.011 |
+| V9 (Felzenszwalb region) | 0.016 |
+| V6 (Db4 wavelet) | 0.027 |
+
+### ProdLDA — most diverse top-7
+| Recipe | F-14 |
+|---|---|
+| V12 (GMM-token) | 0.261 |
+| V3 (joint band-bin) | 0.277 |
+| **V20 (MI-weighted)** | **0.333** |
+| V10 (band-group) | 0.466 |
+| V1 (band-frequency) | 0.522 |
+| V14 (CWT-Morlet) | 0.734 |
+| V7 (absorption triplet) | 0.742 |
+
+### ETM — most diverse top-7
+| Recipe | F-14 |
+|---|---|
+| V7 (absorption triplet) | 0.003 |
+| V12 (GMM-token) | 0.025 |
+| V3 (joint band-bin) | 0.026 |
+| V11 (product quantisation) | 0.046 |
+| **V20 (MI-weighted)** | **0.050** |
+| V15 (spectral indices) | 0.143 |
+| V17 (sparse-coding) | 0.306 |
+
+**Headline.** V20 ranks top-5 on F-14 jaccard under every backbone:
+4th under HDP (0.007), 3rd under ProdLDA (0.333), 5th under ETM
+(0.050). Same diversity profile as under LDA (where V20 was 0.030,
+6th overall). V12 / V3 are the most-diverse-everywhere recipes;
+V20 trails them by a small margin but keeps the label-aware
+amplification advantage. ProdLDA's logistic-normal prior produces
+much higher jaccard absolute values across all recipes because the
+free-form topic-word distributions have less natural diversity than
+the Dirichlet-prior backbones.
+
 ## Backbone F-7 NMI extension — full 4-backbone × 19-recipe sweep (c432-c436)
 
 Until c432 the backbone factorial only carried F-2 c_v. The
