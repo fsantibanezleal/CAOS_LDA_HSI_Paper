@@ -71,10 +71,12 @@ the first \emph{triple-axis win} of the sweep — F-1 macro-F1 (0.858),
 F-2 coherence (0.88) and F-7 NMI (0.44) all three on Indian Pines —
 is within $0.014$ NMI of the leader on the remaining five F-7
 cells at $Q=8$, and produces the \emph{most counterfactually robust
-topic basis} of the sweep ($L_1 = 26.3$ vs $24.5$ for V12). Under
-finer quantisation V20 keeps improving monotonically while V12 and
-V3 saturate or regress, so V20 overtakes V12 as the LDA F-7 winner
-at $Q=32$ (0.563 vs 0.533).
+topic basis} of the sweep ($L_1 = 26.3$ vs $24.5$ for V12). Across the seven top-contender recipes tested at $Q \in \{8, 16, 32\}$,
+V20 is the \emph{only} recipe whose F-7 NMI improves monotonically
+with finer quantisation; V12 and V14 peak at $Q=16$ and regress, V18
+and V11 are monotonically declining, V3 saturates at $Q=8$. V20
+overtakes V12 as the LDA F-7 winner at $Q=32$ (0.563 vs 0.533); the
+lead more than doubles from the 0.014 NMI gap at $Q=8$.
 A four-backbone $\times$ nineteen-recipe extension of F-7 NMI
 identifies V8 (NFINDR endmember-fraction) as the most cross-backbone-
 consistent recipe (mean 0.431) and V20 as the second-most consistent
@@ -753,14 +755,16 @@ soft GMM responsibilities.
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=0.95\textwidth]{q-sensitivity-top-recipes.pdf}
-\caption{Q-sensitivity of the top contender recipes (V3, V8, V12,
-V14, V18, V20) under LDA. Both F-2 $c_v$ and F-7 NMI plotted across
-$Q \in \{8, 16, 32\}$. \textbf{V20 (purple, $\star$) is the only
-recipe whose F-2 and F-7 means improve monotonically through Q=32};
-V12 (orange) peaks at Q=16 and regresses; V3 (blue) saturates at
-Q=8. \textbf{At Q=32 V20 overtakes V12 as the LDA F-7 winner
-(0.563 vs 0.533).} V8 (green) is Q-insensitive because its
-vocabulary equals the endmember count, independent of Q.}
+\caption{Q-sensitivity of the seven top-contender recipes (V3, V8,
+V11, V12, V14, V18, V20) under LDA. Both F-2 $c_v$ and F-7 NMI
+plotted across $Q \in \{8, 16, 32\}$. \textbf{V20 (purple, $\star$)
+is the only recipe whose F-2 and F-7 means improve monotonically
+through Q=32}; V12 (orange) and V14 (cyan) peak at Q=16 and
+regress; V11 (not shown — collapses) and V18 (pink) decline
+monotonically; V3 (blue) saturates at Q=8. \textbf{At Q=32 V20
+overtakes V12 as the LDA F-7 winner (0.563 vs 0.533) with the lead
+more than doubling from Q=8.} V8 (green) is Q-insensitive because
+its vocabulary equals the endmember count, independent of Q.}
 \label{fig:q-sensitivity}
 \end{figure*}
 
