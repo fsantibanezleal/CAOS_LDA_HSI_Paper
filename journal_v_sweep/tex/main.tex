@@ -940,6 +940,16 @@ endmember-fraction vocabulary is robust both across topic-model
 priors and across quantisation levels, while V20's gains from finer
 $Q$ are LDA-specific.
 
+\paragraph{ETM backbone at $Q=16$.} Under the embedded topic model
+backbone, the $Q=16$ ranking inverts: V20 $0.525$, V2 $0.492$, V8
+$0.473$. The MI-weighted recipe now leads — ETM's continuous
+word-embedding prior allows V20's label-aware weighting to translate
+into separable topic embeddings, while V8's fixed endmember vocabulary
+maps to a less differentiated region of the embedding space. This
+extends the cross-backbone story: \textbf{the backbone-recipe
+interaction is non-trivial across $Q$}, and V20 is competitive under
+both LDA and ETM when one can afford $Q=16$.
+
 \paragraph{V8 monotonic on F-18 across Q.} Extending F-18 to Q=16/32
 on the V20 / V8 / V2 trio yields mean matched cosine across the six
 labelled scenes:
