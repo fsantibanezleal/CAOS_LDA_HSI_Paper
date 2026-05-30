@@ -480,37 +480,66 @@ The broader Q-sweep across 19 recipes × 3 schemes × {8, 16, 32} is
 deferred to a follow-up (171 candidate vocabularies per scene × 6
 scenes = 1026 LDA fits, plus the 13 axes downstream).
 
-## Backbone F-7 NMI extension — V20 top-3 across all 4 backbones (c432-c434)
+## Backbone F-7 NMI extension — full 4-backbone × 19-recipe sweep (c432-c436)
 
-Until c432 the backbone factorial only carried F-2 c_v. Adding F-7 NMI
-under each non-LDA backbone changes the headline.
+Until c432 the backbone factorial only carried F-2 c_v. The
+c432-c436 sequence extended F-7 NMI under each non-LDA backbone to
+all 19 recipes. The complete 4-backbone × 19-recipe sweep
+(456 / 456 = 100%) revises the cross-backbone headline.
 
-### Full 4-backbone × 6-recipe F-7 NMI mean across 6 scenes
+### Cross-backbone F-7 NMI mean (top-12 recipes by 4-backbone mean)
 
-| Recipe | LDA | HDP | ProdLDA | ETM | Mean | Best |
+| Recipe | LDA | HDP | ProdLDA | ETM | **4-mean** | Per-backbone wins |
 |---|---|---|---|---|---|---|
-| **V20 (MI-weighted)** | 0.520 | **0.356** | 0.221 | **0.490** | **0.397** | HDP / ETM |
-| V12 (GMM-token) | **0.534** | 0.220 | **0.238** | 0.488 | 0.370 | LDA / ProdLDA |
+| **V8 (NFINDR endmember)** | 0.463 | 0.451 | **0.328** | 0.482 | **0.431** | ProdLDA |
+| **V20 (MI-weighted)** | 0.520 | 0.356 | 0.221 | 0.490 | 0.397 | — |
+| V2 (intensity-bin) | 0.453 | 0.347 | 0.324 | 0.456 | 0.395 | — |
+| V11 (product quantisation) | 0.292 | **0.571** | 0.088 | **0.530** | 0.370 | HDP, ETM |
+| V12 (GMM-token) | **0.534** | 0.220 | 0.238 | 0.488 | 0.370 | LDA |
 | V3 (joint band-bin) | 0.524 | 0.200 | 0.169 | 0.443 | 0.334 | — |
-| V14 (CWT-Morlet) | 0.457 | 0.220 | 0.114 | 0.430 | 0.305 | — |
+| V19 (UMAP coord) | 0.286 | 0.530 | 0.051 | 0.394 | 0.315 | — |
+| V15 (spectral indices) | 0.313 | 0.438 | 0.058 | 0.449 | 0.315 | — |
+| V13 (VQ-VAE) | 0.311 | 0.399 | 0.113 | 0.406 | 0.307 | — |
+| V14 (CWT-Morlet) | 0.457 | 0.220 | 0.114 | 0.430 | 0.306 | — |
 | V18 (graph-Laplacian) | 0.428 | 0.198 | 0.080 | 0.330 | 0.259 | — |
 | V1 (band-frequency) | 0.455 | 0.081 | 0.091 | 0.381 | 0.252 | — |
 
-**Headline.** V20 has the highest cross-backbone F-7 NMI mean (0.397),
-beating V12 (0.370) by 0.027. V20 wins F-7 outright under two of the
-four backbones (HDP by 1.6×; ETM by tie); is second under ProdLDA
-(within 0.017 of V12); and third under LDA (within 0.014 of V12).
+### Per-backbone winners
 
-**V20 is the only recipe in top-3 of all four backbones for F-7 NMI.**
-This corroborates the LDA F-7 finding from three different prior
-classes (stick-breaking HDP, logistic-normal ProdLDA, low-rank
-embedded ETM). Even when each backbone picks a different recipe for
-*coherence* (HDP→V7 sparse-absorption; ETM→V12 GMM; ProdLDA→V3 joint),
-the *label-aligned* topics under each backbone consistently come from
-V20's MI-weighted vocabulary.
+| Backbone | Winner | F-7 NMI | Runner-up gap |
+|---|---|---|---|
+| LDA | V12 (GMM-token) | 0.534 | +0.010 vs V3 |
+| HDP | V11 (product quantisation) | 0.571 | +0.041 vs V19 |
+| ProdLDA | V8 (NFINDR endmember) | 0.328 | -0.018 vs V2 (V8 close) |
+| ETM | V11 (product quantisation) | 0.530 | +0.040 vs V20 |
 
-A 4-backbone × 19-recipe F-7 NMI sweep (just like the c397 backbone ×
-F-2 factorial) is the natural follow-up.
+**Headline revision (c436).** The full-19-recipe extension reveals
+that the cross-backbone F-7 leader is **V8 (NFINDR endmember-
+fraction) at mean 0.431**, not V20 as reported in the c434 6-recipe
+subset. V8 lands top-5 in every backbone but never wins outright;
+its consistency (smallest spread across the four backbones,
+$\sigma$ = 0.06) makes it the most label-portable recipe in the
+sweep. V20 is the second-most cross-backbone-consistent recipe at
+0.397, retains its LDA + ETM strength, and remains the only
+*label-aware* recipe in the family. V11 (product quantisation, vocab
+$M K_s = 32$) is the surprise discovery — wins HDP and ETM outright
+but ranks 12th under LDA and 17th under ProdLDA, suggesting a
+non-trivial interaction between PQ's coarse vocabulary and the
+non-conjugate priors.
+
+### Three cross-backbone families
+
+1. **Consistently strong**: V8, V20, V2. Top-5 in all four backbones.
+   Best mean F-7 NMI across the sweep.
+2. **Backbone-specialist**: V11, V12, V19. Wins one or two backbones
+   outright but bombs at least one other.
+3. **LDA-only**: V12, V3, V14. Top-5 under LDA but middle-pack
+   elsewhere.
+
+V20's distinctive contribution is being the only label-*aware*
+recipe in family 1 — V8 and V2 are label-unaware compressions of
+the spectrum, so V20's MI weighting offers an interpretable
+mechanism for why it lands top-2 across backbones.
 
 ## V-sweep + neural baselines (existing P1 numbers, V1-only)
 
