@@ -1,14 +1,22 @@
 % ---------------------------------------------------------------------
-% CAOS_LDA_HSI journal manuscript #4 — preprint (target venue redacted)
+% CAOS_LDA_HSI journal manuscript #4  (programme paper P5) — preprint
+% (target venue redacted)
 %
 % Title  : Post-hoc Interpretability of LDA on Hyperspectral Imagery:
 %          SHAP Attributions, Counterfactual Topic Flips, and LLM-judge
-%          Alignment under Vocabulary-Size Asymmetry
+%          Alignment under Token-Mass-Dispersion Asymmetry (LDA only)
 % Target : redacted while the preprint circulates
 % Class  : IEEEtran journal option
-% Status : DRAFT v0.2 — populated with F-13 SHAP, F-22 counterfactual
-%          and F-15 self-judge data from c366-c380 + V13..V20 extension
-%          notes added c401. Pairs with P3.
+% Status : DRAFT v0.3 — full structure (Related Work / Method /
+%          Discussion / Limitations / Conclusion), canonical equations
+%          \input from ../../equations/canonical.tex, two P5 figures
+%          (dispersion mechanism + F-15-vs-vocab refutation), live
+%          bibliography. F-13 SHAP, F-22 counterfactual and F-15
+%          self-judge data from c366-c380 + V13..V20 extension (c401).
+%          Programme paper P5 (interpretability); LDA backbone only;
+%          companion to P3 (journal #2, V-sweep) and P4 (journal #3,
+%          backbone factorial). Canonical equation set shared with
+%          P3/P4 lives at ../../equations/canonical.tex.
 % ---------------------------------------------------------------------
 
 \documentclass[journal,a4paper,10pt]{IEEEtran}
@@ -25,11 +33,11 @@
 \usepackage{url}
 \usepackage[hidelinks]{hyperref}
 
-\graphicspath{{../figures/}}
+\graphicspath{{../figures/}{../../figures/}}
 
 \title{Post-hoc Interpretability of LDA on Hyperspectral Imagery:
 SHAP Attributions, Counterfactual Topic Flips, and LLM-judge
-Alignment under Vocabulary-Size Asymmetry}
+Alignment under Token-Mass-Dispersion Asymmetry}
 
 \author{%
   Felipe Santib\'a\~nez-Leal,~\IEEEmembership{Independent Researcher}%
@@ -37,23 +45,29 @@ Alignment under Vocabulary-Size Asymmetry}
     programme, Santiago, Chile
     (e-mail: \texttt{fsantibanezleal@ug.uchile.cl};
     ORCID: 0000-0002-0150-3246).}%
-  \thanks{Preprint, 2026. Fourth manuscript in the CAOS\_LDA\_HSI
-    programme. Code and derived artefacts at
-    \url{https://github.com/fsantibanezleal{}/CAOS\_LDA\_HSI}.}%
+  \thanks{Preprint, 2026. Fourth manuscript (programme paper P5) in the
+    CAOS\_LDA\_HSI series; companion to P3 (V-sweep) and P4 (backbone
+    factorial). This study restricts the analysis to the
+    \emph{latent Dirichlet allocation (LDA) backbone only}. Code and
+    derived artefacts at
+    \url{https://github.com/fsantibanezleal/CAOS_LDA_HSI}.}%
   \thanks{Partially funded by AMTC Basal (ANID/PIA AFB220002) and
     ANID FONDECYT Postdoctorado 3220094.}%
 }
 
-\markboth{Preprint, 2026 --- target venue redacted}{Santib\'a\~nez-Leal:
-Post-hoc Interpretability of LDA-on-HSI}
+\markboth{Preprint, 2026 (P5) --- target venue redacted}{Santib\'a\~nez-Leal:
+Post-hoc Interpretability of LDA-on-HSI (LDA only)}
 
 \IEEEtitleabstractindextext{%
 \begin{abstract}
 The interpretability claim of LDA-on-HSI rests on the assumption that
-topic--word distributions are human-readable. We test three orthogonal
-post-hoc interpretability axes on the V1--V15, V17--V20 sweep from the
-companion paper: F-13 SHAP attribution of pixel-to-topic decisions via a
-closed-form posterior, F-22 counterfactual L1 perturbation required
+topic--word distributions are human-readable. \emph{This study is
+restricted to the LDA backbone}; the cross-backbone comparison (HDP,
+ProdLDA, ETM) is the subject of the companion paper P4. We test three
+orthogonal post-hoc interpretability axes on the V1--V15, V17--V20
+wordification sweep (eighteen LDA-fitted recipes) from the companion
+paper P3: F-13 SHAP attribution of pixel-to-topic decisions via a
+closed-form posterior, F-22 counterfactual $L_1$ perturbation required
 to flip a document's argmax topic, and F-15 LLM-as-judge alignment
 between a document's top tokens and its argmax topic's top tokens.
 We find three concrete results. First, F-13 SHAP gives recipe-specific
@@ -71,17 +85,24 @@ score F-15 = 1.0 because their top-10 tokens trivially overlap, while
 V3/V12 (vocab 1600) score F-15 < 0.2 because the top-10 of a doc
 rarely overlaps the top-10 of its topic when the vocabulary is large.
 The confounder is \emph{not purely vocabulary size}, however: V20
-shares V12's 1600-token vocabulary yet scores F-15 = 0.64, because
-its MI-weighting concentrates token mass on a few high-MI bands and
-raises the effective top-10 overlap density --- so the artefact is
-driven by token-mass dispersion, not nominal vocabulary cardinality.
-This exposes a methodological gap: F-15 as currently defined conflates
-token-mass concentration with coherence, and an LLM oracle would face
-the same artefact unless given semantic --- not identity ---
-comparison capability. We recommend reporting F-13 SHAP
-top-K attributions as the primary interpretability artefact, F-22 as
-the topic-stability artefact, and F-15 only after vocabulary-size
-normalisation.
+shares V12's $1600$-token alphabet (effective $|\mathcal{V}|\approx1376$
+on the labelled scenes) yet scores F-15 = 0.64, because its
+MI-weighting concentrates topic--word mass on a few high-MI bands and
+raises the effective top-10 overlap density. We make this mechanism
+quantitative with the \emph{token-mass dispersion} metric, the
+effective vocabulary $N_{\mathrm{eff}}=\exp(H)$ of a topic's word
+distribution: among the three recipes that share the identical
+$1376$-token alphabet, $N_{\mathrm{eff}}$ falls V3~($431$) $>$
+V12~($400$) $>$ V20~($309$) and F-15 \emph{rises} in lock-step
+($0.12 < 0.16 < 0.64$), whereas a pure-cardinality account predicts
+no difference. The artefact is therefore driven by token-mass
+dispersion, not nominal vocabulary cardinality. This exposes a
+methodological gap: F-15 as currently defined conflates token-mass
+concentration with coherence, and an LLM oracle would face the same
+artefact unless given semantic --- not identity --- comparison
+capability. We recommend reporting F-13 SHAP top-$K$ attributions as
+the primary interpretability artefact, F-22 as the topic-stability
+artefact, and F-15 only after dispersion normalisation.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -96,22 +117,48 @@ topic models, wordification, evaluation framework.
 \IEEEdisplaynontitleabstractindextext
 \IEEEpeerreviewmaketitle
 
+% ---------------------------------------------------------------------
+% Canonical equation set, shared verbatim across P3/P4/P5. We \input the
+% whole file; only the labels actually \eqref'd below are referenced.
+% Authored once at ../../equations/canonical.tex (compiles clean).
+% ---------------------------------------------------------------------
+\input{../../equations/canonical.tex}
+
 % =====================================================================
 \section{Introduction}\label{sec:intro}
 % =====================================================================
 
 The companion paper (P3) ranks the full V1--V20 wordification sweep
 (nineteen recipes; V16 is scaffolded only) on classification,
-coherence and label-coupling axes. The
+coherence and label-coupling axes, and the backbone-factorial paper
+(P4) repeats the headline axes across four topic-model backbones. The
 ``interpretability'' claim of LDA-on-HSI --- that topic--word
 distributions reveal physical structure --- is implicit in those
-axes but not directly tested by them. Three post-hoc interpretability
-tools have been proposed in the broader topic-modelling literature
-that go beyond ``read the top-N words and trust them'': SHAP
-attribution \cite{lundberg2017shap}, counterfactual explanations
+axes but not directly tested by them. \emph{Throughout this paper we
+fix the backbone to LDA} (\eqref{eq:lda-gen}); the cross-backbone
+behaviour of these interpretability axes is out of scope and left to
+P4. Three post-hoc interpretability tools have been proposed in the
+broader topic-modelling and explainable-ML literature that go beyond
+``read the top-$N$ words and trust them'': SHAP attribution
+\cite{lundberg2017shap}, counterfactual explanations
 \cite{wachter2017counterfactual}, and LLM-as-judge alignment
 \cite{stammbach2023revisiting, yang2025bridging}. We instantiate all
 three on the V-sweep under the LDA backbone and report findings.
+
+The three axes correspond to three canonical metrics in the shared
+equation set: F-13 to the SHAP attribution applied to the closed-form
+LDA posterior, F-22 to the minimum-$L_1$ counterfactual
+(\eqref{eq:f22}), and F-15 to the top-$N$ overlap rule
+(\eqref{eq:f15}). Our central methodological contribution is to show
+that F-15 is governed not by the nominal vocabulary cardinality
+$|\mathcal{V}|$ but by the \emph{token-mass dispersion} of the
+topic--word distributions, formalised as the effective vocabulary
+$N_{\mathrm{eff}}=\exp(H)$ of \eqref{eq:dispersion}. The wordification
+recipes themselves are defined in P3; we recall only the four we lean
+on heavily --- V1 (\eqref{eq:v1}), V3 (\eqref{eq:v3}), V12
+(\eqref{eq:v12}) and the label-aware V20 (\eqref{eq:v20}) --- whose
+shared $|\mathcal{V}|$ yet divergent $N_{\mathrm{eff}}$ make them the
+decisive test of the cardinality-versus-dispersion question.
 
 \subsection{The three axes}
 \label{subsec:axes}
@@ -119,21 +166,26 @@ three on the V-sweep under the LDA backbone and report findings.
 \textbf{F-13 SHAP attribution.} For each pixel document $d$ with
 argmax topic $z^*$, attribute $\theta_{d,z^*}$ back to the recipe-
 specific tokens via SHAP's KernelExplainer against the closed-form
-LDA posterior $p(z \mid x, \phi) \propto \exp(\sum_v x_v \log \phi_{z,v} + \log \alpha)$.
+LDA posterior $p(z \mid x, \phi) \propto \exp(\sum_v x_v \log \phi_{z,v} + \log \alpha)$,
+the small-document specialisation of the LDA generative model
+(\eqref{eq:lda-gen}).
 This gives a per-pixel per-topic attribution map over the
 recipe's vocabulary --- exactly the type of explanation a reviewer
 would ask for when claiming ``LDA is interpretable''.
 
 \textbf{F-22 counterfactual L1.} For each document $d$ with argmax
 topic $z^*$, search via coordinate descent for the minimum-$L_1$
-perturbation that flips $z^* \to z'$ for some $z' \neq z^*$.
+perturbation that flips $z^* \to z'$ for some $z' \neq z^*$, the
+discrete counterfactual of \eqref{eq:f22}.
 Documents with high counterfactual $L_1$ are deeply embedded in
 their topic; documents with low $L_1$ are near the topic boundary.
 
 \textbf{F-15 LLM-as-judge alignment.} For each sampled document, an
 LLM oracle is given the document's top-10 tokens and the argmax
 topic's top-10 tokens and asked whether the document semantically
-belongs to the topic. Our internal run substitutes the oracle with
+belongs to the topic; formally, the top-$N$ overlap indicator of
+\eqref{eq:f15} with $N=10$ and threshold $\tau=3$. Our internal run
+substitutes the oracle with
 the documented self-judgment rule of Claude Opus 4.7 (1M-token
 context), encoded as a deterministic Python function in
 \texttt{build\_v\_sweep\_f15\_self\_judge.py}; the canonical
@@ -142,16 +194,105 @@ Anthropic Messages API call is preserved in
 with API access.
 
 % =====================================================================
+\section{Related Work}\label{sec:related}
+% =====================================================================
+
+\textbf{Topic models on hyperspectral imagery.} Probabilistic topic
+models were first applied to spectral data by Wahabzada
+et~al.~\cite{wahabzada2015plant} (plant phenotyping) and to subpixel
+mixtures by Zou and Zare's partial-membership LDA~\cite{zou2017pmlda};
+Liu et~al.~\cite{liu2019hsilda} use LDA for spectral--spatial
+classification. The CAOS\_LDA\_HSI programme~\cite{santibanezleal2022procemin}
+casts a pixel spectrum as a ``document'' through a
+\emph{wordification} recipe (\eqref{eq:quantiser}) and runs online
+variational LDA~\cite{blei2003lda, hoffman2010online}. None of this
+prior work asks whether the resulting topics are \emph{post-hoc
+interpretable} beyond inspecting top-$N$ words; that gap is the
+subject of this paper.
+
+\textbf{Topic-model evaluation.} The dominant automated proxy for
+topic quality is coherence --- NPMI / $c_v$~\cite{newman2010coherence,
+mimno2011coherence, roder2015exploring} (\eqref{eq:f2}) --- and
+stability under reseeding~\cite{greene2014topics} (\eqref{eq:f18}).
+These reward internally consistent word lists but, as we show, are
+themselves sensitive to the vocabulary regime. We treat F-2 and F-7
+(\eqref{eq:f7}) as the targets that our interpretability axes should
+\emph{corroborate} rather than duplicate.
+
+\textbf{Post-hoc interpretability and explanation.} SHAP
+\cite{lundberg2017shap} gives additive, locally faithful feature
+attributions with Shapley-value guarantees; we apply its
+KernelExplainer to the closed-form LDA posterior (F-13). Counterfactual
+explanations~\cite{wachter2017counterfactual} characterise a decision
+by the minimal input change that flips it; F-22 (\eqref{eq:f22}) is
+the topic-assignment counterfactual. The use of large language models
+as automated topic judges follows Stammbach
+et~al.~\cite{stammbach2023revisiting} and the interpretable-evaluation
+line of~\cite{yang2025bridging}; F-15 (\eqref{eq:f15}) is our
+LDA-on-HSI instantiation. Our contribution relative to this literature
+is the observation that the LLM-as-judge proxy inherits a
+\emph{token-mass-dispersion} artefact (\eqref{eq:dispersion}) that is
+invisible at the level of nominal vocabulary size.
+
+% =====================================================================
+\section{Method}\label{sec:method}
+% =====================================================================
+
+\textbf{Backbone, corpus and fits.} Every result in this paper uses
+the LDA backbone (\eqref{eq:lda-gen}) fitted with scikit-learn's
+online variational solver~\cite{pedregosa2011scikit, hoffman2010online}
+($\mathtt{max\_iter}=60$, $\alpha=0.45$, $\beta=0.2$, seed $42$),
+the canonical fit of P3. The corpus is the six labelled scenes ---
+Indian Pines~\cite{baumgardner1992indianpines}, Salinas and
+Salinas-A~\cite{aviris_salinas}, Pavia
+University~\cite{rosis_pavia}, Kennedy Space
+Center~\cite{aviris_ksc} and Botswana~\cite{eo1_botswana}.
+Documents are pixel spectra; tokens are produced by the wordification
+recipes of P3 under the uniform quantiser (\eqref{eq:quantiser}) at
+$Q=8$. We analyse the eighteen LDA-fitted recipes V1--V15, V17--V20
+(V16, a foundation-model recipe, is scaffolded only).
+
+\textbf{F-13.} We sample $50$ documents per $(V,\text{scene})$ cell
+and use $25$ background documents per SHAP KernelExplainer call against
+the closed-form posterior, reporting the top-$8$ tokens per topic by
+mean absolute SHAP value. The closed-form posterior is preferred over
+the amortised \texttt{transform()} because the latter needs internal
+state that cannot be restored from $\phi$ alone.
+
+\textbf{F-22.} We compute the discrete minimum-$L_1$ counterfactual of
+\eqref{eq:f22} by coordinate descent over the integer token-count
+lattice, capped at a sentinel $\mathrm{MAX\_STEPS}=50$; cells in which
+no sampled document flips persist at $50$ rather than being dropped,
+so that ``unflippable'' bases are not silently treated as missing.
+We report the per-scene median over $20$ sampled documents, then the
+mean across the six scenes.
+
+\textbf{F-15 and the dispersion metric.} F-15 is the top-$N$ overlap
+indicator of \eqref{eq:f15} averaged over sampled documents
+($N=10$, $\tau=3$, with a sparse-event fallback that accepts a
+document whose top-$1$ token lies in the topic's top-$5$). To explain
+its behaviour we compute, for each topic-word distribution $\phi_k$,
+the token-mass dispersion of \eqref{eq:dispersion},
+\[
+  N_{\mathrm{eff}}(\phi_k) = \exp\!\big(H(\phi_k)\big)
+  = \exp\!\Big(-\textstyle\sum_v \phi_{kv}\log\phi_{kv}\Big),
+\]
+the effective number of tokens carrying a topic's mass. A low
+$N_{\mathrm{eff}}$ means the topic concentrates on few tokens, so its
+top-$N$ is more likely to overlap a document's top-$N$; a high
+$N_{\mathrm{eff}}$ spreads mass thinly and depresses the overlap even
+when the topic is coherent. We report the per-recipe mean of
+$N_{\mathrm{eff}}(\phi_k)$ over topics and scenes, paired with F-15 and
+$|\mathcal{V}|$. This is the quantity plotted in
+Fig.~\ref{fig:dispersion} and is the mechanism behind the
+abstract's ``dispersion not cardinality'' thesis.
+
+% =====================================================================
 \section{F-13 SHAP results}\label{sec:f13}
 % =====================================================================
 
-We sample 50 documents per (V, scene) cell, use 25 background
-documents per SHAP call, and report the top-8 tokens per topic by
-mean absolute SHAP value. The closed-form posterior is preferred over
-sklearn's amortised \texttt{transform()} because the latter needs
-internal state we cannot fully restore from $\phi$ alone.
-
-The headline result is that SHAP attributions are
+Under the F-13 protocol of \S\ref{sec:method}, the headline result is
+that SHAP attributions are
 \emph{recipe-grounded}: a V1 topic's top SHAP token always names a
 wavelength band; a V7 topic's top SHAP token names an absorption
 feature ``\texttt{abs\_c4\_d7\_a3}'' (centre, depth, area bucket);
@@ -223,15 +364,16 @@ coherence advantage is an artefact of overfitting to its training
 documents.
 
 % =====================================================================
-\section{F-15 LLM-judge results and the vocabulary-size confounder}
+\section{F-15 LLM-judge results: token-mass dispersion, not vocabulary
+size}
 \label{sec:f15}
 % =====================================================================
 
-The LLM-as-judge rule is: a document is \emph{aligned} with its argmax
-topic if its top-10 tokens share $\geq 3$ elements with the topic's
-top-10 (or if the document's top-1 token is in the topic's top-5,
-covering the sparse-event regime of V7 / V9). Per-recipe mean F-15
-across 6 scenes:
+The LLM-as-judge rule (\eqref{eq:f15}, $N=10$, $\tau=3$) marks a
+document \emph{aligned} with its argmax topic if its top-10 tokens
+share $\geq 3$ elements with the topic's top-10 (or if the document's
+top-1 token is in the topic's top-5, covering the sparse-event regime
+of V7 / V9). Per-recipe mean F-15 across the 6 labelled scenes:
 
 \begin{table}[ht]
 \caption{F-15 LLM-judge alignment fraction (Claude Opus 4.7 self-judge
@@ -269,29 +411,73 @@ V15 & 0.033 & 48 \\
 The ranking is \emph{anti-correlated} with F-2 coherence on the
 large-vocabulary recipes V3 and V12. This is not a flaw of those
 recipes; it is a confounder in the F-15 metric definition --- but the
-full 19-recipe sweep shows the confounder is \textbf{not nominal
-vocabulary cardinality}. Two large-vocabulary recipes break the
-pattern: V14 (CWT-Morlet, $|\mathcal{V}| = 1024$) scores 0.950, and
-V20 (MI-weighted, $|\mathcal{V}| = 1160$, essentially V12's
-$BQ$) scores 0.642 --- both far above V12 (0.158) and V3 (0.117)
-despite comparable or larger vocabularies. What separates them is
-\emph{token-mass concentration}: V20's MI-weighting and V14's
-multi-scale wavelet response place most of each document's mass on a
-few tokens, so the top-10 overlap density stays high; V12's and V3's
-mass is spread across $\sim$1600 GMM/bin tokens, so top-10 overlap is
-rare even when the topics are coherent. The confounder is therefore
-mass dispersion, not $|\mathcal{V}|$. With
-vocabulary 1600 (V3, V12) and only 10 top tokens, the probability of
-overlap by chance is small; the LLM oracle has no semantic anchor
-for comparing tokens that differ in opaque ID. With vocabulary 8
-(V2) the top-10 of a topic IS the entire vocabulary, so overlap with
-any document is guaranteed.
+full sweep shows the confounder is \textbf{not nominal
+vocabulary cardinality}. Fig.~\ref{fig:f15vocab} plots F-15 against
+$|\mathcal{V}|$ directly: a pure-cardinality account predicts a
+monotone decreasing curve, but several large-vocabulary recipes break
+it. V9 ($|\mathcal{V}|=647$) scores $1.000$; V14 (CWT-Morlet,
+$|\mathcal{V}|=1024$) scores $0.950$; and V20 (MI-weighted, same
+$1600$-token alphabet as V3/V12, effective $|\mathcal{V}|\approx1376$
+on the labelled scenes) scores $0.642$ --- all far above V12 ($0.158$)
+and V3 ($0.117$) at equal or larger vocabulary.
 
-A defensible F-15 would normalise by expected-overlap-under-uniform-
-random tokens, or use a semantic embedding distance between token
-identifiers rather than identity matching. We flag both as future
-work and recommend interpreting Table~\ref{tab:f15} alongside the
-vocabulary-size column.
+The mechanism is \emph{token-mass dispersion}, made quantitative by
+the effective vocabulary $N_{\mathrm{eff}}=\exp(H)$ of
+\eqref{eq:dispersion}. Fig.~\ref{fig:dispersion} plots F-15 against
+the per-topic mean $N_{\mathrm{eff}}(\phi_k)$, with point colour keyed
+to $\log_{10}|\mathcal{V}|$. The decisive comparison is the three
+recipes that share the \emph{identical} $1376$-token alphabet so that
+$|\mathcal{V}|$ is held fixed by construction: V3, V12 and V20. Their
+topic-word dispersions fall
+$N_{\mathrm{eff}}^{\mathrm V3}=431 > N_{\mathrm{eff}}^{\mathrm V12}=400
+> N_{\mathrm{eff}}^{\mathrm V20}=309$, and F-15 \emph{rises} in
+lock-step ($0.117 < 0.158 < 0.642$). Because $|\mathcal{V}|$ is
+constant across these three, the only thing that can be driving the
+$5.5\times$ spread in F-15 is the dispersion of the topic mass: V20's
+MI-weighting (\eqref{eq:v20}) concentrates the topic--word
+distributions on the discriminative high-MI bands, lowering
+$N_{\mathrm{eff}}$ and raising the probability that a topic's top-10
+overlaps a document's top-10; V12's GMM tokens and V3's joint
+(band, bin) tokens spread the same $1376$-token mass much more thinly,
+so top-10 overlap is rare even when the topics are coherent. With a
+small vocabulary (V2, $|\mathcal{V}|=8$) the top-10 of a topic
+\emph{is} the entire vocabulary, so overlap is guaranteed --- the
+small-$|\mathcal{V}|$ saturation is itself just the $N_{\mathrm{eff}}
+\le |\mathcal{V}|$ floor of the same dispersion mechanism.
+
+A defensible F-15 would normalise by the expected overlap under
+$N_{\mathrm{eff}}$-matched random tokens, or use a semantic embedding
+distance between token identifiers rather than identity matching. We
+flag both as future work and recommend interpreting
+Table~\ref{tab:f15} alongside the $N_{\mathrm{eff}}$ axis of
+Fig.~\ref{fig:dispersion}, not the raw $|\mathcal{V}|$ column.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{p5-dispersion-scatter.pdf}
+\caption{Mechanism plot. F-15 LLM-judge alignment versus per-topic mean
+token-mass dispersion $N_{\mathrm{eff}}=\exp(H(\phi_k))$
+(\eqref{eq:dispersion}), LDA backbone, six labelled scenes, $Q=8$.
+Point colour encodes $\log_{10}|\mathcal{V}|$. Holding $|\mathcal{V}|$
+fixed at the shared $1376$-token alphabet, V3 / V12 / V20 (yellow,
+lower-right cluster) fall in dispersion ($431\!>\!400\!>\!309$) exactly
+as F-15 rises ($0.12\!<\!0.16\!<\!0.64$): F-15 tracks dispersion, not
+cardinality.}
+\label{fig:dispersion}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{p5-f15-vocab.pdf}
+\caption{Refutation plot. F-15 versus nominal vocabulary
+$|\mathcal{V}|$ (log scale). A pure vocabulary-size artefact would
+place all points on a monotone decreasing curve. The circled
+counterexamples V14 ($|\mathcal{V}|=1024$, F-15 $=0.95$) and V20
+($|\mathcal{V}|=1376$, F-15 $=0.64$), together with V9
+($|\mathcal{V}|=647$, F-15 $=1.0$), sit far above V3 / V12 at equal or
+larger $|\mathcal{V}|$, refuting the cardinality hypothesis.}
+\label{fig:f15vocab}
+\end{figure}
 
 % =====================================================================
 \section{Interpretability under the V13--V20 extension}
@@ -339,15 +525,21 @@ as much as the recipe alone.
 
 \paragraph{V20 (MI-weighted bands).}
 V20 inherits V1's interpretability (per-band q-bin tokens are
-spectrally grounded) and adds a label-aware twist:
+spectrally grounded) and adds a label-aware twist (\eqref{eq:v20}):
 high-MI bands emit more copies than low-MI bands, so the topic
 top-tokens concentrate on the discriminative subspectrum. F-13 SHAP
 under V20 therefore surfaces precisely the bands the label
-information is concentrated in — the interpretability is the same
+information is concentrated in --- the interpretability is the same
 as V1's, but the SHAP attributions are sharper because the LDA
 fit has fewer near-zero-contribution tokens to spread mass across.
-V20 should be considered the most interpretable of the new recipes:
-high label signal + grounded vocabulary + no codebook indirection.
+This is the same mechanism that lowers V20's $N_{\mathrm{eff}}$
+relative to V12 and V3 (\S\ref{sec:f15}): the MI-weighting that
+concentrates SHAP attribution mass is exactly what concentrates the
+topic--word mass, so V20's high F-15 (relative to its equal-vocabulary
+neighbours) and its sharp F-13 attributions are two readings of one
+property. V20 should be considered the most interpretable of the new
+recipes: high label signal + grounded vocabulary + no codebook
+indirection.
 
 \paragraph{F-22 counterfactual under the extension.}
 We do not re-run F-22 for every new recipe in this draft; the V20
@@ -391,9 +583,115 @@ a recipe-as-interpretability-tier classification:
 \end{itemize}
 
 % =====================================================================
-% Bibliography intentionally omitted until concrete citations are
-% needed. When ready:
-%   \bibliographystyle{IEEEtran}
-%   \bibliography{../../bibliography/refs}
+\section{Discussion}\label{sec:discussion}
+% =====================================================================
+
+\textbf{The three axes are complementary, not redundant.} F-13, F-22
+and F-15 probe different facets of the same LDA fit. F-13 answers
+\emph{which tokens explain a topic assignment}; F-22 answers
+\emph{how robust that assignment is}; F-15 answers \emph{whether a
+human-like judge would agree the document belongs to its topic}. The
+V20 recipe illustrates how they cohere: its MI-weighting concentrates
+both SHAP attribution mass (sharper F-13) and topic--word mass (lower
+$N_{\mathrm{eff}}$, hence higher F-15 at fixed $|\mathcal{V}|$), and
+the same concentration makes its topics the hardest to flip
+(F-22 $=26.3$, the sweep maximum). This is consistent with P3's
+finding that V20 leads F-2 / F-7 at $Q=32$: a basis that concentrates
+discriminative mass is simultaneously more coherent, more robust, and
+more attributable.
+
+\textbf{F-15 measures the metric, not the model.} The central
+methodological lesson is that an automated alignment proxy can fail
+for reasons that have nothing to do with topic quality. The
+anti-correlation between F-15 and F-2 on V3 / V12 is not evidence that
+those recipes produce incoherent topics --- P3 ranks V12 \emph{first}
+on F-2 and F-7 --- but evidence that a top-$N$-identity overlap rule is
+biased by token-mass dispersion (\eqref{eq:dispersion}). A genuine LLM
+oracle, given opaque token identifiers and asked for identity overlap,
+would inherit the same bias; only a judge equipped with
+\emph{semantic} comparison of token meanings (e.g.\ the spectral
+region a token names) would escape it. This is a cautionary result for
+the growing practice of using LLMs to score topic models
+\cite{stammbach2023revisiting, yang2025bridging}: the prompt must
+expose token \emph{semantics}, not token \emph{strings}, or the score
+will track vocabulary engineering rather than topic content.
+
+\textbf{Interpretability is a recipe property, not an LDA property.}
+The tier classification of \S\ref{sec:rec} shows that the same LDA
+backbone yields explanations ranging from directly physical (V1, V7,
+V14, V18, V20) to recursively opaque (V13, V17, V19). ``LDA is
+interpretable'' is therefore an incomplete claim; the defensible claim
+is ``LDA on a physically-grounded wordification is interpretable.''
+
+% =====================================================================
+\section{Limitations}\label{sec:limitations}
+% =====================================================================
+
+\textbf{LDA only.} Every result here is for the LDA backbone
+(\eqref{eq:lda-gen}). The closed-form posterior that makes F-13
+tractable, and the simplex-structured $\phi_k$ on which
+$N_{\mathrm{eff}}$ is defined, do not transfer unchanged to ProdLDA's
+product-of-experts decoder (\eqref{eq:prodlda-gen}) or ETM's embedding
+decoder (\eqref{eq:etm-beta}); replicating these axes under P4's
+backbones is open work.
+
+\textbf{Self-judge stand-in for the LLM oracle.} F-15 was produced by a
+deterministic encoding of the alignment rule (Claude Opus 4.7, 1M
+context) rather than live per-call API judging. This makes the run
+reproducible and free, but it cannot exhibit the semantic-comparison
+behaviour that a true oracle might; the API builder
+(\texttt{build\_v\_sweep\_f15\_llm\_alignment.py}) is provided for users
+who wish to substitute live judging. Our claims about F-15 concern the
+\emph{metric definition} (\eqref{eq:f15}) and hold regardless of which
+judge instantiates it.
+
+\textbf{$N_{\mathrm{eff}}$ is computed on $\phi_k$.} We measure
+dispersion on the topic--word distributions, the quantity the
+topic-side of the F-15 rule reads; the canonical metric
+(\eqref{eq:dispersion}) is stated on a generic mass vector $p_d$ and
+applies equally to per-document counts. The two give the same
+qualitative ordering for the decisive V3 / V12 / V20 comparison but
+differ in absolute scale; we report the $\phi_k$ version because it is
+what F-15 actually depends on.
+
+\textbf{Partial F-22 under the extension.} The full F-22 table
+(Table~\ref{tab:f22-summary}) is complete for the $Q=8$ sweep, but the
+$\times Q \times$ new-recipe cross-product (\S\ref{sec:v13-v20-interp})
+is profiled only spot-wise; a full re-run is left to a follow-up.
+
+\textbf{Six labelled scenes.} The HIDSAG mineralogical subsets used in
+P1/P3 are not included here because their per-pixel label structure
+differs; the dispersion result should be re-checked on them before
+being claimed as scene-independent.
+
+% =====================================================================
+\section{Conclusion}\label{sec:conclusion}
+% =====================================================================
+
+We instantiated three post-hoc interpretability axes --- F-13 SHAP
+attribution, F-22 counterfactual $L_1$, and F-15 LLM-judge alignment
+--- on the LDA wordification sweep of P3, and reported three results.
+First, F-13 SHAP gives recipe-grounded explanations whose physical
+meaning is fixed by the recipe and cannot silently shift across scenes;
+this is the axis we recommend as the primary interpretability artefact.
+Second, F-22 separates the recipes into robust (V20 $=26.3$,
+V12 $=24.5$, V3 $=23.5$) and fragile (V9 $=1.0$) topic-boundary
+regimes, complementing P3's coherence ranking by ruling out a
+trivial-overfit account of V20's lead. Third, and most important
+methodologically, F-15 is governed by \emph{token-mass dispersion}
+$N_{\mathrm{eff}}=\exp(H)$ (\eqref{eq:dispersion}), \emph{not} nominal
+vocabulary cardinality: among the three recipes sharing the identical
+$1376$-token alphabet, F-15 rises ($0.12\!\to\!0.16\!\to\!0.64$) exactly
+as topic dispersion falls ($431\!\to\!400\!\to\!309$), while a
+cardinality account predicts no difference. We therefore recommend
+reporting F-15 only after dispersion normalisation, and we caution that
+LLM-as-judge topic evaluation inherits the same artefact unless the
+judge is given token \emph{semantics} rather than token strings.
+Extending these axes across the P4 backbones, and re-checking the
+dispersion result on the HIDSAG subsets, are the natural next steps.
+
+% =====================================================================
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
 
 \end{document}

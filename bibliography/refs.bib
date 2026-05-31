@@ -536,6 +536,52 @@
 }
 
 % ---------------------------------------------------------------------
+% §6b Post-hoc interpretability (SHAP, counterfactuals, LLM-as-judge)
+%     Used by P5 (journal_interpretability).
+% ---------------------------------------------------------------------
+
+@inproceedings{lundberg2017shap,
+  title     = {A Unified Approach to Interpreting Model Predictions},
+  author    = {Lundberg, Scott M. and Lee, Su-In},
+  booktitle = {Advances in Neural Information Processing Systems 30 (NeurIPS 2017)},
+  pages     = {4765--4774},
+  year      = {2017},
+  url       = {https://papers.nips.cc/paper/2017/hash/8a20a8621978632d76c43dfd28b67767-Abstract.html},
+  note      = {Introduces SHAP (SHapley Additive exPlanations) and the KernelExplainer; the additive feature-attribution framework used for the F-13 per-pixel per-topic attribution maps in this manuscript.}
+}
+
+@article{wachter2017counterfactual,
+  title   = {Counterfactual Explanations Without Opening the Black Box: Automated Decisions and the {{GDPR}}},
+  author  = {Wachter, Sandra and Mittelstadt, Brent and Russell, Chris},
+  journal = {Harvard Journal of Law \& Technology},
+  volume  = {31},
+  number  = {2},
+  pages   = {841--887},
+  year    = {2017},
+  url     = {https://jolt.law.harvard.edu/assets/articlePDFs/v31/Counterfactual-Explanations-without-Opening-the-Black-Box-Sandra-Wachter-et-al.pdf},
+  note    = {Foundational definition of counterfactual explanations as the minimal feature perturbation that flips a model's decision; the conceptual basis for the F-22 minimum-$L_1$ topic-flip metric.}
+}
+
+@inproceedings{stammbach2023revisiting,
+  title     = {Revisiting Automated Topic Model Evaluation with Large Language Models},
+  author    = {Stammbach, Dominik and Zouhar, Vil{\'e}m and Hoyle, Alexander and Sachan, Mrinmaya and Ash, Elliott},
+  booktitle = {Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing (EMNLP)},
+  pages     = {9348--9357},
+  year      = {2023},
+  doi       = {10.18653/v1/2023.emnlp-main.581},
+  url       = {https://aclanthology.org/2023.emnlp-main.581/},
+  note      = {Shows that large language models can serve as automated judges of topic quality (word-intrusion and coherence-rating tasks) that correlate with human judgement; the LLM-as-judge basis for the F-15 alignment axis and the B-12 tea-leaves probe.}
+}
+
+@misc{yang2025bridging,
+  title        = {Bridging Topic Models and Large Language Models for Interpretable Topic Evaluation},
+  author       = {Yang, Y. and collaborators},
+  year         = {2025},
+  howpublished = {Preprint},
+  note         = {TODO: bibliographic details unverified at draft time --- placeholder for the LLM-assisted interpretable-topic-evaluation line of work cited alongside Stammbach et al. 2023. Verify venue, full author list, and identifier (arXiv/DOI) before submission.}
+}
+
+% ---------------------------------------------------------------------
 % §7 Spatial segmentation (SLIC, Felzenszwalb)
 % ---------------------------------------------------------------------
 
