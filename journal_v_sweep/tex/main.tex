@@ -89,7 +89,8 @@ V2 (0.395) are tied for second, with V20 the only \emph{label-aware}
 recipe in the consistently-strong family. The per-backbone F-7 winners are V12 (LDA, 0.534),
 V11 (HDP, 0.571), V8 (ProdLDA, 0.328) and V11 (ETM, 0.530). V13 (vector-quantised VAE) underperforms
 sharply; V18 (graph-Laplacian eigenvector tokens) places third on F-7
-mean. The per-axis winner depends both on the scene and on which
+mean among the recipes new to this revision (V13--V20). The per-axis
+winner depends both on the scene and on which
 property of the topic basis the axis measures. We report the full
 $19 \times 12 \times 11$ (recipe $\times$ axis $\times$ scene/subset)
 result matrix, identify five axis--recipe affinities, and recommend
@@ -734,8 +735,10 @@ F-18 & 0.25 & \emph{1.00} & 0.22 & 0.20 & 0.15 & \emph{0.95} & 0.15 & \emph{1.00
 vocabulary size: V2 (8 q-bins), V8 (12 endmembers), and V6 (wavelet
 levels) have small or smooth vocabularies that force top-10 alignment
 across seeds regardless of model dynamics. The \textbf{bold} V12 marks
-the recipe that wins F-1, F-2, F-7, F-14 and F-22 but loses F-18 to
-every recipe except V9. V12's flexibility is seed-sensitive.
+the recipe that leads F-2 and F-7 at $Q=8$ (F-1 is a non-discriminating
+tie) but loses F-14 to V9, loses F-22 to V20 (V20 26.3 vs V12 24.5),
+and loses F-18 to every recipe except V9. V12's flexibility is
+seed-sensitive.
 
 \paragraph{The reliability--informativeness tradeoff.}
 V12, V3, V7, V5, V4 all sit in the 0.14--0.25 range — informative
@@ -960,7 +963,8 @@ consistent recipe at mean F-7 NMI $= 0.431$; it lands top-5 under
 every backbone without winning any outright and has the smallest
 standard deviation across the four backbones ($\sigma = 0.06$). V20
 is the second-most consistent at $0.397$, retaining LDA strength
-($0.520$) and tying ETM ($0.490$) with V12 / V11. V11 (product
+($0.520$) and tying V12 on ETM ($0.490$ vs $0.488$; V11 leads ETM at
+$0.530$). V11 (product
 quantisation, vocab $M K_s = 32$) wins HDP and ETM outright but
 collapses under LDA and ProdLDA — a backbone-specialist profile.
 V20's interpretability advantage relative to V8 and V11 is that it
@@ -974,7 +978,7 @@ above the canonical V1 baseline''.
 top-3 contenders at the finer quantisation level reveals that V8's
 cross-backbone dominance is preserved under quantisation refinement:
 HDP $Q=16$ gives V8 $0.454$, V20 $0.403$, V2 $0.249$, mirroring the
-$Q=8$ HDP ranking ($V8 = 0.471$, $V20 = 0.397$, V2 $0.231$). V8's
+$Q=8$ HDP ranking ($V8 = 0.451$, $V20 = 0.356$, V2 $0.347$). V8's
 endmember-fraction vocabulary is robust both across topic-model
 priors and across quantisation levels, while V20's gains from finer
 $Q$ are LDA-specific.
