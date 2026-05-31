@@ -56,12 +56,13 @@ on classification, coherence, label coupling and counterfactual
 robustness, while V1 (band-frequency tokens, the canonical) wins on
 seed-test reliability. The present manuscript asks the orthogonal
 question: \emph{does the recipe winner depend on the topic-model
-backbone?} We run the same V1--V13 sweep under three additional
-backbones --- Hierarchical Dirichlet Process (HDP, nonparametric K),
-Product LDA (ProdLDA, logistic-normal prior + amortised inference)
-and the Embedded Topic Model (ETM, joint word--topic embedding) ---
-producing a $4 \times 13$ factorial on six labelled-scene benchmarks
-(312 cells in the headline F-2 coherence axis). The headline finding
+backbone?} We run the full V1--V20 sweep (nineteen recipes; V16 is
+scaffolded only) under three additional backbones --- Hierarchical
+Dirichlet Process (HDP, nonparametric K), Product LDA (ProdLDA,
+logistic-normal prior + amortised inference) and the Embedded Topic
+Model (ETM, joint word--topic embedding) --- producing a
+$4 \times 19$ factorial on six labelled-scene benchmarks
+(456 cells in the headline F-2 coherence axis). The headline finding
 is that \textbf{the wordification ranking inverts across backbones}.
 LDA and ETM, both with Dirichlet-like priors, agree that V12 wins; HDP
 with its stick-breaking truncation prior picks V7 (absorption-feature
@@ -145,10 +146,10 @@ the practical canonical too.
 \subsection{Contributions}
 \label{subsec:contributions}
 \begin{enumerate}
-  \item A $4 \times 13$ factorial sweep over four topic-model
-    backbones (LDA, HDP, ProdLDA, ETM) and thirteen wordification
-    recipes (V1--V13) on six labelled HSI scenes. 312 F-2 cells, 312
-    F-14 cells.
+  \item A $4 \times 19$ factorial sweep over four topic-model
+    backbones (LDA, HDP, ProdLDA, ETM) and nineteen wordification
+    recipes (V1--V20; V16 scaffolded only) on six labelled HSI scenes.
+    456 F-2 cells, 456 F-14 cells.
   \item Identification of three robust backbone--recipe affinities:
     Dirichlet-prior backbones favour dense-vocabulary recipes (V12,
     V3); truncation-prior backbones favour sparse-event recipes (V7);

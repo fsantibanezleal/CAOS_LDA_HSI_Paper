@@ -113,18 +113,23 @@ as cross-backbone leader."
 
 Tracked in issue #764.
 
-## 3. F-15 LLM alignment coverage gap
+## 3. F-15 LLM alignment coverage — CLOSED (full 19-recipe coverage)
 
-F-15 LLM-judge cells exist for V1-V13 only (78 cells = 13 × 6).
-V14, V15, V17, V18, V19, V20 have **zero** F-15 cells.
+F-15 LLM-judge cells now exist for all 19 recipes (114 cells = 19 × 6);
+the V14-V20 extension was completed 2026-05-30 (issue #758 closed).
 
-The F-15 anti-correlation finding (large-vocab recipes V12/V3 fall
-to 0.16/0.12 because top-10 overlap is rare on 1600-word vocabularies)
-was never validated against V20, which has the same 1600-token vocab
-as V12. **Expected:** V20 F-15 alignment ≈ 0.16, consistent with
-V12. **Actual:** unknown until builder is re-run.
+The original "expected V20 ≈ 0.16, consistent with V12" prediction was
+**WRONG**: V20 scores **0.642**, far above V12 (0.158) and V3 (0.117)
+despite sharing the ~1600-token vocabulary. V14 (vocab 1024) scores
+0.950. This refutes the pure vocabulary-size confounder hypothesis:
+the real driver is **token-mass dispersion**, not nominal vocabulary
+cardinality. V20's MI-weighting (and V14's multi-scale wavelet
+response) concentrate each document's mass on a few tokens, keeping
+the top-10 overlap density high even at large |V|.
 
-Tracked in issue #758.
+Full F-15 means (Q=8): V18/V19=1.00, V14=0.95, V20=0.64, V17=0.57,
+V15=0.03. This corrected finding is now reflected in P5 abstract +
+Table IV (commit eac6c11). Issue #758 closed.
 
 ## 4. HIDSAG family-D coverage gap
 
@@ -191,16 +196,20 @@ data without manual disk inspection.
 
 Tracked in issue #755.
 
-## Status snapshot (2026-05-31)
+## Status snapshot (2026-05-31, post-audit fixup pass)
 
 | Disclosure | Tech report (this doc) | P3 paper | LinkedIn | Wiki | i18n | Code |
 |---|---|---|---|---|---|---|
-| §1 V20 leakage | ✅ | pending | pending | pending | pending | pending |
-| §2 Degenerate cells | ✅ | pending (Appendix B) | n/a | n/a | n/a | n/a |
-| §3 F-15 V14-V20 | ✅ | pending | n/a | n/a | n/a | pending (run builder) |
+| §1 V20 leakage | ✅ | ✅ (F-1 protocol §) | ✅ (F-1 tie note) | n/a | ✅ | ✅ (caveat) |
+| §2 Degenerate cells | ✅ | ✅ (cross-bb footnote) | n/a | n/a | n/a | n/a |
+| §3 F-15 V14-V20 | ✅ closed | ✅ (P5 Table IV) | n/a | n/a | n/a | ✅ (builder run) |
 | §4 HIDSAG V13-V20 | ✅ | pending | n/a | n/a | n/a | pending (run + schema patch) |
-| §5 B-12 V12/V20 | ✅ | pending | n/a | n/a | n/a | pending (builder extension) |
-| §6 Coverage matrix Q | ✅ | n/a | n/a | n/a | n/a | pending (regenerate) |
-| §7 API Q-extension | ✅ | n/a | pending | n/a | pending | pending (endpoint + frontend) |
+| §5 B-12 V12/V20 | ✅ | ✅ (P5 limitation) | n/a | n/a | n/a | ✅ (builder arg) |
+| §6 Coverage matrix Q | ✅ closed | n/a | n/a | n/a | n/a | ✅ (Q-stratified) |
+| §7 API Q-extension | ✅ closed | n/a | n/a | n/a | n/a | ✅ (live in prod) |
+| triple-axis retired | ✅ | ✅ (abstract+captions) | ✅ | ✅ (Home) | ✅ | ✅ (BackboneF7Panel) |
+| F-2 Q=32 tie | ✅ | ✅ | ✅ | ✅ | pending (V20 theory) | n/a |
+| path leak D:\\ | n/a | n/a | n/a | n/a | n/a | ✅ (json + builder) |
 
-Open issues: #755 #756 (resolved 2026-05-31) #757 #758 #759 #762 #763 #764 #765 #766.
+Closed issues: #755 #756 #758 #759 #760 #763 #764 #766 (+ #762 disclosed).
+Deferred: #757 (venv DX), #765 (HIDSAG V13-V20 deep refactor).

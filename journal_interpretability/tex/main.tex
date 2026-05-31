@@ -60,18 +60,25 @@ We find three concrete results. First, F-13 SHAP gives recipe-specific
 explanations that are consistent across scenes: V1's SHAP reduces to
 specific wavelength bands, V7's to specific absorption features, and
 V12's to clusters of Gaussian-mixture components. Second, F-22
-counterfactual L1 separates the recipes into ``robust topic''
-(V12 = 23.5, V3 = 18.2), ``moderate'' (V1 = 6.1, V7 = 5.2) and
-``fragile'' (V9 = 1.0, V10 = 1.2) regimes; V12's topics are 20x
-harder to flip than V9's. Third, F-15 LLM-as-judge alignment is
-\emph{anti-correlated} with F-2 coherence on large-vocabulary recipes:
-V2/V8/V10 (vocab 8/12/24) score F-15 = 1.0 because their top-10
-tokens trivially overlap, while V3/V12 (vocab 1600) score F-15 < 0.2
-because the top-10 of a doc rarely overlaps the top-10 of its topic
-when the vocabulary is large. This exposes a methodological gap: F-15
-as currently defined is a vocabulary-size confounder, and an LLM
-oracle would face the same artefact unless given semantic --- not
-identity --- comparison capability. We recommend reporting F-13 SHAP
+counterfactual L1 (sentinel-patched 19-recipe ranking) separates the
+recipes into ``robust topic'' (V20 = 26.3, V12 = 24.5, V3 = 23.5),
+``moderate'' (V1 = 6.1, V7 = 5.2) and ``fragile'' (V9 = 1.0,
+V10 = 1.2) regimes; the most-robust basis (V20, the label-aware
+MI-weighted recipe) is ${\sim}26\times$ harder to flip than V9's.
+Third, F-15 LLM-as-judge alignment is \emph{anti-correlated} with
+F-2 coherence on large-vocabulary recipes: V2/V8/V10 (vocab 8/12/24)
+score F-15 = 1.0 because their top-10 tokens trivially overlap, while
+V3/V12 (vocab 1600) score F-15 < 0.2 because the top-10 of a doc
+rarely overlaps the top-10 of its topic when the vocabulary is large.
+The confounder is \emph{not purely vocabulary size}, however: V20
+shares V12's 1600-token vocabulary yet scores F-15 = 0.64, because
+its MI-weighting concentrates token mass on a few high-MI bands and
+raises the effective top-10 overlap density --- so the artefact is
+driven by token-mass dispersion, not nominal vocabulary cardinality.
+This exposes a methodological gap: F-15 as currently defined conflates
+token-mass concentration with coherence, and an LLM oracle would face
+the same artefact unless given semantic --- not identity ---
+comparison capability. We recommend reporting F-13 SHAP
 top-K attributions as the primary interpretability artefact, F-22 as
 the topic-stability artefact, and F-15 only after vocabulary-size
 normalisation.
@@ -93,8 +100,9 @@ topic models, wordification, evaluation framework.
 \section{Introduction}\label{sec:intro}
 % =====================================================================
 
-The companion paper (P3) ranks the V1--V13 wordification recipes on
-classification, coherence and label-coupling axes. The
+The companion paper (P3) ranks the full V1--V20 wordification sweep
+(nineteen recipes; V16 is scaffolded only) on classification,
+coherence and label-coupling axes. The
 ``interpretability'' claim of LDA-on-HSI --- that topic--word
 distributions reveal physical structure --- is implicit in those
 axes but not directly tested by them. Three post-hoc interpretability
@@ -172,7 +180,10 @@ documents per (V, scene) cell.
 
 \begin{table}[ht]
 \caption{F-22 median counterfactual $L_1$ to flip argmax topic, mean
-across 6 labelled scenes. Higher means more robust topic boundary.}
+across 6 labelled scenes, full 19-recipe sweep with the sentinel patch
+(cells where every sampled document fails to flip within
+$\text{MAX\_STEPS}=50$ persist at 50 rather than being dropped).
+Higher means more robust topic boundary.}
 \label{tab:f22-summary}
 \centering
 \small
@@ -180,15 +191,22 @@ across 6 labelled scenes. Higher means more robust topic boundary.}
 \toprule
 Recipe & median $L_1$ \\
 \midrule
-V12 & \textbf{23.50} \\
-V3  & 18.20 \\
+V20 & \textbf{26.33} \\
+V12 & 24.50 \\
+V3  & 23.50 \\
 V2  & 7.83 \\
+V14 & 7.67 \\
 V1  & 6.08 \\
 V7  & 5.17 \\
+V15 & 4.00 \\
+V18 & 3.67 \\
 V8  & 3.58 \\
 V11 & 3.33 \\
+V13 & 2.67 \\
+V17 & 2.58 \\
 V4  & 2.50 \\
 V5  & 2.50 \\
+V19 & 2.08 \\
 V6  & 1.92 \\
 V10 & 1.17 \\
 V9  & 1.00 \\
@@ -196,10 +214,12 @@ V9  & 1.00 \\
 \end{tabular}
 \end{table}
 
-V12's topics are 20$\times$ harder to flip than V9's. This complements
-P3's F-2/F-7 finding: V12 wins on coherence \emph{and} on counterfactual
-robustness, which together rule out the alternative explanation that
-V12's coherence advantage is an artefact of overfitting to its training
+V20's topics are ${\sim}26\times$ harder to flip than V9's, and V20
+edges V12 (24.5) and V3 (23.5) for the most-robust basis at $Q=8$.
+This complements P3's F-2/F-7 finding: the label-aware MI-weighted
+recipe V20 wins coherence-adjacent robustness \emph{and} (at $Q=32$)
+F-7, which together rule out the alternative explanation that the
+coherence advantage is an artefact of overfitting to its training
 documents.
 
 % =====================================================================
@@ -228,21 +248,39 @@ V6  & 1.000 & $\approx B$ \\
 V8  & 1.000 & 12 \\
 V9  & 1.000 & $R \cdot Q$ \\
 V10 & 1.000 & 24 \\
+V18 & 1.000 & 128 \\
+V19 & 1.000 & 24 \\
 V11 & 0.992 & 32 \\
 V5  & 0.967 & $B$ \\
 V13 & 0.950 & 128 \\
+V14 & 0.950 & 1024 \\
 V4  & 0.917 & $B$ \\
 V1  & 0.792 & $B$ \\
 V7  & 0.783 & $\le C_b Q^2$ \\
+V20 & 0.642 & 1160 \\
+V17 & 0.570 & 512 \\
 V12 & 0.158 & $B Q$ \\
 V3  & 0.117 & $B Q$ \\
+V15 & 0.033 & 48 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 The ranking is \emph{anti-correlated} with F-2 coherence on the
 large-vocabulary recipes V3 and V12. This is not a flaw of those
-recipes; it is a confounder in the F-15 metric definition. With
+recipes; it is a confounder in the F-15 metric definition --- but the
+full 19-recipe sweep shows the confounder is \textbf{not nominal
+vocabulary cardinality}. Two large-vocabulary recipes break the
+pattern: V14 (CWT-Morlet, $|\mathcal{V}| = 1024$) scores 0.950, and
+V20 (MI-weighted, $|\mathcal{V}| = 1160$, essentially V12's
+$BQ$) scores 0.642 --- both far above V12 (0.158) and V3 (0.117)
+despite comparable or larger vocabularies. What separates them is
+\emph{token-mass concentration}: V20's MI-weighting and V14's
+multi-scale wavelet response place most of each document's mass on a
+few tokens, so the top-10 overlap density stays high; V12's and V3's
+mass is spread across $\sim$1600 GMM/bin tokens, so top-10 overlap is
+rare even when the topics are coherent. The confounder is therefore
+mass dispersion, not $|\mathcal{V}|$. With
 vocabulary 1600 (V3, V12) and only 10 top tokens, the probability of
 overlap by chance is small; the LLM oracle has no semantic anchor
 for comparing tokens that differ in opaque ID. With vocabulary 8

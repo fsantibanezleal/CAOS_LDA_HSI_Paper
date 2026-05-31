@@ -47,7 +47,7 @@ and the per-scene B-12 / F-15 LLM-judge cells.**
 | Scene | V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 | V10 | V11 | V12 | V14 | V18 | V20 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | botswana          | 0.963 | 0.956 | 0.961 | 0.961 | 0.958 | 0.945 | 0.962 | **0.967** | 0.954 | 0.957 | 0.957 | 0.964 | 0.964 | 0.965 | 0.964 |
-| indian-pines      | 0.842 | 0.861 | 0.835 | 0.833 | 0.829 | 0.819 | 0.831 | 0.857 | 0.819 | 0.834 | 0.853 | 0.853 | 0.847 | 0.837 | **0.858** |
+| indian-pines      | 0.842 | **0.861** | 0.835 | 0.833 | 0.829 | 0.819 | 0.831 | 0.857 | 0.819 | 0.834 | 0.853 | 0.853 | 0.847 | 0.837 | 0.858 |
 | kennedy-sc        | 0.923 | 0.925 | 0.924 | 0.924 | 0.925 | 0.923 | 0.922 | 0.927 | 0.922 | 0.917 | 0.927 | **0.930** | 0.917 | 0.919 | 0.921 |
 | pavia-u           | 0.815 | 0.824 | 0.820 | 0.819 | 0.815 | 0.819 | 0.816 | 0.820 | 0.825 | 0.819 | 0.819 | **0.834** | 0.811 | 0.810 | 0.811 |
 | salinas-a         | **0.997** | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 | 0.997 |
@@ -55,13 +55,15 @@ and the per-scene B-12 / F-15 LLM-judge cells.**
 | **mean across scenes** | 0.9152 | 0.9173 | 0.9153 | 0.9151 | 0.9145 | 0.9135 | 0.9143 | 0.9163 | 0.9143 | 0.9134 | 0.9161 | **0.9216** | 0.9145 | 0.9132 | 0.9168 |
 
 Spread (best − worst across all 15 recipes shown, mean of scenes)
-= 0.0084. V20 places **second** in F-1 mean (0.9168), behind V12
-(0.9216) but ahead of V2 (0.9173). On Indian Pines, **V20 wins F-1
-outright** (0.858), beating V12 (0.853) and V2 (0.861 — note V2's win
-is the previous record, now V20 reverses it to 0.858 > V12). This is
-the third Indian Pines axis V20 wins, after F-2 (0.88) and F-7 (0.44),
-making V20 the **only recipe with a triple-axis win on any single
-labelled scene**.
+= 0.0084. **F-1 does not discriminate**: V12 0.9216, V8 0.9163,
+V2 0.9173, V20 0.9168 all sit inside a 0.008 band and within the
+bootstrap HDI of one another. On Indian Pines specifically, **V2
+wins F-1 (0.861)**, with V20 second (0.858), V8 0.857, V11/V12 0.853
+— a tie within noise, NOT a V20 win. V20's genuine Indian-Pines wins
+are F-2 (0.88) and F-7 (0.44); F-1 is a non-discriminating axis and
+V20's F-1 number is additionally label-leakage-contaminated by its
+MI weighting (see §1 of the reproducibility audit). The earlier
+"triple-axis win" framing was incorrect and is retired.
 
 V14 and V18 are competitive (0.9145, 0.9132) but never win F-1
 outright. Their differences from V1 are within the bootstrap HDI
@@ -553,9 +555,10 @@ to test whether the headline ranking holds:
 ranking flips from V12 / V3 / V20 to V12 / V20 / V3. At Q=16 the
 F-7 top-3 spread compresses further (V12 0.552 / V20 0.534 / V3
 0.521, range 0.031 NMI vs 0.014 at Q=8). V20 gains the most on F-2
-(+0.051) and outranks V3. The triple-axis Indian Pines win for V20
-remains intact because all three of F-1 / F-2 / F-7 stay V20 ≥ V12
-on that scene under both Q=8 and Q=16.
+(+0.051) and outranks V3. On Indian Pines V20 stays the F-2 and F-7
+leader at both Q=8 and Q=16; F-1 remains a non-discriminating tie
+(V2 nominally highest), so the earlier "triple-axis" claim does not
+hold and is retired.
 
 The broader Q-sweep across 19 recipes × 3 schemes × {8, 16, 32} is
 deferred to a follow-up (171 candidate vocabularies per scene × 6
@@ -638,12 +641,14 @@ three universal monotonic improvers:
   are simpler label-unaware compressions whose monotonic gain is
   modest because their vocabulary capacity is small.
 
-**V20 retains its lead over V12 at Q=32 (0.030 NMI gap, doubled
-from 0.014 at Q=8) and becomes the LDA F-7 winner at Q=32**, as
-originally claimed. The earlier "V20 monotonic-only" framing was an
-artefact of testing only seven top contenders at finer Q levels;
-the full 19-recipe sweep shows it shares the monotonic-↑ property
-with V2 and V8 but dominates in absolute terms.
+**At Q=8 V20 trails V12 on the LDA F-7 mean by 0.014 NMI
+(0.5198 vs 0.5336); the ranking inverts at Q=32 where V20 leads V12
+by 0.030 (0.5628 vs 0.5329, robust, 5/6 per-scene wins).** This is a
+ranking inversion, not a pre-existing lead that doubles — V20 had no
+lead at Q=8. The earlier "V20 monotonic-only" framing was an artefact
+of testing only seven top contenders at finer Q levels; the full
+19-recipe sweep shows it shares the monotonic-↑ property with V2 and
+V8 but reaches the highest absolute F-7 value at Q=32.
 
 ### Recipes that decline at finer Q
 
