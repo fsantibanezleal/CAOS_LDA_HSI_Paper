@@ -137,13 +137,39 @@ V20 = LDA peak finding is unknown.
 
 Tracked in issue #765.
 
-## 5. B-12 word-intrusion limited to V1
+## 5. B-12 word-intrusion limited to V1 (by design, methodology gap)
 
 B-12 (`data/derived/llm_tea_leaves/`) has 6 cells, one per scene,
-all run against the V1 canonical topic fit. V12 and V20 have not
-been tested with the intrusion methodology.
+all run against the V1 canonical topic fit.
 
-Tracked in issue #766.
+**Why V12/V20 can't be evaluated with B-12 in its current form**:
+the `build_b12_self_judge.py` deterministic rule judges word intrusion
+by parsing wavelength values from the candidate tokens (e.g. `"0823nm"`,
+`"2400nm"`) and computing the one farthest from the candidate-set
+median. V12 tokens are GMM-component IDs (`gmm_c0` ... `gmm_c{N}`),
+V20 tokens are MI-weighted band indices (`miw_b000_q28`) — neither
+encodes wavelength information directly accessible to the parser.
+
+The 2026-05-31 attempt to run `--recipe V12` and `--recipe V20`
+through the V-sweep topic_views layout produces cells with
+`n_attempted = 0` and `per_topic[k].skipped = True` (reason: "no top
+words"), confirming the methodology gap.
+
+**Recommended P5 language**: "The Stammbach et al. (2023) intrusion
+test as implemented in our self-judge bypass operates over
+wavelength-encoded vocabularies. V12 and V20 vocabularies are
+non-wavelength (GMM-component IDs and MI-weighted band indices
+respectively), so B-12 cannot be applied without a vocab-agnostic
+re-implementation of the judge rule. This is itself a finding: the
+single-axis "topic coherence under intrusion" is V1-dialect-specific."
+
+The B-12 builder argparse was extended in c460 to accept `--recipe`
+and `--q` arguments for future use when a vocab-agnostic judge rule
+becomes available.
+
+Tracked in issue #766. The limitation is now documented; degenerate
+V12/V20 cells were removed from disk to avoid misleading downstream
+analyses.
 
 ## 6. F-15 / F-1 / coverage matrix Q-stratification
 
