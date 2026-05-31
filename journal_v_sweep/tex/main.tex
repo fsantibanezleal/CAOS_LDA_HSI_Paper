@@ -351,10 +351,28 @@ hierarchical model on the per-fold macro-F1.
 
 We follow the F-1 protocol of P1: per-V K-policy, 5-fold
 StratifiedKFold (\texttt{random\_state} = 42), per-fold LDA refit with no
-test-set leakage, two methods reported per cell (\emph{raw\_logistic}
-baseline and \emph{topic\_routed\_soft}, the soft-gated per-topic
-specialist ensemble from P1). Macro-F1 is reported per fold and
-averaged.
+test-set leakage at the LDA fit step, two methods reported per cell
+(\emph{raw\_logistic} baseline and \emph{topic\_routed\_soft}, the
+soft-gated per-topic specialist ensemble from P1). Macro-F1 is reported
+per fold and averaged.
+
+\paragraph{V20 leakage caveat.} V20 wordification computes per-band
+mutual information weights using the full labelled stratified sample
+($\text{SAMPLES\_PER\_CLASS} = 220$) before the F-1 5-fold split. The
+resulting \texttt{doc\_term} matrix therefore encodes test-fold label
+information into the vocabulary structure. The per-fold LDA refit
+prevents downstream LDA leakage but does NOT correct the upstream
+MI-weighting. V20's F-1 macro-F1 should be read with this caveat;
+the saturation of V20 (0.917), V8 (0.916) and V2 (0.917) to within
+$\pm 0.001$ across $Q \in \{8, 16, 32\}$ suggests the practical bias
+is negligible at the topic\_routed\_soft saturation ceiling, but
+methodologically V20 and V8/V2 are not directly comparable on F-1.
+The metrics F-2, F-7, F-14, F-18 and F-22 do NOT depend on label
+information of the test fold and are unaffected. A nested-protocol
+re-run (MI weights computed per-fold from train\_idx only) is
+proposed in the reproducibility audit (issue \#763); the expected
+magnitude of the bias is $|\Delta F\text{-}1| \le 0.005$ given the
+observed saturation.
 
 Table~\ref{tab:f1-full} gives the mean macro-F1 across folds for
 \emph{topic\_routed\_soft} on all 6 labelled scenes.
@@ -917,6 +935,21 @@ V1  (band-frequency)        & 0.455 & 0.081 & 0.091 & 0.381 & 0.252 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\paragraph{Convergence audit (footnote to the cross-backbone table).}
+The 4-backbone $\times$ 19-recipe $\times$ 6-scene Q=8 factorial
+contains a non-trivial number of cells where the backbone failed to
+converge (NMI = 0 or near-zero): LDA 1/114, ETM 1/114, but
+\textbf{HDP 25/114 (22\%)} and \textbf{ProdLDA 41/114 (36\%)}. The
+cross-backbone mean reported in the table above averages these zeros
+together with successful fits.
+
+Excluding zero cells from the per-backbone means yields V8 0.431
+(unchanged — V8 has no degenerate cells), V20 0.408 ($+0.011$, one
+ProdLDA zero on Indian Pines), V11 0.382 ($+0.012$), V12 0.393
+($+0.023$). V8 retains cross-backbone leadership under either
+treatment of zeros. The full convergence audit per (backbone, recipe,
+scene) cell is in the reproducibility audit (issue \#764).
 
 \textbf{V8 (NFINDR endmember-fraction)} is the most cross-backbone-
 consistent recipe at mean F-7 NMI $= 0.431$; it lands top-5 under
