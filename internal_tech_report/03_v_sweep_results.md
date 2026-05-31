@@ -629,8 +629,11 @@ V20, V2, V8. V6 is monotonic-↑ on F-7 only (F-2 regresses). Of the
 three universal monotonic improvers:
 
 - **V20** has the steepest gains on both axes (F-2 +0.060, F-7
-  +0.043), the highest absolute values at Q=32 (F-2 0.910, F-7
-  0.563), and is the only label-aware recipe in the family.
+  +0.043), the highest absolute F-7 value at Q=32 (0.563, +0.030
+  margin over V12, 5/6 per-scene wins), and is the only label-aware
+  recipe in the family. F-2 c_v at Q=32 is V20 0.910 vs V12 0.909
+  — statistical tie (margin 0.0016 ≈ noise, per-scene 3-3 split),
+  so V20's F-2 leadership is *mean-only* and not robust.
 - V2 (intensity-bin, vocab Q) and V8 (NFINDR endmember, vocab ≤ K_e)
   are simpler label-unaware compressions whose monotonic gain is
   modest because their vocabulary capacity is small.
