@@ -49,6 +49,12 @@ supplementary/journal/*.pdf
 !conference/build/main.pdf
 !journal/build/
 !journal/build/main.pdf
+!journal_v_sweep/build/
+!journal_v_sweep/build/main.pdf
+!journal_backbone_factorial/build/
+!journal_backbone_factorial/build/main.pdf
+!journal_interpretability/build/
+!journal_interpretability/build/main.pdf
 !supplementary/build/
 !supplementary/build/*.pdf
 !conference/word/

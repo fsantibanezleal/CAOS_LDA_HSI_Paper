@@ -464,7 +464,7 @@ label across the full V-sweep. Bold = best per scene. Sweep run
 \toprule
 Scene & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 \\
 \midrule
-Indian Pines     & 0.34 & 0.35 & \textbf{0.43} & 0.25 & 0.20 & 0.26 & 0.16 & 0.43 & 0.10 & 0.27 & 0.25 & 0.42 \\
+Indian Pines     & 0.34 & 0.35 & 0.43 & 0.25 & 0.20 & 0.26 & 0.16 & 0.43 & 0.10 & 0.27 & 0.25 & 0.42 \\
 Kennedy SC       & 0.41 & 0.40 & \textbf{0.54} & 0.32 & 0.25 & 0.34 & 0.20 & 0.17 & 0.11 & 0.27 & 0.26 & 0.41 \\
 Pavia U          & 0.47 & 0.38 & 0.55 & 0.38 & 0.14 & 0.43 & 0.23 & 0.54 & 0.02 & 0.00 & 0.21 & \textbf{0.61} \\
 Salinas-A        & 0.62 & 0.65 & \textbf{0.68} & 0.37 & 0.56 & 0.33 & 0.16 & 0.52 & 0.20 & 0.28 & 0.42 & 0.55 \\
@@ -473,12 +473,15 @@ Salinas          & 0.47 & 0.54 & 0.43 & 0.39 & 0.44 & 0.33 & 0.28 & 0.56 & 0.14 
 \end{tabular}
 \end{table*}
 
-V3 wins F-7 on three scenes (Indian Pines, Kennedy SC, Salinas-A);
-V12 wins on Pavia U and Salinas. \emph{V1 never wins F-7}: on every
-labelled scene there is at least one wordification that produces more
-label-aligned topics. This is the strongest single-axis result in the
-sweep and the key contribution against the V1-canonical assumption of
-the companion paper.
+Within this 12-recipe view V3 wins F-7 on Kennedy SC and Salinas-A
+and V12 wins on Pavia U and Salinas; on Indian Pines V3 ties V8 at
+0.43 (no unique 12-recipe winner). In the full 19-recipe sweep
+(Appendix~\ref{app:full-matrix}) V20 wins Indian Pines F-7 at 0.44.
+\emph{V1 never wins F-7}: on every labelled scene there is at least
+one wordification that produces more label-aligned topics. This is
+the strongest single-axis result in the sweep and the key
+contribution against the V1-canonical assumption of the companion
+paper.
 
 % =====================================================================
 \section{F-2 and F-7 under the V13--V20 extension}
