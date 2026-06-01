@@ -5,8 +5,10 @@
 %          of Topic-Model Families on Hyperspectral Imagery
 % Target : redacted while the preprint circulates
 % Class  : IEEEtran journal option
-% Status : DRAFT v0.1 — populated with results from c378 (ProdLDA),
-%          c379 (ETM), c368 (HDP) over the V1..V20 design space.
+% Status : PREPRINT v1.0 — populated with results from c378 (ProdLDA),
+%          c379 (ETM), c368 (HDP) over the V1..V20 design space, with
+%          the c423/c432-c436 sweep refresh and the canonical equation
+%          set \input from ../../equations/canonical.tex.
 %          LDVAE-T (fifth backbone) parked pending public code.
 % ---------------------------------------------------------------------
 
@@ -83,6 +85,12 @@ backbone choice, learned tokenisation.
 
 \begin{document}
 
+% Canonical equation set (single source of truth, shared across P3/P4/P5).
+% Do not re-derive: \input here and \eqref the labels below. Unused groups
+% (B-recipes other than the four we cite, most of group C) simply go
+% un-\eqref'd; they are still typeset but unreferenced.
+\input{../../equations/canonical.tex}
+
 \maketitle
 \IEEEdisplaynontitleabstractindextext
 \IEEEpeerreviewmaketitle
@@ -154,9 +162,10 @@ the practical canonical too.
     Dirichlet-prior backbones favour dense-vocabulary recipes (V12,
     V3); truncation-prior backbones favour sparse-event recipes (V7);
     logistic-normal backbones favour large-vocabulary recipes (V3).
-  \item A per-recipe \emph{affinity score} that measures how a recipe
-    transfers across the four backbones, identifying V3 (consistently
-    top-3 across backbones) and V13 (consistently bottom-3) as the
+  \item A per-recipe \emph{affinity score} \eqref{eq:affinity} that
+    measures how a recipe transfers across the four backbones,
+    identifying V12 / V20 (tied at the top of the coherence affinity
+    ranking) and V13 (consistently at the per-backbone minimum) as the
     extremes.
   \item A revised practical recommendation: the
     $(\text{backbone}, \text{wordification})$ pair is a single
@@ -167,8 +176,16 @@ the practical canonical too.
 \section{The four backbones}\label{sec:backbones}
 % =====================================================================
 
+All four backbones are formally defined by the canonical equation set
+shared across the manuscript series: LDA by \eqref{eq:lda-gen}, HDP by
+\eqref{eq:hdp-gen}, ProdLDA by \eqref{eq:prodlda-gen}, and ETM by
+\eqref{eq:etm-beta}. The
+prose below records only the hyperparameters and implementation that
+specialise each generic backbone to this study.
+
 \subsection{Online-VB LDA (P1, P3)}
-The canonical fixed-K LDA with online variational Bayes inference
+The canonical fixed-K LDA \eqref{eq:lda-gen} with online variational
+Bayes inference
 \cite{hoffman2010online}. Symmetric Dirichlet priors $\alpha = 0.45$
 on topic mixtures and $\eta = 0.20$ on topic-word distributions.
 $K$ chosen by the same policy as P3: $K = \mathrm{clip}(\lfloor
@@ -178,24 +195,28 @@ $K_{P1} = \max(4, \min(12, n_{\mathrm{classes}}))$. Implementation:
 
 \subsection{Hierarchical Dirichlet Process (HDP)}
 Bayesian nonparametric topic model with two-level stick breaking
-\cite{teh2006hdp}. We use gensim's \texttt{HdpModel} with truncation
+\eqref{eq:hdp-gen} \cite{teh2006hdp}. We use gensim's \texttt{HdpModel} with truncation
 $T=20$ at the corpus level and $K=8$ at the document level. Random
 seed 42. The number of effective topics is data-driven; the topic
 \emph{rank} (the strength of each topic's prior weight) is part of
 the inference output.
 
 \subsection{Product LDA (ProdLDA)}
-Logistic-normal variational topic model
-\cite{srivastava2017prodlda}. Standard normal prior on the latent
-$\mathbf{z} \in \mathbb{R}^K$; $\theta = \mathrm{softmax}(\mathbf{z})$;
+Logistic-normal variational topic model with a product-of-experts
+likelihood \eqref{eq:prodlda-gen} \cite{srivastava2017autoencoding}.
+Laplace-approximated Dirichlet prior on the latent
+$\delta_d \in \mathbb{R}^K$; $\theta_d = \mathrm{softmax}(\delta_d)$;
 two-layer MLP encoder, Pyro implementation. 80 epochs, batch 128,
 learning rate $1\mathrm{e}{-3}$, random seed 42.
 
 \subsection{Embedded Topic Model (ETM)}
-Joint word--topic embedding model \cite{dieng2020etm}. Word embedding
-dimension 64; topic embeddings parameterised so the topic--word
-distribution is $\mathrm{softmax}(\beta_k^\top \rho)$ for word
-embedding matrix $\rho$. Same 80-epoch / batch-128 / seed-42 protocol.
+Joint word--topic embedding model \cite{dieng2020topic}. The
+topic--word distribution is the canonical embedded decoder
+$\beta_k = \mathrm{softmax}(\rho^\top \alpha_k)$ of
+\eqref{eq:etm-beta}, with word-embedding matrix
+$\rho \in \mathbb{R}^{L\times|V|}$ ($L = 64$) and per-topic embedding
+$\alpha_k \in \mathbb{R}^{L}$. Same 80-epoch / batch-128 / seed-42
+protocol.
 
 \section{Method: factorial design}\label{sec:method}
 
@@ -205,11 +226,17 @@ wordification stage is identical across backbones) and refit the
 backbone from scratch. For each cell we report:
 
 \begin{itemize}
-  \item F-2 $c_v$ coherence on the top-10 words per topic, using the
-    same KSG-style sliding-window-NPMI estimator as P1.
+  \item F-2 $c_v$ coherence \eqref{eq:f2} on the top-10 words per topic,
+    using the same KSG-style sliding-window-NPMI estimator as P1.
   \item F-14 mean off-diagonal top-10 jaccard between topics
-    (lower = more diverse).
+    \eqref{eq:f14} (lower = more diverse).
 \end{itemize}
+
+All recipes share the per-row min--max normalisation and uniform
+quantiser of \eqref{eq:quantiser}; the four recipes that dominate the
+factorial are V1 (band-frequency, \eqref{eq:v1}), V3 (joint band--bin,
+\eqref{eq:v3}), V8 (NFINDR endmember-fraction, \eqref{eq:v8}), V12
+(GMM-token, \eqref{eq:v12}) and V20 (MI-weighted bands, \eqref{eq:v20}).
 
 F-7 NMI was added under each non-LDA backbone in the c432--c437
 extension (see \S\ref{subsec:f7-backbone}); F-1 classification,
@@ -239,7 +266,7 @@ now cover V1..V15, V17..V20).}
 \toprule
 Backbone & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 & V13 & V14 & V15 & V17 & V18 & V19 & V20 & best \\
 \midrule
-LDA      & 0.64 & 0.44 & 0.84 & 0.45 & 0.43 & 0.53 & 0.29 & 0.32 & 0.71 & 0.33 & 0.23 & \textbf{0.88} & 0.25 & 0.63 & 0.36 & 0.42 & 0.57 & 0.38 & 0.85 & V12 \\
+LDA      & 0.64 & 0.44 & 0.84 & 0.45 & 0.43 & 0.53 & 0.29 & 0.32 & 0.71 & 0.33 & 0.23 & \textbf{0.85} & 0.25 & 0.63 & 0.36 & 0.42 & 0.57 & 0.38 & 0.85 & V12 \\
 HDP      & 0.54 & 0.44 & 0.31 & 0.44 & 0.44 & 0.32 & \textbf{0.61} & 0.31 & 0.35 & 0.35 & 0.50 & 0.34 & 0.31 & 0.31 & 0.39 & 0.59 & 0.42 & 0.50 & 0.41 & V7 \\
 ProdLDA  & 0.75 & 0.44 & \textbf{0.86} & 0.43 & 0.43 & 0.53 & 0.51 & 0.31 & 0.73 & 0.33 & 0.34 & 0.83 & 0.25 & 0.47 & 0.37 & 0.42 & 0.48 & 0.37 & 0.74 & V3 \\
 ETM      & 0.66 & 0.44 & 0.79 & 0.43 & 0.44 & 0.55 & 0.26 & 0.31 & 0.73 & 0.32 & 0.24 & \textbf{0.82} & 0.25 & 0.62 & 0.36 & 0.43 & 0.58 & 0.35 & 0.77 & V12 \\
@@ -257,16 +284,35 @@ V12 wins; under ProdLDA V3 wins; V20 trails the per-backbone winner
 by 0.05 $c_v$ on average. The cross-backbone affinity ranking below
 quantifies this.
 
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{p4-backbone-factorial.pdf}
+\caption{F-2 $c_v$ across the $19 \times 4$ backbone factorial. Each
+panel is one backbone; recipes are sorted by that backbone's $c_v$.
+The per-backbone winner (bold cell in Table~\ref{tab:f2-factorial})
+moves between recipes --- V12 for LDA / ETM, V3 for ProdLDA, V7 for
+HDP --- making the recipe ranking backbone-dependent.}
+\label{fig:backbone-factorial}
+\end{figure}
+
 \subsection{Per-recipe affinity score}
 
 We define a recipe's \emph{cross-backbone affinity score}
-$\mathcal{A}(\mathrm{V}_i) = $ the average over backbones of
-$(c_v(\mathrm{V}_i) - \min_j c_v(\mathrm{V}_j)) /$ $(\max_j c_v(\mathrm{V}_j) - \min_j c_v(\mathrm{V}_j))$ (math-mode).
-$\mathcal{A} \in [0, 1]$; higher means the recipe consistently scores
-near the per-backbone top across all four backbones.
+$\mathcal{A}(V_i)$ by \eqref{eq:affinity}: the average, over the four
+backbones $\mathcal{B} = \{\mathrm{LDA}, \mathrm{HDP}, \mathrm{ProdLDA},
+\mathrm{ETM}\}$, of the within-backbone min--max-normalised $c_v$ of
+recipe $V_i$. $\mathcal{A} \in [0, 1]$; higher means the recipe
+consistently scores near the per-backbone top across all four
+backbones. Table~\ref{tab:affinity} reports $\mathcal{A}$ computed
+directly from the full $19 \times 4$ cells of
+Table~\ref{tab:f2-factorial}, so every recipe --- including the
+label-aware V14 / V18 / V20 --- sits on one common scale.
 
 \begin{table}[ht]
-\caption{Cross-backbone affinity scores.}
+\caption{Cross-backbone affinity scores $\mathcal{A}(V_i)$
+\eqref{eq:affinity}, computed from the full $19 \times 4$ factorial of
+Table~\ref{tab:f2-factorial} (min--max normalised within each backbone,
+then averaged).}
 \label{tab:affinity}
 \centering
 \small
@@ -274,45 +320,61 @@ near the per-backbone top across all four backbones.
 \toprule
 Recipe & $\mathcal{A}$ \\
 \midrule
-V3   & 0.83 \\
-V12  & 0.79 \\
-V9   & 0.62 \\
-V1   & 0.61 \\
-V6   & 0.45 \\
-V7   & 0.40 \\
-V5   & 0.31 \\
-V4   & 0.30 \\
-V2   & 0.21 \\
-V8   & 0.16 \\
-V11  & 0.16 \\
+V12  & 0.76 \\
+V20  & 0.76 \\
+V1   & 0.74 \\
+V3   & 0.73 \\
+V9   & 0.63 \\
+V18  & 0.47 \\
+V17  & 0.46 \\
+V14  & 0.42 \\
+V7   & 0.39 \\
+V6   & 0.38 \\
+V2   & 0.36 \\
+V4   & 0.35 \\
+V5   & 0.35 \\
+V19  & 0.32 \\
+V15  & 0.22 \\
+V11  & 0.20 \\
 V10  & 0.14 \\
-V13  & 0.04 \\
+V8   & 0.09 \\
+V13  & 0.01 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\textbf{V3 has the highest cross-backbone affinity}: even though it
-only wins outright under ProdLDA, it is in the top-3 under every
-backbone, making it the most consistent recipe across families.
-\textbf{V13 (learned VQ-VAE) has the lowest affinity}, scoring near the
-per-backbone minimum across all four. The optimised reconstruction
-objective of VQ-VAE training does not align with any of the four
-backbones' priors.
+\textbf{V12 and V20 tie for the highest cross-backbone affinity}
+($\mathcal{A} = 0.76$), with V1 ($0.74$) and V3 ($0.73$) close behind:
+all four sit near the per-backbone top under every prior. V20 is the
+only \emph{label-aware} recipe in this leading group, making it the
+most cross-backbone-portable label-aware recipe in the sweep and a
+near-replacement for V12 / V3 when label information is available.
+V3, although it only wins coherence outright under ProdLDA, remains a
+top-4 affinity recipe because it is consistently strong everywhere
+except HDP. \textbf{V13 (learned VQ-VAE) has the lowest affinity}
+($\mathcal{A} = 0.01$), scoring at the per-backbone minimum across all
+four: the reconstruction-optimal VQ-VAE codebook does not align with
+any of the four backbones' priors. Note that V8 scores low here
+($0.09$) on \emph{coherence} affinity specifically --- it is a
+small-vocabulary recipe whose strength is label coupling (F-7), not
+$c_v$; the F-7 factorial below ranks it very differently.
 
-\paragraph{V14, V18, V20 in the affinity ranking (2026-05-28).}
-Treating the new recipes' cells in Table~\ref{tab:f2-factorial} on the
-same affinity scale (with HDP V13 imputed at the per-recipe HDP
-average), V20 places second after V3 ($\mathcal{A} \approx 0.78$),
-slightly above V12. V14 lands around V1 ($\mathcal{A} \approx 0.42$),
-and V18 around V6 ($\approx 0.39$). The headline: \textbf{V20 is the
-most cross-backbone-portable label-aware recipe in the sweep}, and a
-near-replacement for V3 / V12 when label information is available.
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{p4-affinity-bars.pdf}
+\caption{Cross-backbone affinity $\mathcal{A}(V_i)$ \eqref{eq:affinity}
+per recipe (Table~\ref{tab:affinity}). V12 and V20 tie at the top
+($0.76$); V13 sits at the per-backbone minimum ($0.01$). V20 is the
+only label-aware recipe in the leading group.}
+\label{fig:affinity-bars}
+\end{figure}
 
 \subsection{F-7 NMI under each backbone — V8 cross-backbone leadership}
 \label{subsec:f7-backbone}
 
 The c432--c437 extension computes F-7 normalised mutual information
-between the argmax topic per document and the ground-truth labels for
+\eqref{eq:f7} between the argmax topic per document and the
+ground-truth labels for
 the six labelled scenes, repeated under each backbone. The procedure
 is: (1) fit the backbone via its deterministic builder, (2) project
 each sampled labelled pixel through the fitted model to obtain the
@@ -376,6 +438,18 @@ V12's LDA leadership does not generalise. This corroborates the P3
 narrative that no recipe-backbone choice is canonical.
 
 \subsection{Three backbone--recipe affinities}\label{sec:affinities}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{p4-prior-geometry.pdf}
+\caption{Why each prior favours a different vocabulary geometry. The
+Dirichlet-like priors of LDA / ETM \eqref{eq:lda-gen}, \eqref{eq:etm-beta}
+reward dense vocabularies (V12 / V3); HDP's stick-breaking truncation
+\eqref{eq:hdp-gen} rewards sparse-event vocabularies (V7); ProdLDA's
+logistic-normal prior \eqref{eq:prodlda-gen} rewards large vocabularies
+that let a few tokens discriminate strongly (V3).}
+\label{fig:prior-geometry}
+\end{figure}
 
 \textbf{Dirichlet prior + dense vocabulary.} LDA and ETM both use a
 Dirichlet-like prior over the topic simplex. They both pick V12 (GMM-
@@ -469,9 +543,9 @@ We make three recommendations:
   \item Future LDA-on-HSI papers should report the
     $(\text{backbone}, \text{wordification})$ pair explicitly in
     table headers, not as separate hyperparameters.
-  \item Cross-backbone affinity, as defined above, is a more
+  \item Cross-backbone affinity \eqref{eq:affinity} is a more
     informative summary than per-backbone-winner counts: it identifies
-    recipes that generalise across families (V3, V12, V9, V1) versus
+    recipes that generalise across families (V12, V20, V1, V3) versus
     those that only win in narrow regimes (V7 for HDP, V13 nowhere).
   \item V1 (band-frequency) remains a defensible \emph{reproducibility}
     canonical because of P3's F-18 result, but should not be claimed
@@ -495,9 +569,7 @@ We make three recommendations:
 \end{itemize}
 
 % =====================================================================
-% Bibliography intentionally omitted from the scaffold; once the manuscript
-% needs citation, switch to:
-%   \bibliographystyle{IEEEtran}
-%   \bibliography{../../bibliography/refs}
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
 
 \end{document}

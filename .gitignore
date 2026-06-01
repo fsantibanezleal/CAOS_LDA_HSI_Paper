@@ -67,3 +67,9 @@ supplementary/journal/*.pdf
 # Reference templates downloaded archives
 templates/*.zip
 templates/*.tar.gz
+
+# Transient PDFs next to .tex for the new manuscript series (tracked copy lives in build/)
+journal_v_sweep/tex/*.pdf
+journal_backbone_factorial/tex/*.pdf
+journal_interpretability/tex/*.pdf
+figures/source/__pycache__/

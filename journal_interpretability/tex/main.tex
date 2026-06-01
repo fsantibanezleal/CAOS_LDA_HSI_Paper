@@ -85,17 +85,17 @@ score F-15 = 1.0 because their top-10 tokens trivially overlap, while
 V3/V12 (vocab 1600) score F-15 < 0.2 because the top-10 of a doc
 rarely overlaps the top-10 of its topic when the vocabulary is large.
 The confounder is \emph{not purely vocabulary size}, however: V20
-shares V12's $1600$-token alphabet (effective $|\mathcal{V}|\approx1376$
-on the labelled scenes) yet scores F-15 = 0.64, because its
-MI-weighting concentrates topic--word mass on a few high-MI bands and
-raises the effective top-10 overlap density. We make this mechanism
-quantitative with the \emph{token-mass dispersion} metric, the
-effective vocabulary $N_{\mathrm{eff}}=\exp(H)$ of a topic's word
-distribution: among the three recipes that share the identical
-$1376$-token alphabet, $N_{\mathrm{eff}}$ falls V3~($431$) $>$
-V12~($400$) $>$ V20~($309$) and F-15 \emph{rises} in lock-step
-($0.12 < 0.16 < 0.64$), whereas a pure-cardinality account predicts
-no difference. The artefact is therefore driven by token-mass
+re-weights V3's identical $(\mathrm{band},\mathrm{bin})$ alphabet and
+matches V12's same-sized GMM-token alphabet (mean nominal
+$|\mathcal{V}|\approx1376$ across the six scenes, $B\,Q$ per scene),
+yet scores F-15 = 0.64 against their 0.12 / 0.16 --- so cardinality
+cannot explain the gap. We make the real mechanism quantitative with the
+\emph{token-mass dispersion} metric, the effective vocabulary
+$N_{\mathrm{eff}}=\exp\!\big(H(\phi_k)\big)$ of a topic's word
+distribution (averaged over topics and scenes): $N_{\mathrm{eff}}$
+falls V3~($431$) $>$ V12~($400$) $>$ V20~($309$) and F-15 \emph{rises}
+in lock-step ($0.12 < 0.16 < 0.64$), whereas a pure-cardinality account
+predicts no difference. The artefact is therefore driven by token-mass
 dispersion, not nominal vocabulary cardinality. This exposes a
 methodological gap: F-15 as currently defined conflates token-mass
 concentration with coherence, and an LLM oracle would face the same
@@ -399,7 +399,7 @@ V14 & 0.950 & 1024 \\
 V4  & 0.917 & $B$ \\
 V1  & 0.792 & $B$ \\
 V7  & 0.783 & $\le C_b Q^2$ \\
-V20 & 0.642 & 1160 \\
+V20 & 0.642 & $B Q$ \\
 V17 & 0.570 & 512 \\
 V12 & 0.158 & $B Q$ \\
 V3  & 0.117 & $B Q$ \\
@@ -416,9 +416,9 @@ vocabulary cardinality}. Fig.~\ref{fig:f15vocab} plots F-15 against
 $|\mathcal{V}|$ directly: a pure-cardinality account predicts a
 monotone decreasing curve, but several large-vocabulary recipes break
 it. V9 ($|\mathcal{V}|=647$) scores $1.000$; V14 (CWT-Morlet,
-$|\mathcal{V}|=1024$) scores $0.950$; and V20 (MI-weighted, same
-$1600$-token alphabet as V3/V12, effective $|\mathcal{V}|\approx1376$
-on the labelled scenes) scores $0.642$ --- all far above V12 ($0.158$)
+$|\mathcal{V}|=1024$) scores $0.950$; and V20 (MI-weighted, mean
+nominal $|\mathcal{V}|\approx1376$ across scenes, the same size as
+V3/V12) scores $0.642$ --- all far above V12 ($0.158$)
 and V3 ($0.117$) at equal or larger vocabulary.
 
 The mechanism is \emph{token-mass dispersion}, made quantitative by
@@ -426,9 +426,11 @@ the effective vocabulary $N_{\mathrm{eff}}=\exp(H)$ of
 \eqref{eq:dispersion}. Fig.~\ref{fig:dispersion} plots F-15 against
 the per-topic mean $N_{\mathrm{eff}}(\phi_k)$, with point colour keyed
 to $\log_{10}|\mathcal{V}|$. The decisive comparison is the three
-recipes that share the \emph{identical} $1376$-token alphabet so that
-$|\mathcal{V}|$ is held fixed by construction: V3, V12 and V20. Their
-topic-word dispersions fall
+recipes whose alphabets are the same size (mean nominal
+$|\mathcal{V}|\approx1376$; V3 and V20 share the \emph{identical}
+$(\mathrm{band},\mathrm{bin})$ alphabet, V12 a same-sized GMM-token
+one), so $|\mathcal{V}|$ is held fixed by construction: V3, V12 and
+V20. Their topic-word dispersions fall
 $N_{\mathrm{eff}}^{\mathrm V3}=431 > N_{\mathrm{eff}}^{\mathrm V12}=400
 > N_{\mathrm{eff}}^{\mathrm V20}=309$, and F-15 \emph{rises} in
 lock-step ($0.117 < 0.158 < 0.642$). Because $|\mathcal{V}|$ is
@@ -438,8 +440,8 @@ MI-weighting (\eqref{eq:v20}) concentrates the topic--word
 distributions on the discriminative high-MI bands, lowering
 $N_{\mathrm{eff}}$ and raising the probability that a topic's top-10
 overlaps a document's top-10; V12's GMM tokens and V3's joint
-(band, bin) tokens spread the same $1376$-token mass much more thinly,
-so top-10 overlap is rare even when the topics are coherent. With a
+(band, bin) tokens spread their $\approx1376$-token mass much more
+thinly, so top-10 overlap is rare even when the topics are coherent. With a
 small vocabulary (V2, $|\mathcal{V}|=8$) the top-10 of a topic
 \emph{is} the entire vocabulary, so overlap is guaranteed --- the
 small-$|\mathcal{V}|$ saturation is itself just the $N_{\mathrm{eff}}
@@ -458,8 +460,8 @@ Fig.~\ref{fig:dispersion}, not the raw $|\mathcal{V}|$ column.
 \caption{Mechanism plot. F-15 LLM-judge alignment versus per-topic mean
 token-mass dispersion $N_{\mathrm{eff}}=\exp(H(\phi_k))$
 (\eqref{eq:dispersion}), LDA backbone, six labelled scenes, $Q=8$.
-Point colour encodes $\log_{10}|\mathcal{V}|$. Holding $|\mathcal{V}|$
-fixed at the shared $1376$-token alphabet, V3 / V12 / V20 (yellow,
+Point colour encodes $\log_{10}|\mathcal{V}|$. At the same alphabet
+size (mean nominal $|\mathcal{V}|\approx1376$), V3 / V12 / V20 (yellow,
 lower-right cluster) fall in dispersion ($431\!>\!400\!>\!309$) exactly
 as F-15 rises ($0.12\!<\!0.16\!<\!0.64$): F-15 tracks dispersion, not
 cardinality.}
@@ -680,9 +682,11 @@ regimes, complementing P3's coherence ranking by ruling out a
 trivial-overfit account of V20's lead. Third, and most important
 methodologically, F-15 is governed by \emph{token-mass dispersion}
 $N_{\mathrm{eff}}=\exp(H)$ (\eqref{eq:dispersion}), \emph{not} nominal
-vocabulary cardinality: among the three recipes sharing the identical
-$1376$-token alphabet, F-15 rises ($0.12\!\to\!0.16\!\to\!0.64$) exactly
-as topic dispersion falls ($431\!\to\!400\!\to\!309$), while a
+vocabulary cardinality: among the three recipes whose alphabets are
+the same size (mean $|\mathcal{V}|\approx1376$; V3/V20 identical
+$(\mathrm{band},\mathrm{bin})$, V12 same-sized GMM), F-15 rises
+($0.12\!\to\!0.16\!\to\!0.64$) exactly as topic dispersion falls
+($431\!\to\!400\!\to\!309$), while a
 cardinality account predicts no difference. We therefore recommend
 reporting F-15 only after dispersion normalisation, and we caution that
 LLM-as-judge topic evaluation inherits the same artefact unless the

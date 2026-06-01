@@ -5,7 +5,8 @@
 %          Interpretable-Topic-Model Framework on Hyperspectral Imagery
 % Target : redacted while the preprint circulates
 % Class  : IEEEtran journal option
-% Status : SCAFFOLD — sections populated as the V-sweep completes.
+% Status : Preprint — V-sweep complete (19 recipes x 12 axes x 11
+%          scenes/subsets), all headline tables populated.
 %          See companion paper at ../journal/tex/main.tex for the
 %          twelve-axis framework and the V1-canonical baseline.
 % ---------------------------------------------------------------------
@@ -61,8 +62,11 @@ spanning seven axes of design freedom (token alphabet, spatial vs.\
 spectral aggregation, local vs.\ global vocabulary, document-length
 regime, signal transform, label-aware weighting, and learnt
 representation) and sweep them through the framework on the six
-labelled-scene panel and the five HIDSAG mineralogical subsets used in
-P1. The headline finding is that \emph{there is no universal winner}:
+labelled-scene panel (Indian Pines~\cite{baumgardner1992indianpines},
+Salinas and Salinas-A~\cite{aviris_salinas}, Pavia
+University~\cite{rosis_pavia}, Kennedy Space Center~\cite{aviris_ksc}
+and Botswana~\cite{eo1_botswana}) and the five HIDSAG mineralogical
+subsets~\cite{hidsag2023} used in P1. The headline finding is that \emph{there is no universal winner}:
 V1 wins F-2 coherence on 2/6 scenes; V3, a joint (band, bin) Cartesian
 vocabulary, wins F-7 topic--label normalised MI on 2/6 scenes; V12
 (Gaussian-mixture tokens) wins F-2 on 2/6 and F-7 on 2/6;
@@ -232,6 +236,58 @@ V16 foundation-model wordification deferred to a follow-up).
 Appendix~\ref{app:full-matrix} reproduces the full 19-recipe matrices.
 
 % =====================================================================
+\section{Related work}\label{sec:related}
+% =====================================================================
+
+\paragraph{Topic models.} Latent Dirichlet allocation
+\cite{blei2003lda} and its collapsed-Gibbs \cite{griffiths2004finding}
+and online-variational \cite{hoffman2010online} estimators are the
+backbone this paper sweeps over; we use the online-VB implementation
+\eqref{eq:lda-gen}. The nonparametric hierarchical Dirichlet process
+\cite{teh2006hdp} \eqref{eq:hdp-gen} and the neural topic models
+ProdLDA \cite{srivastava2017autoencoding} \eqref{eq:prodlda-gen} and
+the embedded topic model \cite{dieng2020topic} \eqref{eq:etm-beta} ---
+the latter built on neural variational inference \cite{miao2016neural}
+and the variational autoencoder \cite{kingma2014auto} --- enter as the
+alternative backbones of the cross-backbone factorial
+(\S\ref{sec:extensions}). Model selection over $K$ is informed by the
+estimation-and-selection analysis of \cite{taddy2012estimation}.
+
+\paragraph{LDA and topic models on hyperspectral and spectral data.}
+Probabilistic topic models have been applied to spectral data for
+subpixel unmixing \cite{zou2017pmlda}, spectral--spatial classification
+\cite{liu2019hsilda}, plant-phenotyping spectroscopy
+\cite{wahabzada2015plant}, and geometallurgical estimation from
+hyperspectral core imagery \cite{santibanezleal2022procemin}, which
+introduced the band--frequency document recipes that V1--V3 generalise
+here. The broader hyperspectral classification and unmixing literature
+\cite{plaza2009recent,camps2014advances,bioucasdias2012unmixing}
+supplies the endmember-extraction machinery behind V8: NFINDR-style
+simplex-vertex endmembers, with vertex component analysis
+\cite{nascimento2005vca} as the closely-related fast alternative and
+\cite{borsoi2021variability} surveying spectral-variability effects on
+the abundances V8 quantises.
+
+\paragraph{Coherence, reliability, and evaluation.} F-2 uses the $c_v$
+coherence of \cite{roder2015exploring} \eqref{eq:f2}, which generalises
+the human-judgement-correlated PMI/NPMI measures of
+\cite{newman2010coherence} and the document-co-occurrence statistic of
+\cite{mimno2011coherence}. F-7 reports a normalised mutual information
+\eqref{eq:f7}; the correction-for-chance and normalisation choices
+follow \cite{vinh2010information}. F-18 instantiates the multi-seed
+stability protocol of \cite{greene2014topics} using Hungarian matching
+\cite{kuhn1955hungarian,munkres1957algorithms} of top-$N$ indicator
+sets \eqref{eq:f18}. The uniform-quantiser distortion bound of
+\cite{gershogray1992vq} bounds the wordification noise introduced by
+the $Q$-level binning in \eqref{eq:quantiser}. We follow the
+reproducibility recommendations of \cite{pineau2021nature} and build on
+the scikit-learn \cite{pedregosa2011scikit}, NumPy
+\cite{harris2020numpy}, SciPy \cite{virtanen2020scipy} and gensim
+\cite{rehurek2010gensim} implementations; the mutual-information
+weighting in V20 \eqref{eq:v20} uses the \texttt{mutual\_info\_classif}
+estimator of \cite{pedregosa2011scikit}.
+
+% =====================================================================
 \section{The nineteen-recipe wordification design space}
 \label{sec:design-space}
 % =====================================================================
@@ -248,6 +304,32 @@ weights are not yet vendored.}
 \label{fig:taxonomy}
 \end{figure*}
 
+% ---------------------------------------------------------------------
+% Canonical equation set, shared across the P3/P4/P5 manuscript series.
+% Single source of truth: ../../equations/canonical.tex. We \input it
+% here and reference the labels by \eqref{} throughout; the displayed
+% equations therefore stay byte-identical across all papers in the
+% series. The LDA backbone \eqref{eq:lda-gen}, the quantiser
+% \eqref{eq:quantiser}, the five reference recipes
+% \eqref{eq:v1}/\eqref{eq:v3}/\eqref{eq:v8}/\eqref{eq:v12}/\eqref{eq:v20},
+% and the six evaluation axes \eqref{eq:f1}--\eqref{eq:f22} are all
+% defined there. Unused groups (HDP/ProdLDA/ETM backbones, F-15,
+% dispersion, affinity) are also typeset for cross-paper coherence.
+% ---------------------------------------------------------------------
+\input{../../equations/canonical.tex}
+
+Equations~\eqref{eq:lda-gen}--\eqref{eq:affinity} are the shared
+canonical definitions of the manuscript series: the LDA backbone this
+paper sweeps over \eqref{eq:lda-gen}, the per-row min--max quantiser
+\eqref{eq:quantiser} that underlies every intensity recipe, the five
+recipes referenced repeatedly below
+(V1~\eqref{eq:v1}, V3~\eqref{eq:v3}, V8~\eqref{eq:v8},
+V12~\eqref{eq:v12}, V20~\eqref{eq:v20}), and the six evaluation axes
+reported here (F-1~\eqref{eq:f1}, F-2~\eqref{eq:f2}, F-7~\eqref{eq:f7},
+F-14~\eqref{eq:f14}, F-18~\eqref{eq:f18}, F-22~\eqref{eq:f22}). The
+remaining backbones \eqref{eq:hdp-gen}--\eqref{eq:etm-beta} enter in the
+cross-backbone factorial of \S\ref{sec:extensions}.
+
 We define each recipe as a map $\mathrm{wordify}_V : \mathbb{R}^B \to
 \mathbb{N}^{|\mathcal{V}_V|}$ from a normalised pixel spectrum to a
 non-negative count vector over a recipe-specific vocabulary
@@ -261,7 +343,11 @@ Table~\ref{tab:recipes} states each recipe formally and
 Vocabulary size and mean document length are stated for the V-sweep
 canonical setting (scheme = uniform, $Q = 8$, Indian Pines,
 $B = 200$ bands). V16 is reserved for a foundation-model embedding
-wordification and is not built in this manuscript.}
+wordification and is not built in this manuscript. The five recipes
+that recur in the results are formalised in the canonical equation set:
+V1~\eqref{eq:v1}, V3~\eqref{eq:v3}, V8~\eqref{eq:v8}, V12~\eqref{eq:v12}
+and V20~\eqref{eq:v20}; all intensity recipes share the quantiser
+$q_b(\cdot)$ of \eqref{eq:quantiser}.}
 \label{tab:recipes}
 \centering
 \small
@@ -326,6 +412,22 @@ V20 & MI-weighted band        & V1 with per-band copies $w_b = \mathrm{round}(\m
 \section{Method}\label{sec:method}
 % =====================================================================
 
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.95\columnwidth]{p3-spectrum-to-tokens.pdf}
+\caption{From spectrum to LDA tokens. A normalised pixel spectrum
+$x_d \in \mathbb{R}^B$ is mapped to a doc-term count vector $n_d$ by a
+recipe-specific $\mathrm{wordify}_V$. The intensity recipes apply the
+per-row min--max quantiser $q_b(\cdot)$ of \eqref{eq:quantiser}: V1
+emits one band token per band with multiplicity equal to its quantised
+intensity \eqref{eq:v1}; V3 emits a single joint (band, bin) token per
+band \eqref{eq:v3}; V20 re-emits each V3 token $w_b$ times, with the
+per-band weight set by the normalised mutual information of band $b$
+with the label \eqref{eq:v20}. The resulting bag of tokens is the
+document that LDA \eqref{eq:lda-gen} fits.}
+\label{fig:spectrum-to-tokens}
+\end{figure}
+
 \subsection{Per-V K-policy}
 \label{subsec:k-policy}
 The canonical fit defined in P1 uses
@@ -344,11 +446,14 @@ V9 to 4, V10 to 3, V11 to 3 (Indian Pines), and similarly for the
 other scenes.
 
 \subsection{Other experimental settings}
-All other settings are inherited verbatim from P1
-(the ``Canonical fit'' subsection of that manuscript): same stratified-pixel
-sample, same online-VB hyperparameters, same five-fold StratifiedKFold,
-same per-fold LDA refit-no-leakage protocol, same Bayesian
-hierarchical model on the per-fold macro-F1.
+The topic backbone is online-variational-Bayes LDA \eqref{eq:lda-gen}
+throughout (the cross-backbone HDP / ProdLDA / ETM extensions of
+\S\ref{sec:extensions} substitute \eqref{eq:hdp-gen}, \eqref{eq:prodlda-gen}
+and \eqref{eq:etm-beta} respectively). All other settings are inherited
+verbatim from P1 (the ``Canonical fit'' subsection of that manuscript):
+same stratified-pixel sample, same online-VB hyperparameters, same
+five-fold StratifiedKFold, same per-fold LDA refit-no-leakage protocol,
+same Bayesian hierarchical model on the per-fold macro-F1.
 
 % =====================================================================
 \section{F-1: classification under V-sweep}\label{sec:results}
@@ -358,8 +463,9 @@ We follow the F-1 protocol of P1: per-V K-policy, 5-fold
 StratifiedKFold (\texttt{random\_state} = 42), per-fold LDA refit with no
 test-set leakage at the LDA fit step, two methods reported per cell
 (\emph{raw\_logistic} baseline and \emph{topic\_routed\_soft}, the
-soft-gated per-topic specialist ensemble from P1). Macro-F1 is reported
-per fold and averaged.
+soft-gated per-topic specialist ensemble from P1). The reported score
+is the macro-averaged $F_1$ of \eqref{eq:f1}, computed per fold and
+averaged.
 
 \paragraph{V20 leakage caveat.} V20 wordification computes per-band
 mutual information weights using the full labelled stratified sample
@@ -418,6 +524,8 @@ spread crosses HDI94.
 \section{F-2: topic--word coherence}\label{sec:f2-results}
 % =====================================================================
 
+F-2 is the $c_v$ coherence of \eqref{eq:f2} (NPMI sliding window with
+cosine aggregation, top-10 words per topic).
 Table~\ref{tab:f2-full} reports the full $12 \times 5$ matrix from the
 completed sweep over the labelled-scene panel (Botswana excluded — its
 canonical fits were the last to land and not all 12 recipes had completed
@@ -450,6 +558,9 @@ SC and Salinas-A; V3 is competitive everywhere but wins nowhere.
 \label{sec:f7-results}
 % =====================================================================
 
+F-7 is the topic--label normalised mutual information of
+\eqref{eq:f7}, computed between the argmax topic assignment
+$\hat{z}_d = \arg\max_k \theta_{dk}$ and the labelled class $y_d$.
 Table~\ref{tab:f7-full} reports the full $12 \times 5$ matrix for F-7
 NMI between the argmax topic assignment and the labelled class.
 
@@ -709,8 +820,9 @@ $\theta_{d,k}$ to recipe-specific tokens using SHAP's KernelExplainer
 on a closed-form posterior. Reports the top-8 tokens per topic with
 mean absolute SHAP. This is the headline interpretability defence.
 
-\textbf{F-14 repetitiveness.} Mean off-diagonal top-10 jaccard between
-topics. Lower is better. Per-recipe mean across six scenes:
+\textbf{F-14 repetitiveness.} Mean off-diagonal top-10 Jaccard between
+topics \eqref{eq:f14}. Lower is better. Per-recipe mean across six
+scenes:
 V9 = 0.000, V7 = 0.009, V12 = 0.009, V3 = 0.012; V1 = 0.200 (mid-pack);
 V6 = 0.738 and V8 = 0.868 are dominated by their tiny vocabularies.
 
@@ -719,8 +831,9 @@ S2's documents, compute F-7 NMI on the target. Only vocab-portable
 recipes (V2, V10, V11) qualify. V2 transfers best at 0.32 mean NMI;
 V11 0.19; V10 0.10.
 
-\textbf{F-18 reliability.} Maier 2024 protocol — top-10 indicator
-cosine similarity threshold across reseed pairs (seeds 42--46).
+\textbf{F-18 reliability.} Maier 2024 protocol \cite{greene2014topics}
+— Hungarian-matched \cite{kuhn1955hungarian} top-10 indicator cosine
+similarity across reseed pairs (seeds 42--46), as in \eqref{eq:f18}.
 Per-recipe mean fraction-above-0.7 across the six labelled scenes:
 
 \begin{center}
@@ -770,8 +883,9 @@ combines the cross-backbone-portability finding (top-3 mean F-7 NMI
 across LDA / HDP / ProdLDA / ETM) with reseed reliability at the
 $0.95$ level — a previously unrecognised composite recommendation.}
 
-\textbf{F-22 counterfactual.} Coordinate-descent search for minimum
-$L_1$ perturbation that flips $\arg\max \theta_d$, capped at
+\textbf{F-22 counterfactual.} The minimum-$L_1$ token perturbation
+that flips $\arg\max_k \theta_k(n_d)$, as defined in \eqref{eq:f22};
+we solve it by coordinate-descent search capped at
 $\text{MAX\_STEPS} = 50$ token-flips. Cells where every sampled
 document fails to flip persist with the sentinel value $50$ rather
 than being dropped. Higher = more robust topic boundary. Per-recipe
@@ -1168,6 +1282,38 @@ V1 alongside the per-axis best recipe.
 \end{itemize}
 
 % =====================================================================
+\section{Conclusion}\label{sec:conclusion}
+% =====================================================================
+
+A nineteen-recipe sweep of the wordification step, run through the
+twelve-axis evaluation framework of the companion paper, shows that
+\emph{no single recipe is universally best}. On classification (F-1,
+\eqref{eq:f1}) the recipes are statistically indistinguishable under a
+bootstrap posterior; the discriminating axes are coherence (F-2,
+\eqref{eq:f2}) and topic--label coupling (F-7, \eqref{eq:f7}), where
+the spread reaches $0.5$ and $0.6$ respectively. Across F-2 and F-7
+the top three recipes --- V12 \eqref{eq:v12} (Gaussian-mixture tokens),
+V3 \eqref{eq:v3} (joint band--bin vocabulary), and V20 \eqref{eq:v20}
+(mutual-information-weighted bands) --- cluster within $0.014$ NMI of
+each other, a flat design-space ceiling rather than a sharp peak.
+V20, the simplest label-aware reweighting of V1 \eqref{eq:v1}, wins
+F-2 and F-7 together on Indian Pines and produces the most
+counterfactually robust topic basis of the sweep (F-22,
+\eqref{eq:f22}, $L_1 = 26.3$); its dominance scales with quantiser
+resolution, reaching the highest absolute F-7 at $Q = 32$. The
+cross-backbone factorial identifies V8 \eqref{eq:v8} (NFINDR
+endmember-fraction) as the most backbone-portable recipe and the only
+high-reliability recipe (F-18, \eqref{eq:f18}, $\ge 0.95$) whose
+reliability is not a vocabulary-size artefact. The practical
+recommendation is twofold: retain V1 as a \emph{reproducibility
+default} rather than a universal best, and pick the recipe to the
+axis --- V20 when LDA is fixed and finer quantisation is affordable,
+V8 when the backbone is uncertain or reseed reliability is required.
+Closing the remaining framework axes (F-3--F-12) over the full
+nineteen-recipe family, and building the deferred foundation-model
+wordification V16, are the natural next steps.
+
+% =====================================================================
 \appendices
 \section{Full nineteen-recipe F-2 and F-7 matrices}
 \label{app:full-matrix}
@@ -1218,9 +1364,7 @@ mean         & 0.45 & 0.45 & 0.52 & 0.35 & 0.32 & 0.32 & 0.23 & 0.46 & 0.12 & 0.
 \end{table*}
 
 % =====================================================================
-% Bibliography intentionally omitted from the scaffold; once the sweep
-% completes and concrete claims need citation, switch to:
-%   \bibliographystyle{IEEEtran}
-%   \bibliography{../../bibliography/refs}
+\bibliographystyle{IEEEtran}
+\bibliography{../../bibliography/refs}
 
 \end{document}
