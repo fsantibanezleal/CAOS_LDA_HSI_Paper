@@ -142,7 +142,7 @@ broader topic-modelling and explainable-ML literature that go beyond
 ``read the top-$N$ words and trust them'': SHAP attribution
 \cite{lundberg2017shap}, counterfactual explanations
 \cite{wachter2017counterfactual}, and LLM-as-judge alignment
-\cite{stammbach2023revisiting, yang2025bridging}. We instantiate all
+\cite{stammbach2023revisiting}. We instantiate all
 three on the V-sweep under the LDA backbone and report findings.
 
 The three axes correspond to three canonical metrics in the shared
@@ -227,8 +227,7 @@ explanations~\cite{wachter2017counterfactual} characterise a decision
 by the minimal input change that flips it; F-22 (\eqref{eq:f22}) is
 the topic-assignment counterfactual. The use of large language models
 as automated topic judges follows Stammbach
-et~al.~\cite{stammbach2023revisiting} and the interpretable-evaluation
-line of~\cite{yang2025bridging}; F-15 (\eqref{eq:f15}) is our
+et~al.~\cite{stammbach2023revisiting}; F-15 (\eqref{eq:f15}) is our
 LDA-on-HSI instantiation. Our contribution relative to this literature
 is the observation that the LLM-as-judge proxy inherits a
 \emph{token-mass-dispersion} artefact (\eqref{eq:dispersion}) that is
@@ -614,7 +613,7 @@ would inherit the same bias; only a judge equipped with
 \emph{semantic} comparison of token meanings (e.g.\ the spectral
 region a token names) would escape it. This is a cautionary result for
 the growing practice of using LLMs to score topic models
-\cite{stammbach2023revisiting, yang2025bridging}: the prompt must
+\cite{stammbach2023revisiting}: the prompt must
 expose token \emph{semantics}, not token \emph{strings}, or the score
 will track vocabulary engineering rather than topic content.
 
