@@ -27,10 +27,11 @@ SCENES = [
     "indian-pines-corrected", "salinas-corrected", "salinas-a-corrected",
     "pavia-university", "kennedy-space-center", "botswana",
 ]
-RECIPES = ["V3", "V8", "V12", "V14", "V18", "V20"]
+RECIPES = ["V3", "V8", "V11", "V12", "V14", "V18", "V20"]
 RECIPE_COLOURS = {
     "V3":  "#0ea5e9",
     "V8":  "#10b981",
+    "V11": "#a855f7",
     "V12": "#f59e0b",
     "V14": "#06b6d4",
     "V18": "#ec4899",
@@ -39,6 +40,7 @@ RECIPE_COLOURS = {
 RECIPE_MARKERS = {
     "V3":  "o",
     "V8":  "s",
+    "V11": "X",
     "V12": "D",
     "V14": "^",
     "V18": "v",
