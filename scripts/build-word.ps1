@@ -1,8 +1,9 @@
-# Build the .docx versions of both manuscripts from the LaTeX sources.
+# Build the .docx versions of every manuscript from the LaTeX sources.
 # Uses pandoc + citeproc; pandoc must be on PATH (winget JohnMacFarlane.Pandoc).
 #
-# Conference: conference/tex/main.tex -> conference/word/main.docx
-# Journal   : journal/tex/main.tex    -> journal/word/main.docx
+# Covers all five manuscripts (each <variant>/tex/main.tex -> <variant>/word/main.docx):
+#   conference (P2), journal (P1),
+#   journal_v_sweep (P3), journal_backbone_factorial (P4), journal_interpretability (P5)
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
@@ -13,7 +14,7 @@ if (-not $pandoc) {
     if ($cand) { $pandoc = $cand } else { throw "pandoc not found. Install with: winget install JohnMacFarlane.Pandoc" }
 }
 
-foreach ($variant in @("conference", "journal")) {
+foreach ($variant in @("conference", "journal", "journal_v_sweep", "journal_backbone_factorial", "journal_interpretability")) {
     $tex = Join-Path $root "$variant\tex\main.tex"
     $outDir = Join-Path $root "$variant\word"
     New-Item -ItemType Directory -Path $outDir -Force | Out-Null

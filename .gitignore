@@ -49,6 +49,12 @@ supplementary/journal/*.pdf
 !conference/build/main.pdf
 !journal/build/
 !journal/build/main.pdf
+!journal_v_sweep/build/
+!journal_v_sweep/build/main.pdf
+!journal_backbone_factorial/build/
+!journal_backbone_factorial/build/main.pdf
+!journal_interpretability/build/
+!journal_interpretability/build/main.pdf
 !supplementary/build/
 !supplementary/build/*.pdf
 !conference/word/
@@ -61,3 +67,9 @@ supplementary/journal/*.pdf
 # Reference templates downloaded archives
 templates/*.zip
 templates/*.tar.gz
+
+# Transient PDFs next to .tex for the new manuscript series (tracked copy lives in build/)
+journal_v_sweep/tex/*.pdf
+journal_backbone_factorial/tex/*.pdf
+journal_interpretability/tex/*.pdf
+figures/source/__pycache__/

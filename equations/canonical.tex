@@ -1,0 +1,182 @@
+% ===================================================================
+% CANONICAL EQUATION SET  —  CAOS_LDA_HSI manuscript series (P3/P4/P5)
+% ===================================================================
+% Single source of truth for all display equations. Authored once,
+% \input into P3 (journal_v_sweep), P4 (journal_backbone_factorial),
+% P5 (journal_interpretability), and transcribed (KaTeX) into the
+% web-app methodology route and the wiki Mathematical-Background page.
+%
+% Usage:  \input{../../equations/canonical.tex}  then reference the
+% groups by \eqref{eq:lda-gen}, \eqref{eq:etm-beta}, etc. Groups can
+% also be copied verbatim into a single \begin{align} if a paper wants
+% them inline. Each equation is independently labelled.
+%
+% NOTATION (fixed once, used everywhere):
+%   b in {1..B}    spectral band            (B ~ 200)
+%   q in {0..Q-1}  quantisation level       (Q in {8,16,32}, default 8)
+%   k in {1..K}    topic                    (K per-scene K-policy)
+%   d in {1..D}    document = labelled pixel
+%   v in V         wordification vocabulary (recipe-specific)
+%   x_d in R^B     normalised pixel spectrum
+%   y_d            land-cover / mineral label of pixel d
+%   theta_d        per-doc topic proportions  (simplex Delta^{K-1})
+%   phi_k          topic-word distribution    (simplex Delta^{|V|-1})
+%   n_d in N^{|V|} doc-term count vector produced by a recipe
+% ===================================================================
+
+% ----- GROUP A : the four topic-model backbones -------------------
+
+% A1  LDA (online variational Bayes; P1/P3 baseline)
+\begin{equation}\label{eq:lda-gen}
+\phi_k \sim \mathrm{Dir}(\beta),\quad
+\theta_d \sim \mathrm{Dir}(\alpha),\quad
+z_{dn} \sim \mathrm{Cat}(\theta_d),\quad
+w_{dn} \sim \mathrm{Cat}(\phi_{z_{dn}}).
+\end{equation}
+
+% A2  HDP (nonparametric K via two-level stick-breaking)
+\begin{equation}\label{eq:hdp-gen}
+\boldsymbol{\beta}\sim\mathrm{GEM}(\gamma),\quad
+\pi_d \sim \mathrm{DP}(\alpha_0,\boldsymbol{\beta}),\quad
+z_{dn}\sim\mathrm{Cat}(\pi_d),\quad
+w_{dn}\sim\mathrm{Cat}(\phi_{z_{dn}}),
+\end{equation}
+with global atom weights $\beta_k=\beta'_k\prod_{l<k}(1-\beta'_l)$,
+$\beta'_k\sim\mathrm{Beta}(1,\gamma)$.
+
+% A3  ProdLDA (logistic-normal prior + product-of-experts likelihood)
+\begin{equation}\label{eq:prodlda-gen}
+\delta_d \sim \mathcal{N}(\mu_0,\Sigma_0),\quad
+\theta_d = \mathrm{softmax}(\delta_d),\quad
+w_{dn} \sim \mathrm{Cat}\!\big(\mathrm{softmax}(\boldsymbol{\beta}\,\theta_d)\big),
+\end{equation}
+where $\boldsymbol{\beta}\in\mathbb{R}^{|V|\times K}$ is \emph{unnormalised}
+(the word distribution is a product of experts, not a per-topic
+simplex), and $(\mu_0,\Sigma_0)$ is the Laplace approximation to
+$\mathrm{Dir}(\alpha)$; inference is amortised,
+$(\mu_d,\Sigma_d)=\mathrm{Enc}_\eta(n_d)$.
+
+% A4  ETM (embedded topic model; topic = direction in word-embedding space)
+\begin{equation}\label{eq:etm-beta}
+\beta_k = \mathrm{softmax}\!\big(\rho^{\top}\alpha_k\big),\qquad
+\theta_d = \mathrm{softmax}(\delta_d),\quad
+w_{dn}\sim\mathrm{Cat}\!\Big(\textstyle\sum_k \theta_{dk}\,\beta_k\Big),
+\end{equation}
+with word embeddings $\rho\in\mathbb{R}^{L\times|V|}$ and topic
+embeddings $\alpha_k\in\mathbb{R}^{L}$. (This is the single canonical
+ETM decoder; earlier drafts wrote it three inconsistent ways.)
+
+% ----- GROUP B : wordification recipes (spectrum -> doc-term) ------
+
+% B0  per-row min-max normalisation + uniform quantiser
+\begin{equation}\label{eq:quantiser}
+\tilde{x}_{db}=\frac{x_{db}-\min_b x_{db}}{\max_b x_{db}-\min_b x_{db}},
+\qquad
+q_b(x_d)=\mathrm{clip}\big(\lfloor \tilde{x}_{db}\,Q\rfloor,\,0,\,Q-1\big).
+\end{equation}
+
+% B1  V1 band-frequency: token = band, multiplicity = quantised intensity
+\begin{equation}\label{eq:v1}
+n_d^{\mathrm{V1}}[b] = q_b(x_d),\qquad |V_{\mathrm{V1}}| = B.
+\end{equation}
+
+% B2  V3 joint (band, bin): one token per band naming its bin
+\begin{equation}\label{eq:v3}
+n_d^{\mathrm{V3}}[(b,q)] = \mathbb{1}\!\left[q_b(x_d)=q\right],\qquad
+|V_{\mathrm{V3}}| = B\,Q .
+\end{equation}
+
+% B3  V8 NFINDR endmember-fraction: NNLS abundances over the convex hull
+\begin{equation}\label{eq:v8}
+a_d=\arg\min_{a\ge 0}\;\lVert x_d - E\,a\rVert_2^2,\qquad
+n_d^{\mathrm{V8}}[m]=\big\lfloor s\,a_{dm}\big\rceil,
+\end{equation}
+where $E=[e_1,\dots,e_M]$ are the NFINDR endmembers (simplex vertices)
+and $s$ a fixed integer scale; $|V_{\mathrm{V8}}|=M$.
+
+% B4  V12 GMM-token: soft responsibilities of a K_g-component mixture
+\begin{equation}\label{eq:v12}
+r_{dk}=\frac{\pi_k\,\mathcal{N}(x_d\mid\mu_k,\Sigma_k)}
+{\sum_{j}\pi_j\,\mathcal{N}(x_d\mid\mu_j,\Sigma_j)},\qquad
+n_d^{\mathrm{V12}}[(k,q)]=\mathbb{1}\!\left[q_b\!\big(r_{d\cdot}\big)=q\right].
+\end{equation}
+
+% B5  V20 MI-weighted bands: V3 alphabet, per-band emission multiplicity
+\begin{equation}\label{eq:v20}
+w_b=\Big\lfloor \tfrac{\mathrm{MI}(x_{\cdot b};\,y)}{\max_{b'}\mathrm{MI}(x_{\cdot b'};\,y)}\;Q_{\max}\Big\rceil,
+\qquad
+n_d^{\mathrm{V20}}[(b,q)] = w_b\,\mathbb{1}\!\left[q_b(x_d)=q\right].
+\end{equation}
+The token alphabet is V3's, $|V_{\mathrm{V20}}|=B\,Q$ (=1600 at
+$B=200,Q=8$; mean $\approx 1376$ across the six labelled scenes since
+$B$ varies). Bands with $w_b=0$ emit nothing, so the \emph{effective}
+(non-empty-column) vocabulary is smaller still ($\approx 770$ mean).
+
+% ----- GROUP C : evaluation axes ----------------------------------
+
+% C1  F-1 macro-F1 (5-fold; topic_routed_soft head)
+\begin{equation}\label{eq:f1}
+\mathrm{F\text{-}1}=\frac{1}{|\mathcal{C}|}\sum_{c\in\mathcal{C}}
+\frac{2\,P_c R_c}{P_c+R_c}.
+\end{equation}
+
+% C2  F-2 coherence c_v (NPMI sliding window + cosine aggregation)
+\begin{equation}\label{eq:f2}
+\mathrm{NPMI}(w_i,w_j)=\frac{\log\frac{p(w_i,w_j)+\epsilon}{p(w_i)p(w_j)}}{-\log\big(p(w_i,w_j)+\epsilon\big)},\quad
+c_v=\frac{1}{N}\sum_{i}\cos\!\big(\mathbf{v}_i,\,\textstyle\sum_j \mathbf{v}_j\big),
+\end{equation}
+with $\mathbf{v}_i=\big(\mathrm{NPMI}(w_i,w_\ell)\big)_{\ell=1}^{N}$ over the
+top-$N$ topic words.
+
+% C3  F-7 topic-to-label NMI (normalised by H(label))
+\begin{equation}\label{eq:f7}
+\hat{z}_d=\arg\max_k \theta_{dk},\qquad
+\mathrm{F\text{-}7}=\frac{I(\hat{Z};Y)}{H(Y)}.
+\end{equation}
+
+% C4  F-14 top-N pairwise Jaccard repetitiveness (lower = more diverse)
+\begin{equation}\label{eq:f14}
+\mathrm{F\text{-}14}=\frac{2}{K(K-1)}\sum_{k<k'}
+\frac{|T_k\cap T_{k'}|}{|T_k\cup T_{k'}|},\qquad T_k=\text{top-}N(\phi_k).
+\end{equation}
+
+% C5  F-18 Maier reseed reliability (Hungarian-matched top-N cosine)
+\begin{equation}\label{eq:f18}
+\mathrm{F\text{-}18}=\frac{1}{\binom{S}{2}}\sum_{s<s'}\frac{1}{K}
+\max_{\sigma\in\mathfrak{S}_K}\sum_{k}\cos\!\big(\mathbf{u}^{(s)}_k,\mathbf{u}^{(s')}_{\sigma(k)}\big),
+\end{equation}
+over $S$ reseeded refits, with $\mathbf{u}^{(s)}_k$ the top-$N$ indicator
+vector of topic $k$ in run $s$.
+
+% C6  F-22 counterfactual L1 (min token perturbation to flip argmax topic)
+\begin{equation}\label{eq:f22}
+\mathrm{F\text{-}22}(d)=\min_{\delta\in\mathbb{Z}^{|V|}}\lVert\delta\rVert_1
+\;\;\text{s.t.}\;\;
+\arg\max_k\theta_k(n_d+\delta)\neq\arg\max_k\theta_k(n_d),\;\;n_d+\delta\ge 0,
+\end{equation}
+reported as the per-scene median, capped at a sentinel
+$\mathrm{MAX\_STEPS}=50$ when no flip is found.
+
+% C7  F-15 LLM-judge alignment (top-N overlap rule)
+\begin{equation}\label{eq:f15}
+\mathrm{aligned}(d)=\mathbb{1}\!\Big[\,|\,\mathrm{top}_N(n_d)\cap \mathrm{top}_N(\phi_{\hat{z}_d})\,|\ge\tau\,\Big],\quad
+\mathrm{F\text{-}15}=\tfrac{1}{D}\textstyle\sum_d \mathrm{aligned}(d).
+\end{equation}
+
+% C8  token-mass dispersion (P5 mechanism metric: effective vocabulary)
+\begin{equation}\label{eq:dispersion}
+p_{dv}=\frac{n_{dv}}{\sum_{v'} n_{dv'}},\qquad
+N_{\mathrm{eff}}(d)=\exp\!\big(H(p_d)\big)=\exp\!\Big(-\sum_v p_{dv}\log p_{dv}\Big).
+\end{equation}
+Low $N_{\mathrm{eff}}$ (mass concentrated on few tokens) keeps top-$N$
+overlap high; this — not nominal $|V|$ — is what drives F-15.
+
+% ----- GROUP D : cross-backbone affinity score (P4) ----------------
+
+% D1  per-recipe cross-backbone affinity (min-max normalised within backbone)
+\begin{equation}\label{eq:affinity}
+\mathcal{A}(V_i)=\frac{1}{|\mathcal{B}|}\sum_{m\in\mathcal{B}}
+\frac{c_v^{(m)}(V_i)-\min_j c_v^{(m)}(V_j)}{\max_j c_v^{(m)}(V_j)-\min_j c_v^{(m)}(V_j)}\;\in[0,1],
+\end{equation}
+averaged over backbones $\mathcal{B}=\{\mathrm{LDA},\mathrm{HDP},\mathrm{ProdLDA},\mathrm{ETM}\}$;
+$\mathcal{A}\to 1$ when a recipe sits near the per-backbone top everywhere.
