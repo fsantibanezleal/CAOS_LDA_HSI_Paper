@@ -92,7 +92,7 @@ Mean owner-NMI per recipe (n=5 subsets each), highest first:
 | V10 | 0.092 |
 | V14 (CWT-Morlet) | 0.060 |
 | V13 (VQ-VAE) | 0.021 |
-| V6 (wavelet) | 0.018 |
+| V6 (wavelet) | 0.019 |
 
 Notes on the newly-ported recipes (#765): **V18 (graph-Laplacian) is the
 strongest of the five and the best recipe overall on MINERAL1**; V19
