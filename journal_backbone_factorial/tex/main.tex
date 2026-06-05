@@ -39,7 +39,7 @@ Topic-Model Families on Hyperspectral Imagery}
     ORCID: 0000-0002-0150-3246).}%
   \thanks{Preprint, 2026. Third manuscript in the CAOS\_LDA\_HSI
     programme. Companion papers: \emph{Beyond Accuracy} (P1, twelve-axis
-    framework) and \emph{Which Wordification Matters?} (P3, 13-recipe
+    framework) and \emph{Which Wordification Matters?} (P3, 19-recipe
     sweep under fixed LDA backbone). Code and derived artefacts at
     \url{https://github.com/fsantibanezleal/CAOS_LDA_HSI}.}%
   \thanks{This work has been partially funded by AMTC Basal
@@ -51,12 +51,13 @@ Backbone $\times$ Wordification Factorial on HSI}
 
 \IEEEtitleabstractindextext{%
 \begin{abstract}
-The companion paper showed that twelve wordification recipes V1--V12,
-plus a learned VQ-VAE recipe V13, produce measurably different topic
-bases under a fixed LDA backbone --- V12 (Gaussian-mixture tokens) wins
-on classification, coherence, label coupling and counterfactual
-robustness, while V1 (band-frequency tokens, the canonical) wins on
-seed-test reliability. The present manuscript asks the orthogonal
+The companion paper showed that nineteen wordification recipes
+(V1--V15, V17--V20) produce measurably different topic bases under a
+fixed LDA backbone, with no universal winner --- V12 (Gaussian-mixture
+tokens) leads coherence and topic--label coupling on most scenes, V20
+(mutual-information-weighted bands) is the most counterfactually robust,
+and V1 (band-frequency tokens, the canonical) wins seed-test
+reliability, while F-1 macro-F1 does not discriminate. The present manuscript asks the orthogonal
 question: \emph{does the recipe winner depend on the topic-model
 backbone?} We run the full V1--V20 sweep (nineteen recipes; V16 is
 scaffolded only) under three additional backbones --- Hierarchical
