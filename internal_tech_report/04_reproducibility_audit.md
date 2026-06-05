@@ -131,14 +131,21 @@ Full F-15 means (Q=8): V18/V19=1.00, V14=0.95, V20=0.64, V17=0.57,
 V15=0.03. This corrected finding is now reflected in P5 abstract +
 Table IV (commit eac6c11). Issue #758 closed.
 
-## 4. HIDSAG family-D coverage gap
+## 4. HIDSAG family-D coverage (resolved under #765)
 
-Only 50 cells in `data/derived/v_sweep/hidsag/f7_topic_to_owner/`
-(12 recipes V1-V12, 5 sources). V13-V20 absent. JSONs missing
-`source_id` field (currently group as "unknown").
+Now **150 cells** under `data/derived/v_sweep/hidsag/` — 15 recipes
+(V1-V7, V10-V14, V17-V19) × 5 subsets × 2 axes (topic_views + owner-NMI),
+and every cell carries a `source_id` (= subset code). V8/V9 are
+precompute-blocked (need scene-level endmember/segmentation precompute
+HIDSAG lacks); V15/V16 are out-of-scope.
 
-V20 has NEVER been tested on HIDSAG. The cross-domain validity of
-V20 = LDA peak finding is unknown.
+V20 is **n/a on HIDSAG by design**: it is label-aware and needs a
+per-document mineral class label, which the region documents do not
+carry (only a `sample_owner` provenance id). So the "V20 = LDA peak"
+finding is not transferable to HIDSAG — not an untested gap. Among the
+recipes that do transfer, **V18** (graph-Laplacian) is the best new
+recipe (mean owner-NMI 0.204; leads MINERAL1 at 0.270). See
+[`07_hidsag_results.md`](07_hidsag_results.md).
 
 Tracked in issue #765.
 
