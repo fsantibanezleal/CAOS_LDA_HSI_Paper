@@ -8,7 +8,7 @@ future contributor (or reviewer with deep questions).
 
 ## Contents
 
-- [`01_design_space.md`](01_design_space.md) — full V1..V12 design-space
+- [`01_design_space.md`](01_design_space.md) — full V1..V20 design-space
   rationale, including UI/code discrepancies (V3 not trigram, V9 not
   SLIC, V11 seed gap) and how we resolved them.
 - [`02_k_policy.md`](02_k_policy.md) — per-V K-policy derivation
