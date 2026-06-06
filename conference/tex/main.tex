@@ -78,8 +78,9 @@ alignment, robustness.
 
 Topic modelling, in particular Latent Dirichlet Allocation
 \cite{blei2003lda}, has been adapted to hyperspectral imagery (HSI)
-as a route to \emph{interpretable} spectral mixtures: each pixel
-becomes a document of quantised band-frequency tokens, and the
+as a route to \emph{interpretable} spectral mixtures: each spectral
+unit (canonically a pixel, but optionally a region, patch, or full
+sample) becomes a document of quantised band-frequency tokens, and the
 inferred topic--word distributions $\phi_k$ act as basis spectra in
 a non-negative simplex. The approach yields per-pixel posterior
 mixtures $\theta_d \in \Delta^{K-1}$ that admit several downstream
