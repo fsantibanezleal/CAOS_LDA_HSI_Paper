@@ -54,9 +54,9 @@ Multi-Axis Topic-Model Evaluation on HSI}
 \begin{abstract}
 Topic models, in particular Latent Dirichlet Allocation (LDA), have
 been adapted to hyperspectral imagery (HSI) as a route to
-\emph{interpretable} spectral mixtures: each pixel becomes a document
-of quantised band-frequency tokens and the inferred topic--word
-distributions act as non-negative basis spectra. Yet the dominant
+\emph{interpretable} spectral mixtures: each spectral unit (canonically a
+pixel) becomes a document of quantised band-frequency tokens and the
+inferred topic--word distributions act as non-negative basis spectra. Yet the dominant
 evaluation criterion remains downstream classification accuracy, an
 accuracy-only view that is silent on whether the basis is reproducible,
 band-robust, calibrated, or actually outperforms standard linear
@@ -604,7 +604,7 @@ and Spectral Angle Mapper distance per topic-mineral pair; the
 \subsection{Labelled scenes}
 
 The six standard labelled HSI benchmarks were obtained from the UPV/EHU
-Hyperspectral Remote Sensing Scenes collection. The scenes span four
+Hyperspectral Remote Sensing Scenes collection. The scenes span three
 sensor families (AVIRIS, ROSIS, EO-1 Hyperion) and three application
 domains (agriculture, urban, wetlands), and are listed in
 Table~\ref{tab:scenes} with the per-scene tokenisation outcome.
@@ -733,7 +733,7 @@ is the \emph{HIDSAG inversion} we flag in the introduction.
 
 \begin{table}[t]
 \caption{F-1 method posteriors on the HIDSAG block (five subsets ×
-nineteen targets × five methods = 95 observations).}
+nineteen targets = 95 observations; five methods compared).}
 \label{tab:b1-hidsag}
 \centering
 \small
@@ -1178,7 +1178,7 @@ of interest.
 
 All numerical results in this manuscript derive from deterministic
 artefacts under \texttt{data/derived/} in the companion code
-repository at \url{https://github.com/fsantibanezleal/caos_lda_hsi}.
+repository at \url{https://github.com/fsantibanezleal/CAOS_LDA_HSI}.
 The HIDSAG database is available from
 \cite{hidsag2023figshare}; the labelled hyperspectral benchmark
 scenes (Indian Pines, Salinas, Salinas-A, Pavia U, KSC, Botswana)
