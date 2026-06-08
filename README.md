@@ -12,14 +12,27 @@ Companion repositories:
 - [`CAOS_LDA_HSI.wiki`](https://github.com/fsantibanezleal/CAOS_LDA_HSI/wiki) —
   technical documentation
 
-This repository contains **two manuscripts** in parallel:
+## 📄 Compiled PDFs
 
-| Form | Target | Scope | Location |
-|---|---|---|---|
-| Conference paper (4-8 pp) | [WHISPERS 2026](https://www.ieee-whispers.com/) (IEEE GRSS hyperspectral workshop) | Band-mask robustness diagnostic for LDA on hyperspectral imagery | [`conference/`](conference/) |
-| Journal article (~20-30 pp) | [IEEE TGRS](https://ieeexplore.ieee.org/xpl/RecentIssue.jsp?punumber=36) (Trans. Geoscience and Remote Sensing) | Topic models as interpretable spectral mixtures — full multi-axis framework + reproducibility discipline + band-mask robustness | [`journal/`](journal/) |
+**All current manuscript PDFs in one place: [`pdfs/`](pdfs/).**
+That is the canonical link to share — not the repository root.
 
-Each manuscript ships in two formats:
+## Manuscripts
+
+This repository hosts **five manuscripts** plus an internal technical
+report. Target venues are intentionally **redacted** while the work
+circulates as preprints.
+
+| # | Manuscript | Form | Source | PDF |
+|---|---|---|---|---|
+| 1 | Beyond Accuracy: A Multi-Axis Evaluation Framework for Interpretable Topic Models on Hyperspectral Imagery | Journal article (~20-30 pp) | [`journal/`](journal/) | [pdf](pdfs/journal-multi-axis-framework.pdf) |
+| 2 | A Band-Mask Robustness Diagnostic for Latent Dirichlet Allocation on Hyperspectral Imagery | Conference paper (4-8 pp) | [`conference/`](conference/) | [pdf](pdfs/conference-band-mask-robustness.pdf) |
+| 3 | Which Wordification Matters? A Nineteen-Recipe Sweep of the Interpretable-Topic-Model Framework on Hyperspectral Imagery | Journal article | [`journal_v_sweep/`](journal_v_sweep/) | [pdf](pdfs/journal-wordification-sweep.pdf) |
+| 4 | Which Backbone Picks Which Wordification? A Factorial Study of Topic-Model Families on Hyperspectral Imagery | Journal article | [`journal_backbone_factorial/`](journal_backbone_factorial/) | [pdf](pdfs/journal-backbone-factorial.pdf) |
+| 5 | Post-hoc Interpretability of LDA on Hyperspectral Imagery: SHAP Attributions, Counterfactual Topic Flips, and LLM-judge Alignment | Journal article | [`journal_interpretability/`](journal_interpretability/) | [pdf](pdfs/journal-interpretability.pdf) |
+| — | Internal technical report (design space, K-policy, V-sweep results, reproducibility audit, paper portfolio, HIDSAG results) | Internal notes (Markdown) | [`internal_tech_report/`](internal_tech_report/) | — |
+
+Each LaTeX manuscript ships in two formats:
 
 - **LaTeX source** (`<form>/tex/`) — primary, with IEEEtran class +
   validated bibliography
@@ -29,41 +42,31 @@ Each manuscript ships in two formats:
 
 ```
 CAOS_LDA_HSI_Paper/
-├── conference/                  WHISPERS 4-8 pp paper
-│   ├── tex/                       LaTeX source (IEEEtran conf)
-│   ├── figures/                   SVG/PDF figures
-│   ├── word/                      .docx (Pandoc-converted)
-│   └── build/                     PDF output (gitignored)
-├── journal/                     IEEE TGRS 20-30 pp article
+├── pdfs/                        ← all compiled manuscript PDFs (share this)
+├── journal/                     Multi-axis evaluation framework (flagship)
 │   ├── tex/                       LaTeX source (IEEEtran journal)
 │   ├── figures/                   SVG/PDF figures
 │   ├── word/                      .docx (Pandoc-converted)
-│   └── build/                     PDF output (gitignored)
+│   └── build/                     PDF output (main.pdf tracked)
+├── conference/                  Band-mask robustness diagnostic (short paper)
+│   └── tex/ figures/ word/ build/
+├── journal_v_sweep/             Nineteen-recipe wordification sweep
+├── journal_backbone_factorial/  Backbone × wordification factorial study
+├── journal_interpretability/    SHAP / counterfactual / LLM-judge interpretability
+├── internal_tech_report/        Internal Markdown notes (not for submission)
 ├── supplementary/               Per-chapter supplementary material
-│   ├── conference/                5 supplements A..E (one per
-│   │                              conference §)
-│   ├── journal/                   7 supplements A..G (one per
-│   │                              journal §)
-│   ├── build/                     supplement PDFs (gitignored)
-│   └── word/                      supplement DOCX (gitignored)
 ├── bibliography/                Shared .bib file + validation notes
-├── venues/                      Venue research (conferences + journals)
+├── venues/                      Venue research (kept internal)
 ├── templates/                   IEEEtran reference templates
-├── docs/                        Project-level docs (this is the repo
-│                                README; per-manuscript guidance lives
-│                                in each form's tex/ folder)
-├── data/                        Manuscript-specific extracted data
-│                                (small enough to commit; e.g. CSVs
-│                                of paired ARI numbers, etc.)
-└── figures/                     9 deterministic figures + builders
-    └── source/                  Python builders driven from
-                                  CAOS_LDA_HSI/data/derived/
+├── equations/                   Shared equation snippets
+├── data/                        Manuscript-specific extracted data (CSVs)
+└── figures/                     Deterministic figures + Python builders
+    └── source/                  Builders driven from CAOS_LDA_HSI/data/derived/
 ```
 
 ## Branch flow
 
-- `main` — release-ready manuscripts; CI builds PDFs from `tex/`
-  sources
+- `main` — release-ready manuscripts
 - `develop` — work in progress, integration before main
 
 All other work happens on `task/<5-digit-id>/<descriptor>` branches
@@ -71,12 +74,12 @@ PR'd to `develop`.
 
 ## Reproducibility commitment
 
-Every numerical claim in either manuscript is backed by a
-JSON / binary file in `CAOS_LDA_HSI/data/derived/` and a public
-endpoint at <https://lda-hsi.fasl-work.com/api/...>. The manuscripts
-do **not** add new experiments; they describe and contextualise
-results already produced and validated by the companion code repo's
-pipeline (1726+ artefacts as of cycle 138).
+Every numerical claim in any manuscript is backed by a JSON / binary
+file in `CAOS_LDA_HSI/data/derived/` and a public endpoint at
+<https://lda-hsi.fasl-work.com/api/...>. The manuscripts do **not** add
+new experiments; they describe and contextualise results already
+produced and validated by the companion code repo's pipeline
+(~3,900 derived artefacts).
 
 ## Bibliography discipline
 
@@ -93,32 +96,20 @@ two strict rules:
 ## Build commands
 
 ```bash
-# LaTeX → PDF
-cd conference/tex && latexmk -pdf main.tex     # WHISPERS conf
-cd journal/tex && latexmk -pdf main.tex        # IEEE TGRS
+# LaTeX → PDF (run in any manuscript's tex/ directory)
+cd journal/tex && latexmk -pdf main.tex
+# then copy the output into the shared folder under a descriptive name:
+cp main.pdf ../../pdfs/journal-multi-axis-framework.pdf
 
 # LaTeX → Word via Pandoc
-pandoc -s conference/tex/main.tex \
-       --bibliography=bibliography/refs.bib \
-       --citeproc \
-       -o conference/word/manuscript.docx
-
 pandoc -s journal/tex/main.tex \
        --bibliography=bibliography/refs.bib \
        --citeproc \
        -o journal/word/manuscript.docx
 ```
 
-## Status
+## Funding
 
-| Cycle | Section | Form | Status |
-|---|---|---|---|
-| 140 | Repo bootstrap + dir structure | — | done |
-| 141 | Venue research | — | done |
-| 142 | LaTeX templates | both | done |
-| 143 | Validated bibliography | both | done |
-| 144 | Conference paper draft | conference | done |
-| 145 | Journal article draft | journal | done |
-| 146 | Pandoc → Word | both | done |
-| 147 | Web app cross-link | (other repo) | done |
-| 148 | Final review + push | — | done |
+This work has been partially funded by The Advanced Mining Technology
+Center (AMTC) Basal project (ANID/PIA Project AFB220002) and ANID
+FONDECYT Postdoctorado 3220094.
