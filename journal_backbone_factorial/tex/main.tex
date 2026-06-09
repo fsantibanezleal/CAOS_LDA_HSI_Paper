@@ -567,9 +567,12 @@ We make three recommendations:
   \item F-1 (Bayesian classification) is only run under LDA. Running
     F-1 under HDP / ProdLDA / ETM requires extending the topic-routed
     classifier pipeline to each backbone, deferred.
-  \item HDP's $K_{\text{effective}}$ extraction (currently truncation
-    level) needs refinement to use a topic-prevalence threshold;
-    affects F-16 model-selection adequacy.
+  \item HDP's $K_{\text{effective}}$ is extracted as the number of
+    topics holding at least $1\%$ of corpus mass under the top-level
+    stick-breaking weights (the \texttt{hdp\_to\_lda} expected topic
+    prevalence), feeding F-16 model-selection adequacy
+    $|K_{\text{effective}}-\#\text{classes}|$; F-16 is surfaced in the
+    interactive sweep rather than tabulated here.
 \end{itemize}
 
 % =====================================================================
