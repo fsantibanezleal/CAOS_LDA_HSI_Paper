@@ -2,32 +2,38 @@
 
 The P5 narrative: the F-15 alignment metric does NOT track nominal
 vocabulary size |V|; it tracks *token-mass dispersion* — how spread the
-corpus token mass is across the vocabulary that is actually exercised.
+mass of each topic's word distribution is across the vocabulary.
 
-Dispersion is measured as the effective vocabulary size
+The F-15 rule compares a topic's top-N tokens against a document's
+top-N, so the dispersion that matters is that of the LDA topic-word
+distribution phi_k (NOT the corpus marginal). It is measured as the
+per-topic effective vocabulary size
 
-    N_eff = exp(H(p))      with   p = corpus marginal token distribution,
-                                   H in nats  (== 2**H_bits)
+    N_eff(phi_k) = exp(H(phi_k))     with   H the Shannon entropy in nats
+                                            of the topic-word distribution,
 
-computed per (scene, recipe) from the wordification doc-term matrix and
-averaged across the 6 labelled scenes. N_eff answers "how many tokens
-carry the bulk of the corpus mass?" — V2/V8/V10 collapse to ~4-7
-effective tokens; V3/V12/V20 spread mass over ~460-475.
+computed per (scene, recipe) from the LDA fits (phi.npy), averaged over
+the topics in a fit and then across the 6 labelled scenes. N_eff answers
+"how many tokens carry the bulk of a topic's mass?" — V2/V8/V10 collapse
+to a few effective tokens, while the three large-|V| recipes that share
+the identical 1376-token alphabet fall MONOTONICALLY in phi dispersion:
+V3 N_eff≈431 > V12 ≈400 > V20 ≈309. F-15 tracks that ordering exactly
+(0.12 < 0.16 < 0.64), proving F-15 reads phi dispersion, not |V|.
 
 The self-judgment F-15 rule (top-10 doc/topic overlap) is trivially
-satisfied when N_eff is small (every topic and every doc draws from the
-same handful of tokens) and rarely satisfied when N_eff is large. So
-F-15 is a *dispersion meter*, not a coherence meter — the key
-methodological caveat for P5.
+satisfied when N_eff is small (every topic draws from the same handful
+of tokens) and rarely satisfied when N_eff is large. So F-15 is a
+*dispersion meter*, not a coherence meter — the key methodological
+caveat for P5.
 
 The contrast figure (build_p5_f15_vocab_scatter.py) plots the same F-15
 values against nominal |V| on a log axis, where the relationship is
 markedly weaker. Together they refute "F-15 just measures vocab size".
 
 Ground-truth anchors (internal_tech_report/03_v_sweep_results.md):
-  V12 F-15 0.158, V3 0.117  (large N_eff -> low alignment)
-  V20 F-15 0.642            (large N_eff, mid alignment)
-  V14 F-15 0.950            (nominal |V|=1024 but N_eff only ~67 -> high)
+  V12 F-15 0.158, V3 0.117  (large phi N_eff -> low alignment)
+  V20 F-15 0.642            (mid phi N_eff, mid alignment)
+  V14 F-15 0.950            (nominal |V|=1024 but small phi N_eff -> high)
 
 Output: figures/p5-dispersion-scatter.{pdf,png}
 """
@@ -41,12 +47,13 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
-from scipy import sparse  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HSI_ROOT = REPO_ROOT.parent / "CAOS_LDA_HSI"
 SRC = HSI_ROOT / "data" / "derived" / "v_sweep"
-DOC_TERM_ROOT = HSI_ROOT / "data" / "local" / "wordifications"
+# LDA fits hold phi.npy (K topics x V vocab) — the topic-word distributions
+# whose dispersion the F-15 rule actually reads.
+LDA_FITS_ROOT = HSI_ROOT / "data" / "local" / "v_sweep" / "lda_fits"
 OUT_DIR = REPO_ROOT / "figures"
 
 SCENES = [
@@ -63,23 +70,40 @@ HIGH_DISP = {"V3", "V12", "V20", "V17"}   # large N_eff
 LOW_DISP = {"V2", "V8", "V10", "V14"}     # small N_eff
 
 
-def neff_corpus(scene: str, recipe: str) -> float | None:
-    """Effective vocabulary N_eff = 2**H(corpus marginal token dist).
+def _neff(p: np.ndarray) -> float:
+    """Effective support N_eff = exp(H(p)) of a non-negative mass vector.
 
-    Computed directly from the doc-term matrix so the metric is identical
-    for every recipe (the derived wordification JSONs only cover V1-V12).
+    H is the Shannon entropy in nats; exp(H) is the perplexity / effective
+    number of tokens carrying the bulk of the mass.
     """
-    p = DOC_TERM_ROOT / recipe / "uniform_Q8" / scene / "doc_term.npz"
+    p = np.asarray(p, dtype=np.float64)
+    p = p[p > 0]
+    if p.size == 0:
+        return 0.0
+    p = p / p.sum()
+    h = -float(np.sum(p * np.log(p)))
+    return float(np.exp(h))
+
+
+def neff_topic_phi(scene: str, recipe: str) -> float | None:
+    """Per-topic-phi effective vocabulary  mean_k exp(H(phi_k)).
+
+    The F-15 rule reads the topic side via top-N(phi_z), so the dispersion
+    that drives F-15 is that of the LDA topic-word distribution phi_k, NOT
+    the corpus marginal. We load phi.npy (K topics x V vocab) from the LDA
+    fit, take N_eff = exp(H(phi_k)) per topic, and average over topics.
+    The caller then averages this across the 6 labelled scenes — exactly
+    as the paper text/caption aggregate it. For the three recipes sharing
+    the 1376-token alphabet this yields V3≈431 > V12≈400 > V20≈309, the
+    monotone fall the caption describes.
+    """
+    p = LDA_FITS_ROOT / f"{scene}_{recipe}_uniform_Q8" / "phi.npy"
     if not p.exists():
         return None
-    m = sparse.load_npz(p).tocsc().astype(np.float64)
-    col = np.asarray(m.sum(axis=0)).ravel()
-    tot = col.sum()
-    if tot <= 0:
+    phi = np.load(p)  # K x V topic-word distributions
+    if phi.ndim != 2 or phi.shape[0] == 0:
         return None
-    pp = col[col > 0] / tot
-    h_bits = float(-np.sum(pp * np.log2(pp)))
-    return float(2.0 ** h_bits)
+    return float(np.mean([_neff(phi[k]) for k in range(phi.shape[0])]))
 
 
 def f15_value(scene: str, recipe: str) -> tuple[float | None, int | None]:
@@ -96,7 +120,7 @@ def collect() -> list[dict]:
     for recipe in RECIPES:
         neffs, f15s, vnoms = [], [], []
         for scene in SCENES:
-            n = neff_corpus(scene, recipe)
+            n = neff_topic_phi(scene, recipe)
             f, v = f15_value(scene, recipe)
             if n is not None:
                 neffs.append(n)
@@ -172,8 +196,8 @@ def main() -> int:
 
     ax.set_xscale("log")
     ax.set_xlabel(
-        "Token-mass dispersion  N$_{eff}$ = exp $H(p)$  "
-        "(effective vocabulary, mean over 6 scenes, log scale)",
+        "Token-mass dispersion  N$_{eff}$ = exp $H(\\phi_k)$  "
+        "(per-topic mean effective vocabulary, mean over 6 scenes, log scale)",
         fontsize=10.5,
     )
     ax.set_ylabel("F-15 LLM-judge alignment (mean over 6 scenes)", fontsize=10.5)
@@ -207,11 +231,11 @@ def main() -> int:
 
     fig.text(
         0.01, 0.005,
-        "N$_{eff}$ = 2$^{H(p)}$ with p the corpus marginal token distribution, computed from "
-        "data/local/wordifications/<recipe>/uniform_Q8/<scene>/doc_term.npz (matches derived corpus_marginal_entropy_bits). "
+        "N$_{eff}$ = exp $H(\\phi_k)$ with $\\phi_k$ the LDA topic-word distribution (mean over topics, then 6 scenes), computed from "
+        "data/local/v_sweep/lda_fits/<scene>_<recipe>_uniform_Q8/phi.npy. "
         "F-15 from data/derived/v_sweep/f15_llm_alignment/. "
-        "V14 has nominal |V|=1024 yet N_eff≈67 → F-15 0.95, while V3/V12 (|V|=1600, N_eff≈465) collapse to 0.12/0.16: "
-        "F-15 is a dispersion meter, refuting the pure |V| reading.",
+        "At the shared |V|=1376 alphabet, phi dispersion falls monotonically V3≈431 > V12≈400 > V20≈309 as F-15 rises 0.12 < 0.16 < 0.64; "
+        "V14 (|V|=1024) has N$_{eff}$≈188 yet F-15 0.95: F-15 is a dispersion meter, refuting the pure |V| reading.",
         fontsize=7.0, color="#475569", ha="left",
     )
 
