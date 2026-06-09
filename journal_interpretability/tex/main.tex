@@ -444,7 +444,10 @@ thinly, so top-10 overlap is rare even when the topics are coherent. With a
 small vocabulary (V2, $|\mathcal{V}|=8$) the top-10 of a topic
 \emph{is} the entire vocabulary, so overlap is guaranteed --- the
 small-$|\mathcal{V}|$ saturation is itself just the $N_{\mathrm{eff}}
-\le |\mathcal{V}|$ floor of the same dispersion mechanism.
+\le |\mathcal{V}|$ ceiling of the same dispersion mechanism: when
+$|\mathcal{V}|$ is small the entropy ceiling $\log|\mathcal{V}|$ is low, so
+$N_{\mathrm{eff}}$ cannot exceed $|\mathcal{V}|$ and the top-$N$ is forced
+to cover (nearly) the whole vocabulary.
 
 A defensible F-15 would normalise by the expected overlap under
 $N_{\mathrm{eff}}$-matched random tokens, or use a semantic embedding

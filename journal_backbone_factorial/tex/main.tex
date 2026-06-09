@@ -373,14 +373,16 @@ only label-aware recipe in the leading group.}
 \subsection{F-7 NMI under each backbone — V8 cross-backbone leadership}
 \label{subsec:f7-backbone}
 
-The c432--c437 extension computes F-7 normalised mutual information
-\eqref{eq:f7} between the argmax topic per document and the
+The c432--c437 extension computes F-7, the label-normalised mutual
+information $I(\hat Z;Y)/H(Y)$ \eqref{eq:f7} (the asymmetric uncertainty
+coefficient $U(Y\mid\hat Z)$, not the symmetric NMI), between the argmax
+topic per document and the
 ground-truth labels for
 the six labelled scenes, repeated under each backbone. The procedure
 is: (1) fit the backbone via its deterministic builder, (2) project
 each sampled labelled pixel through the fitted model to obtain the
 topic mixture $\theta_d$, (3) take $z^*_d = \arg\max_k \theta_{d, k}$,
-(4) compute $\mathrm{NMI}(z^*, y)$. For HDP we use gensim's
+(4) compute the F-7 score $I(z^*;y)/H(y)$ of \eqref{eq:f7}. For HDP we use gensim's
 \texttt{HdpModel.\_\_getitem\_\_} corpus projection; for ProdLDA and
 ETM the trained encoder produces $\theta$ directly. The resulting
 $19 \times 4 = 76$-cell F-7 matrix is in Table~\ref{tab:f7-backbone}.
@@ -505,8 +507,9 @@ prior:
     coarse quantisation \emph{matches the HDP's coarse topic
     discovery}.
   \item \textbf{Under ETM} (low-rank embedded decoder), the topic-
-    word distribution is constrained to $\beta_k = \rho \alpha_k^\top$
-    with $\rho \in \mathbb{R}^{V \times E}$. A small vocabulary
+    word distribution is constrained to $\beta_k = \mathrm{softmax}(\rho\,\alpha_k)$
+    with word embeddings $\rho \in \mathbb{R}^{V \times E}$ and topic
+    embedding $\alpha_k \in \mathbb{R}^{E}$. A small vocabulary
     means $\rho$ is tiny ($32 \times E$) and the embedded geometry
     can be fully learnt from few PQ codewords. V11's coarse
     vocabulary \emph{matches the ETM's low-dimensional decoder}.

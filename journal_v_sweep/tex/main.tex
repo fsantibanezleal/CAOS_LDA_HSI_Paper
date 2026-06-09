@@ -274,9 +274,13 @@ the abundances V8 quantises.
 coherence of \cite{roder2015exploring} \eqref{eq:f2}, which generalises
 the human-judgement-correlated PMI/NPMI measures of
 \cite{newman2010coherence} and the document-co-occurrence statistic of
-\cite{mimno2011coherence}. F-7 reports a normalised mutual information
-\eqref{eq:f7}; the correction-for-chance and normalisation choices
-follow \cite{vinh2010information}. F-18 instantiates the multi-seed
+\cite{mimno2011coherence}. F-7 reports a mutual information normalised by the label entropy $H(Y)$
+\eqref{eq:f7}, i.e.\ the asymmetric uncertainty coefficient $U(Y\mid\hat
+Z)=I(\hat Z;Y)/H(Y)$ (not chance-corrected); the normalisation follows the
+conventions catalogued by \cite{vinh2010information}. Because the topic
+count $K$ varies across recipes and backbones, this uncorrected score
+carries a mild $K$-dependent upward bias and is best read within, rather
+than strictly across, recipes of differing $K$. F-18 instantiates the multi-seed
 stability protocol of \cite{greene2014topics} using Hungarian matching
 \cite{kuhn1955hungarian,munkres1957algorithms} of top-$N$ indicator
 sets \eqref{eq:f18}. The uniform-quantiser distortion bound of
