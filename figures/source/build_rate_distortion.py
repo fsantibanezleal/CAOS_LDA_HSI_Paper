@@ -1,10 +1,14 @@
 """Rate-distortion curve (axis F-11) across LDA, NMF, PCA.
 
-Six-panel layout, one per labelled scene. X axis: rate = log2(K)
-bits required to address one of K basis vectors. Y axis:
-normalised held-out RMSE of the reconstruction
+Six-panel layout, one per labelled scene. X axis: dictionary size K
+(number of basis spectra), on a log2 scale. Y axis: normalised held-out
+RMSE of the reconstruction
   hat_x = sum_k theta_dk * phi_k^T
-in the quantised band-frequency space.
+in the quantised band-frequency space. NOTE: this is a
+distortion-vs-complexity curve, NOT a strict rate-distortion curve --
+the reconstruction is a SOFT convex combination over all K topics
+(theta_d in the simplex), whose description cost is not the log2(K) bits
+of a hard one-of-K codeword, so we plot K rather than a bit-rate.
 
 LDA / NMF / PCA on the same K grid; lower curves dominate. The
 tokenisation-loss caveat (the recipe quantises to Q+1=13 levels
@@ -14,7 +18,6 @@ from __future__ import annotations
 
 import json
 import sys
-from math import log2
 from pathlib import Path
 
 import matplotlib
@@ -57,21 +60,21 @@ def main() -> int:
         with path.open("r", encoding="utf-8") as fh:
             d = json.load(fh)
         K_grid = d["K_grid"]
-        rate = [log2(k) for k in K_grid]
         for method, (colour, style, mlabel) in METHOD_STYLE.items():
             entries = d["method_curves"].get(method, [])
             if not entries:
                 continue
             ys = [e["rmse_test_normalised"] for e in entries]
-            ax.plot(rate, ys, marker="o", color=colour, lw=1.6,
+            ax.plot(K_grid, ys, marker="o", color=colour, lw=1.6,
                     linestyle=style, ms=5, label=mlabel, alpha=0.95)
+        ax.set_xscale("log", base=2)
         ax.set_title(label, fontsize=10)
         ax.grid(alpha=0.25)
     for ax in flat[len(SCENES):]:
         ax.set_visible(False)
     # X/Y labels on outer plots
     for ax in axes[-1]:
-        ax.set_xlabel(r"rate $\log_2 K$ (bits)", fontsize=9.5)
+        ax.set_xlabel(r"dictionary size $K$ (number of basis spectra, $\log_2$ scale)", fontsize=9.5)
     for row in axes:
         row[0].set_ylabel("normalised held-out RMSE", fontsize=9.5)
 
@@ -79,7 +82,7 @@ def main() -> int:
     axes[0, 0].legend(loc="upper right", fontsize=8.5, frameon=False)
 
     fig.suptitle(
-        "F-11 rate–distortion of θ — LDA vs NMF vs PCA per scene",
+        "F-11 distortion vs dictionary size K of θ — LDA vs NMF vs PCA per scene",
         fontsize=11, y=1.00,
     )
     fig.tight_layout()

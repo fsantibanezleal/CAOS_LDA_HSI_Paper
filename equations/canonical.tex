@@ -88,11 +88,16 @@ n_d^{\mathrm{V3}}[(b,q)] = \mathbb{1}\!\left[q_b(x_d)=q\right],\qquad
 
 % B3  V8 NFINDR endmember-fraction: NNLS abundances over the convex hull
 \begin{equation}\label{eq:v8}
-a_d=\arg\min_{a\ge 0}\;\lVert x_d - E\,a\rVert_2^2,\qquad
+a_d=\arg\min_{a\ge 0,\;\mathbf{1}^{\top}a=1}\;\lVert x_d - E\,a\rVert_2^2,\qquad
 n_d^{\mathrm{V8}}[m]=\big\lfloor s\,a_{dm}\big\rceil,
 \end{equation}
 where $E=[e_1,\dots,e_M]$ are the NFINDR endmembers (simplex vertices)
-and $s$ a fixed integer scale; $|V_{\mathrm{V8}}|=M$.
+and $s$ a fixed integer scale; $|V_{\mathrm{V8}}|=M$. The abundance
+non-negativity (ANC, $a\ge 0$) and sum-to-one (ASC, $\mathbf{1}^{\top}a=1$)
+constraints make $a_d$ a point on the simplex spanned by the endmembers
+(fully-constrained least squares, FCLS; implemented as
+$\delta$-augmented NNLS followed by renormalisation), so the coefficients
+are genuine abundance fractions over the convex hull.
 
 % B4  V12 GMM-token: soft responsibilities of a K_g-component mixture
 \begin{equation}\label{eq:v12}
@@ -128,10 +133,14 @@ c_v=\frac{1}{N}\sum_{i}\cos\!\big(\mathbf{v}_i,\,\textstyle\sum_j \mathbf{v}_j\b
 with $\mathbf{v}_i=\big(\mathrm{NPMI}(w_i,w_\ell)\big)_{\ell=1}^{N}$ over the
 top-$N$ topic words.
 
-% C3  F-7 topic-to-label NMI (normalised by H(label))
+% C3  F-7 topic-to-label MI normalised by H(label) -- this is the
+% ASYMMETRIC label-normalised MI (uncertainty coefficient U(Y|Zhat) =
+% completeness, Rosenberg-Hirschberg 2007), NOT the symmetric NMI
+% I/sqrt(H H). Uncorrected for chance.
 \begin{equation}\label{eq:f7}
 \hat{z}_d=\arg\max_k \theta_{dk},\qquad
-\mathrm{F\text{-}7}=\frac{I(\hat{Z};Y)}{H(Y)}.
+\mathrm{F\text{-}7}=\frac{I(\hat{Z};Y)}{H(Y)}
+\;=\; U(Y\mid\hat{Z})\;=\;1-\frac{H(Y\mid\hat{Z})}{H(Y)}.
 \end{equation}
 
 % C4  F-14 top-N pairwise Jaccard repetitiveness (lower = more diverse)

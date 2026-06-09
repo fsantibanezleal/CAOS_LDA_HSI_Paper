@@ -577,8 +577,12 @@ We reconstruct each pixel spectrum from its $\theta$ coefficient and
 the basis $\phi$ as $\hat{\mathbf{x}}_d = \phi^\top \theta_d$, scaled
 back from the quantised band-frequency representation. The
 distortion is reported as the per-pixel mean-squared error against the
-original spectrum, plotted against the rate
-$\log_2 K$ (bits required to address one of $K$ basis spectra). The
+original spectrum, plotted against the dictionary size $K$ (the number
+of basis spectra). Note this is a distortion-vs-complexity curve, not a
+strict rate--distortion curve: the reconstruction $\phi^\top\theta_d$ is a
+\emph{soft} convex combination over all $K$ topics, whose description cost
+is that of the continuous simplex vector $\theta_d \in \Delta^{K-1}$, not
+the $\log_2 K$ bits of a hard one-of-$K$ codeword selection. The
 curve diagnoses how aggressively the topic representation compresses
 the spectrum while remaining usable for downstream tasks.
 
