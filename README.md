@@ -1,5 +1,7 @@
 # CAOS_LDA_HSI — Paper Manuscripts
 
+[![License](https://img.shields.io/github/license/fsantibanezleal/CAOS_LDA_HSI_Paper)](LICENSE)
+
 Manuscripts repository for the **CAOS_LDA_HSI** project — topic
 modelling on hyperspectral imagery, with strong emphasis on
 reproducibility and a multi-axis evaluation framework.
