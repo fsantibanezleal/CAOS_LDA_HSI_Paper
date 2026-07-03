@@ -73,3 +73,10 @@ journal_v_sweep/tex/*.pdf
 journal_backbone_factorial/tex/*.pdf
 journal_interpretability/tex/*.pdf
 figures/source/__pycache__/
+
+# Python virtualenvs (any name, any depth) — never commit venvs
+.venv/
+.venv*
+**/.venv*
+venv/
+**/venv/
