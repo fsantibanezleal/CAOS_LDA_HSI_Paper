@@ -24,8 +24,14 @@ SOFTWARE.
 
 ---
 
-The accompanying manuscripts (LaTeX sources in `conference/tex/` and
-`journal/tex/`, Word conversions in `*/word/`, and figures in
-`*/figures/` + `figures/source/`) are provided under the same MIT
-license. The reference templates in `templates/` originate from IEEE
-and carry their own redistribution terms — see `templates/README.md`.
+The accompanying manuscripts (the LaTeX sources under each manuscript's
+`tex/` directory, the Word conversions under `*/word/`, the built PDFs in
+`pdfs/`, and the figures in `*/figures/` and `figures/source/`) are licensed
+under the Creative Commons Attribution 4.0 International license (CC-BY-4.0),
+https://creativecommons.org/licenses/by/4.0/ . This matches the manuscripts'
+Zenodo deposits (DOIs 10.5281/zenodo.21504110, .21504112, .21504114, .21504116,
+.21504118). The software in this repository (build and figure-builder scripts)
+remains under the MIT license above.
+
+The reference templates in `templates/` originate from IEEE and carry their own
+redistribution terms. See `templates/README.md`.

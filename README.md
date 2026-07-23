@@ -25,14 +25,19 @@ This repository hosts **five manuscripts** plus an internal technical
 report. Target venues are intentionally **redacted** while the work
 circulates as preprints.
 
-| # | Manuscript | Form | Source | PDF |
-|---|---|---|---|---|
-| 1 | Beyond Accuracy: A Multi-Axis Evaluation Framework for Interpretable Topic Models on Hyperspectral Imagery | Journal article (~20-30 pp) | [`journal/`](journal/) | [pdf](pdfs/journal-multi-axis-framework.pdf) |
-| 2 | A Band-Mask Robustness Diagnostic for Latent Dirichlet Allocation on Hyperspectral Imagery | Conference paper (4-8 pp) | [`conference/`](conference/) | [pdf](pdfs/conference-band-mask-robustness.pdf) |
-| 3 | Which Wordification Matters? A Nineteen-Recipe Sweep of the Interpretable-Topic-Model Framework on Hyperspectral Imagery | Journal article | [`journal_v_sweep/`](journal_v_sweep/) | [pdf](pdfs/journal-wordification-sweep.pdf) |
-| 4 | Which Backbone Picks Which Wordification? A Factorial Study of Topic-Model Families on Hyperspectral Imagery | Journal article | [`journal_backbone_factorial/`](journal_backbone_factorial/) | [pdf](pdfs/journal-backbone-factorial.pdf) |
-| 5 | Post-hoc Interpretability of LDA on Hyperspectral Imagery: SHAP Attributions, Counterfactual Topic Flips, and LLM-judge Alignment | Journal article | [`journal_interpretability/`](journal_interpretability/) | [pdf](pdfs/journal-interpretability.pdf) |
-| — | Internal technical report (design space, K-policy, V-sweep results, reproducibility audit, paper portfolio, HIDSAG results) | Internal notes (Markdown) | [`internal_tech_report/`](internal_tech_report/) | — |
+| # | Manuscript | Form | Source | PDF | DOI |
+|---|---|---|---|---|---|
+| 1 | Beyond Accuracy: A Multi-Axis Evaluation Framework for Interpretable Topic Models on Hyperspectral Imagery | Journal article (~20-30 pp) | [`journal/`](journal/) | [pdf](pdfs/journal-multi-axis-framework.pdf) | [10.5281/zenodo.21504116](https://doi.org/10.5281/zenodo.21504116) |
+| 2 | A Band-Mask Robustness Diagnostic for Latent Dirichlet Allocation on Hyperspectral Imagery | Conference paper (4-8 pp) | [`conference/`](conference/) | [pdf](pdfs/conference-band-mask-robustness.pdf) | [10.5281/zenodo.21504110](https://doi.org/10.5281/zenodo.21504110) |
+| 3 | Which Wordification Matters? A Nineteen-Recipe Sweep of the Interpretable-Topic-Model Framework on Hyperspectral Imagery | Journal article | [`journal_v_sweep/`](journal_v_sweep/) | [pdf](pdfs/journal-wordification-sweep.pdf) | [10.5281/zenodo.21504118](https://doi.org/10.5281/zenodo.21504118) |
+| 4 | Which Backbone Picks Which Wordification? A Factorial Study of Topic-Model Families on Hyperspectral Imagery | Journal article | [`journal_backbone_factorial/`](journal_backbone_factorial/) | [pdf](pdfs/journal-backbone-factorial.pdf) | [10.5281/zenodo.21504112](https://doi.org/10.5281/zenodo.21504112) |
+| 5 | Post-hoc Interpretability of LDA on Hyperspectral Imagery: SHAP Attributions, Counterfactual Topic Flips, and LLM-judge Alignment | Journal article | [`journal_interpretability/`](journal_interpretability/) | [pdf](pdfs/journal-interpretability.pdf) | [10.5281/zenodo.21504114](https://doi.org/10.5281/zenodo.21504114) |
+| — | Internal technical report (design space, K-policy, V-sweep results, reproducibility audit, paper portfolio, HIDSAG results) | Internal notes (Markdown) | [`internal_tech_report/`](internal_tech_report/) | — | — |
+
+All five manuscripts are published as CC-BY-4.0 preprints on Zenodo (version
+DOIs above; each also has a concept DOI that always resolves to the latest
+version). The manuscript text and figures are CC-BY-4.0; the companion code and
+derived artefacts remain MIT.
 
 Each LaTeX manuscript ships in two formats:
 
