@@ -75,14 +75,15 @@ explanations that are consistent across scenes: V1's SHAP reduces to
 specific wavelength bands, V7's to specific absorption features, and
 V12's to clusters of Gaussian-mixture components. Second, F-22
 counterfactual L1 (sentinel-patched 19-recipe ranking) separates the
-recipes into ``robust topic'' (V20 = 26.3, V12 = 24.5, V3 = 23.5),
-``moderate'' (V1 = 6.1, V7 = 5.2) and ``fragile'' (V9 = 1.0,
-V10 = 1.2) regimes; the most-robust basis (V20, the label-aware
-MI-weighted recipe) is ${\sim}26\times$ harder to flip than V9's.
+recipes into an ``ultra-robust'' band (V20, V12, V3; sentinel-patched
+means 26.3 / 24.5 / 23.5), a ``moderate'' band (V1 = 6.1, V7 = 5.2)
+and a ``fragile'' band (V9 = 1.0, V10 = 1.2); within the ultra-robust
+band a large fraction of documents never flip within 50 steps, so the
+ordering is not strict (V12 is the most robust where flip-sampling is adequate).
 Third, F-15 LLM-as-judge alignment is \emph{anti-correlated} with
 F-2 coherence on large-vocabulary recipes: V2/V8/V10 (vocab 8/12/24)
 score F-15 = 1.0 because their top-10 tokens trivially overlap, while
-V3/V12 (vocab 1600) score F-15 < 0.2 because the top-10 of a doc
+V3/V12 (vocab ${\sim}1376$) score F-15 < 0.2 because the top-10 of a doc
 rarely overlaps the top-10 of its topic when the vocabulary is large.
 The confounder is \emph{not purely vocabulary size}, however: V20
 re-weights V3's identical $(\mathrm{band},\mathrm{bin})$ alphabet and
@@ -296,7 +297,7 @@ Under the F-13 protocol of \S\ref{sec:method}, the headline result is
 that SHAP attributions are
 \emph{recipe-grounded}: a V1 topic's top SHAP token always names a
 wavelength band; a V7 topic's top SHAP token names an absorption
-feature ``\texttt{abs\_c4\_d7\_a3}'' (centre, depth, area bucket);
+feature ``\texttt{abs\_c3\_d4\_a1}'' (centre, depth, area bucket);
 a V12 topic's top SHAP token names a (band, Gaussian-component)
 pair. This recipe-grounding is what makes F-13 a defensible
 interpretability axis: the explanation \emph{cannot} silently shift
@@ -304,12 +305,12 @@ between scenes because the vocabulary is fixed by the recipe.
 
 A sample from Indian Pines, recipe V7, topic 0:
 \begin{verbatim}
-abs_c4_d7_a3   mean|SHAP| = 0.0207
-abs_c3_d4_a2   mean|SHAP| = 0.0184
-abs_c4_d6_a3   mean|SHAP| = 0.0163
+abs_c3_d4_a1   mean|SHAP| = 0.0261
+abs_c2_d0_a2   mean|SHAP| = 0.0201
+abs_c3_d4_a2   mean|SHAP| = 0.0144
 \end{verbatim}
 A geospectroscopist reading these can immediately ask: what is the
-wavelength range of centroid bucket 4? Why are depth bins 6 and 7
+wavelength range of centroid bucket 3? Why are depth bins 4 and 0
 elevated? The answer is independent of which scene we apply V7 to.
 
 % =====================================================================
@@ -356,13 +357,15 @@ V9  & 1.00 \\
 \end{tabular}
 \end{table}
 
-V20's topics are ${\sim}26\times$ harder to flip than V9's, and V20
-edges V12 (24.5) and V3 (23.5) for the most-robust basis at $Q=8$.
-This complements P3's F-2/F-7 finding: the label-aware MI-weighted
-recipe V20 wins coherence-adjacent robustness \emph{and} (at $Q=32$)
-F-7, which together rule out the alternative explanation that the
-coherence advantage is an artefact of overfitting to its training
-documents.
+V20, V12 (24.5) and V3 (23.5) form an ultra-robust band at $Q=8$: in a
+large fraction of the sampled documents no assignment flips within 50
+steps (the sentinel), so the per-cell median is dominated by
+never-flipped scenes and the strict V20 $>$ V12 ordering is an artefact
+of that sentinel patching; where flip-sampling is adequate (6--19 flipped
+documents per scene) V12 is the most robust. What the axis does support
+is that V20 / V12 / V3 are far harder to flip than the fragile recipes
+(V9 = 1.0) which, with V20's $Q=32$ F-7 lead, argues against the
+coherence advantage being a mere overfitting artefact.
 
 % =====================================================================
 \section{F-15 LLM-judge results: token-mass dispersion, not vocabulary
@@ -388,7 +391,7 @@ Recipe & F-15 & vocabulary $|\mathcal{V}|$ \\
 \midrule
 V2  & 1.000 & 8 \\
 V6  & 1.000 & $\approx B$ \\
-V8  & 1.000 & 12 \\
+V8  & 1.000 & 10 \\
 V9  & 1.000 & $R \cdot Q$ \\
 V10 & 1.000 & 24 \\
 V18 & 1.000 & 128 \\
@@ -404,7 +407,7 @@ V20 & 0.642 & $B Q$ \\
 V17 & 0.570 & 512 \\
 V12 & 0.158 & $B Q$ \\
 V3  & 0.117 & $B Q$ \\
-V15 & 0.033 & 48 \\
+V15 & 0.033 & 44 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -548,12 +551,12 @@ recipes: high label signal + grounded vocabulary + no codebook
 indirection.
 
 \paragraph{F-22 counterfactual under the extension.}
-We do not re-run F-22 for every new recipe in this draft; the V20
-counterfactual L1 ranking under LDA is competitive with V12 (median
-L1 $\ge 15$ on the labelled scenes where V20 has been profiled),
-suggesting that label-aware amplification produces topics that are
-also harder to perturb. A full F-22 ($\times 7$ new recipes
-$\times 6$ scenes) is left to a follow-up.
+Table~\ref{tab:f22-summary} already reports F-22 for all seven extension
+recipes across the six labelled scenes at $Q=8$: V20, V12 and V3 form
+the ultra-robust band (sentinel-patched means 26.3 / 24.5 / 23.5),
+though, as noted in Section~\ref{sec:f22}, that ordering is dominated
+by never-flipped scenes rather than a strict robustness gap. A full
+F-22 across the $Q=16/32$ cross-product is left to a follow-up.
 
 % =====================================================================
 \section{Recommendation}\label{sec:rec}
@@ -600,11 +603,11 @@ human-like judge would agree the document belongs to its topic}. The
 V20 recipe illustrates how they cohere: its MI-weighting concentrates
 both SHAP attribution mass (sharper F-13) and topic--word mass (lower
 $N_{\mathrm{eff}}$, hence higher F-15 at fixed $|\mathcal{V}|$), and
-the same concentration makes its topics the hardest to flip
-(F-22 $=26.3$, the sweep maximum). This is consistent with P3's
-finding that V20 leads F-2 / F-7 at $Q=32$: a basis that concentrates
-discriminative mass is simultaneously more coherent, more robust, and
-more attributable.
+the same concentration places its topics in the ultra-robust band
+(F-22 sentinel-patched mean $=26.3$; a large fraction of its documents
+never flip within 50 steps). This is consistent with P3's finding that
+V20 leads F-7 at $Q=32$: a basis that concentrates discriminative mass
+is simultaneously more coherent, harder to flip, and more attributable.
 
 \textbf{F-15 measures the metric, not the model.} The central
 methodological lesson is that an automated alignment proxy can fail
@@ -680,10 +683,11 @@ attribution, F-22 counterfactual $L_1$, and F-15 LLM-judge alignment
 First, F-13 SHAP gives recipe-grounded explanations whose physical
 meaning is fixed by the recipe and cannot silently shift across scenes;
 this is the axis we recommend as the primary interpretability artefact.
-Second, F-22 separates the recipes into robust (V20 $=26.3$,
-V12 $=24.5$, V3 $=23.5$) and fragile (V9 $=1.0$) topic-boundary
-regimes, complementing P3's coherence ranking by ruling out a
-trivial-overfit account of V20's lead. Third, and most important
+Second, F-22 separates the recipes into an ultra-robust band (V20 / V12 /
+V3, sentinel-patched means 26.3 / 24.5 / 23.5, in which most documents
+never flip within 50 steps) and a fragile regime (V9 $=1.0$),
+complementing P3's coherence ranking by arguing against a
+trivial-overfit account of V20's coherence lead. Third, and most important
 methodologically, F-15 is governed by \emph{token-mass dispersion}
 $N_{\mathrm{eff}}=\exp(H)$ (\eqref{eq:dispersion}), \emph{not} nominal
 vocabulary cardinality: among the three recipes whose alphabets are

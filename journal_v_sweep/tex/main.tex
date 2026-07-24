@@ -91,7 +91,7 @@ Eight recipes decline monotonically; six peak at $Q=16$ then regress.
 A four-backbone $\times$ nineteen-recipe extension of F-7 NMI
 identifies V8 (NFINDR endmember-fraction) as the most cross-backbone-
 consistent recipe by a clear margin (mean 0.431); V20 (0.397) and
-V2 (0.395) are tied for second, with V20 the only \emph{label-aware}
+V2 (0.395) rank second and third, with V20 the only \emph{label-aware}
 recipe in the consistently-strong family. The per-backbone F-7 winners are V12 (LDA, 0.534),
 V11 (HDP, 0.571), V8 (ProdLDA, 0.328) and V11 (ETM, 0.530). V13 (vector-quantised VAE) underperforms
 sharply; V18 (graph-Laplacian eigenvector tokens) places third on F-7
@@ -506,11 +506,11 @@ full V-sweep. Bold = best per scene.}
 \toprule
 Scene & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 \\
 \midrule
-Botswana          & 0.96 & 0.96 & 0.96 & 0.96 & 0.96 & 0.95 & 0.96 & \textbf{0.97} & 0.95 & 0.96 & 0.96 & 0.96 \\
-Indian Pines      & 0.84 & \textbf{0.86} & 0.84 & 0.83 & 0.83 & 0.82 & 0.83 & 0.86 & 0.82 & 0.83 & 0.85 & 0.85 \\
-Kennedy SC        & 0.92 & 0.93 & 0.92 & 0.92 & 0.93 & 0.92 & 0.92 & 0.93 & 0.92 & 0.92 & 0.93 & \textbf{0.93} \\
-Pavia U           & 0.81 & 0.82 & 0.82 & 0.82 & 0.81 & 0.82 & 0.82 & 0.82 & 0.83 & 0.82 & 0.82 & \textbf{0.83} \\
-Salinas-A         & \textbf{0.997} & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 & 0.997 \\
+Botswana          & 0.96 & 0.97 & 0.97 & 0.96 & 0.96 & 0.96 & 0.96 & \textbf{0.97} & 0.96 & 0.97 & 0.96 & 0.97 \\
+Indian Pines      & 0.84 & \textbf{0.86} & 0.85 & 0.84 & 0.84 & 0.84 & 0.84 & 0.85 & 0.84 & 0.84 & 0.84 & 0.85 \\
+Kennedy SC        & 0.92 & 0.92 & 0.92 & 0.92 & 0.92 & 0.92 & 0.92 & 0.92 & 0.92 & 0.92 & 0.91 & \textbf{0.93} \\
+Pavia U           & 0.81 & 0.80 & 0.80 & 0.82 & 0.81 & 0.82 & 0.82 & 0.81 & 0.81 & 0.81 & 0.83 & \textbf{0.83} \\
+Salinas-A         & \textbf{0.997} & 0.996 & 0.996 & 0.996 & 0.996 & 0.997 & 0.996 & 0.995 & 0.996 & 0.996 & 0.996 & 0.996 \\
 Salinas           & 0.95 & \textbf{0.96} & 0.95 & 0.95 & 0.95 & 0.95 & 0.95 & 0.95 & 0.95 & 0.95 & 0.95 & 0.95 \\
 \midrule
 Mean              & 0.9152 & 0.9173 & 0.9153 & 0.9151 & 0.9145 & 0.9135 & 0.9143 & 0.9163 & 0.9143 & 0.9134 & 0.9161 & \textbf{0.9216} \\
@@ -686,7 +686,7 @@ that low-frequency Laplacian eigenvectors carry global manifold
 structure that LDA can latch onto. The mean F-7 NMI of 0.43 places
 V18 third among the new recipes (behind V20 0.52 and V14 0.46) and
 \emph{V18 produces the most coherent topics on Pavia U among the
-V13--V20 set} ($c_v = 0.66$). Topics in V18 fits correspond to
+unsupervised structure-aware new recipes} (V13, V17, V18, V19; $c_v = 0.66$). Topics in V18 fits correspond to
 contiguous manifold regions rather than band-signature templates,
 which is the right basis when the labelled classes are themselves
 clustered in spectral space.
@@ -697,8 +697,8 @@ CWT-Morlet decomposition of the spectrum. It is the multi-scale
 analogue of V6 (Db4 DWT). V14 places second among the new recipes on
 F-7 mean (0.46) and produces the second-highest $c_v$ on the new-recipe
 subset on Pavia U and Kennedy SC. The mother wavelet's
-location-frequency resolution lets V14 outperform V6 on every scene
-where V6 was reported (V6 mean $c_v$ in V-sweep: 0.55, V14: 0.63).
+location-frequency resolution lets V14 outperform V6 on four of the six
+scenes (V6 mean $c_v$ in V-sweep: 0.53, V14: 0.63).
 
 \paragraph{V13 / V17 / V19 — underperformers and the cost of
 expressiveness.}
@@ -735,7 +735,7 @@ intervals as a robust posterior-like quantity ($B = 5000$ resamples
 of the 30 per-fold scores per recipe, $\mathrm{random\_state} = 42$).
 A full hierarchical Bayesian (NUTS) fit is also runnable
 (\texttt{build\_v\_sweep\_f1\_bayesian.py}); the bootstrap is reported
-here because (a) the 720-observation panel produces a posterior whose
+here because (a) the 360-observation panel produces a posterior whose
 tail is well-approximated by the bootstrap and (b) the NUTS fit on
 Windows + PyTensor was prohibitively slow during preprint preparation.
 
@@ -839,7 +839,7 @@ S2's documents, compute F-7 NMI on the target. Only vocab-portable
 recipes (V2, V10, V11) qualify. V2 transfers best at 0.32 mean NMI;
 V11 0.19; V10 0.10.
 
-\textbf{F-18 reliability.} Maier 2024 protocol \cite{greene2014topics}
+\textbf{F-18 reliability.} Greene et al.\ (2014) protocol \cite{greene2014topics}
 — Hungarian-matched \cite{kuhn1955hungarian} top-10 indicator cosine
 similarity across reseed pairs (seeds 42--46), as in \eqref{eq:f18}.
 Per-recipe mean fraction-above-0.7 across the six labelled scenes:
@@ -1225,7 +1225,7 @@ adds no per-fit cost — the MI estimate is computed once per scene.
 \subsection{V18 vs.\ F-2 on manifold-shaped scenes}
 \label{subsec:v18-affinity}
 V18 (graph-Laplacian eigenvectors) is the highest-$c_v$ recipe among
-the V13--V20 extension on Pavia U ($c_v = 0.66$), and places third on
+the unsupervised structure-aware new recipes (V13, V17, V18, V19) on Pavia U ($c_v = 0.66$), and places third on
 F-7 mean (0.43 NMI). The intuition: scenes whose labelled classes
 correspond to connected regions in the pixel-similarity graph (urban
 land-cover types in Pavia, agricultural fields in Salinas) yield
@@ -1343,8 +1343,8 @@ Indian Pines & 0.32 & 0.35 & 0.70 & 0.32 & 0.32 & 0.32 & 0.27 & 0.30 & 0.71 & 0.
 Salinas      & 0.36 & 0.35 & 0.65 & 0.32 & 0.32 & 0.32 & 0.20 & 0.21 & 0.72 & 0.29 & 0.22 & \textbf{0.84} & 0.29 & 0.53 & 0.36 & 0.59 & 0.51 & 0.32 & 0.80 \\
 Salinas-A    & \textbf{0.96} & 0.35 & 0.92 & 0.32 & 0.32 & 0.81 & 0.32 & 0.38 & 0.71 & 0.23 & 0.21 & 0.88 & 0.22 & 0.72 & 0.39 & 0.45 & 0.52 & 0.38 & 0.74 \\
 Pavia U      & 0.91 & 0.43 & 0.96 & 0.59 & 0.40 & 0.58 & 0.27 & 0.21 & 0.70 & 0.32 & 0.22 & \textbf{1.00} & 0.28 & 0.76 & 0.25 & 0.40 & 0.66 & 0.39 & 0.95 \\
-Kennedy SC   & \textbf{0.97} & 0.76 & 0.93 & 0.81 & 0.93 & 0.79 & 0.37 & 0.52 & 0.72 & 0.32 & 0.22 & 0.84 & 0.26 & 0.76 & 0.50 & 0.42 & 0.63 & 0.41 & 0.88 \\
-Botswana     & 0.35 & 0.62 & \textbf{0.90} & 0.40 & 0.40 & 0.61 & 0.41 & 0.55 & 0.72 & 0.40 & 0.22 & 0.85 & 0.17 & 0.52 & 0.39 & 0.34 & 0.50 & 0.38 & 0.85 \\
+Kennedy SC   & \textbf{0.97} & 0.76 & 0.93 & 0.81 & 0.93 & 0.79 & 0.37 & 0.52 & 0.72 & 0.53 & 0.25 & 0.89 & 0.26 & 0.76 & 0.50 & 0.42 & 0.63 & 0.41 & 0.88 \\
+Botswana     & 0.35 & 0.35 & \textbf{0.90} & 0.32 & 0.32 & 0.34 & 0.33 & 0.29 & 0.70 & 0.33 & 0.26 & 0.85 & 0.17 & 0.52 & 0.39 & 0.34 & 0.50 & 0.38 & 0.85 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -1360,14 +1360,14 @@ labelled-scene panel. Bold = best per scene across all 19 recipes.}
 \toprule
 Scene & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 & V13 & V14 & V15 & V17 & V18 & V19 & V20 \\
 \midrule
-Indian Pines & 0.34 & 0.35 & 0.43 & 0.25 & 0.20 & 0.26 & 0.16 & 0.43 & 0.10 & 0.27 & 0.25 & 0.42 & 0.29 & 0.31 & 0.26 & 0.18 & 0.27 & 0.21 & \textbf{0.44} \\
-Salinas      & 0.47 & 0.54 & 0.43 & 0.39 & 0.44 & 0.33 & 0.28 & 0.56 & 0.14 & 0.20 & 0.33 & \textbf{0.64} & 0.35 & 0.51 & 0.28 & 0.17 & 0.50 & 0.35 & 0.47 \\
-Salinas-A    & 0.62 & 0.65 & \textbf{0.68} & 0.37 & 0.56 & 0.33 & 0.16 & 0.52 & 0.20 & 0.28 & 0.42 & 0.55 & 0.49 & 0.55 & 0.51 & 0.34 & 0.52 & 0.33 & 0.68 \\
+Indian Pines & 0.34 & 0.35 & 0.43 & 0.25 & 0.20 & 0.25 & 0.16 & 0.43 & 0.10 & 0.08 & 0.25 & 0.42 & 0.29 & 0.31 & 0.26 & 0.18 & 0.27 & 0.21 & \textbf{0.44} \\
+Salinas      & 0.47 & 0.54 & 0.43 & 0.39 & 0.44 & 0.32 & 0.28 & 0.56 & 0.14 & 0.20 & 0.33 & \textbf{0.64} & 0.35 & 0.51 & 0.28 & 0.17 & 0.50 & 0.35 & 0.47 \\
+Salinas-A    & 0.62 & 0.64 & \textbf{0.68} & 0.37 & 0.56 & 0.33 & 0.16 & 0.52 & 0.20 & 0.28 & 0.42 & 0.55 & 0.49 & 0.55 & 0.51 & 0.34 & 0.52 & 0.33 & 0.68 \\
 Pavia U      & 0.47 & 0.38 & 0.55 & 0.38 & 0.14 & 0.43 & 0.23 & 0.54 & 0.02 & 0.00 & 0.21 & \textbf{0.61} & 0.22 & 0.49 & 0.28 & 0.21 & 0.52 & 0.36 & 0.54 \\
-Kennedy SC   & 0.41 & 0.40 & \textbf{0.54} & 0.32 & 0.25 & 0.34 & 0.20 & 0.17 & 0.11 & 0.27 & 0.26 & 0.51 & 0.31 & 0.43 & 0.29 & 0.21 & 0.28 & 0.25 & 0.52 \\
-Botswana     & 0.42 & 0.40 & 0.52 & 0.36 & 0.41 & 0.27 & 0.36 & \textbf{0.56} & 0.16 & 0.16 & 0.32 & 0.46 & 0.21 & 0.44 & 0.25 & 0.19 & 0.47 & 0.21 & 0.47 \\
+Kennedy SC   & 0.41 & 0.40 & \textbf{0.54} & 0.32 & 0.25 & 0.34 & 0.20 & 0.17 & 0.11 & 0.17 & 0.22 & 0.51 & 0.31 & 0.43 & 0.29 & 0.21 & 0.28 & 0.25 & 0.52 \\
+Botswana     & 0.42 & 0.40 & 0.52 & 0.35 & 0.20 & 0.24 & 0.17 & \textbf{0.56} & 0.13 & 0.17 & 0.32 & 0.46 & 0.21 & 0.44 & 0.25 & 0.19 & 0.47 & 0.21 & 0.47 \\
 \midrule
-mean         & 0.45 & 0.45 & 0.52 & 0.35 & 0.32 & 0.32 & 0.23 & 0.46 & 0.12 & 0.20 & 0.30 & \textbf{0.53} & 0.31 & 0.46 & 0.31 & 0.22 & 0.43 & 0.29 & 0.52 \\
+mean         & 0.45 & 0.45 & 0.52 & 0.35 & 0.30 & 0.32 & 0.20 & 0.46 & 0.12 & 0.15 & 0.29 & \textbf{0.53} & 0.31 & 0.46 & 0.31 & 0.22 & 0.43 & 0.29 & 0.52 \\
 \bottomrule
 \end{tabular}
 \end{table*}

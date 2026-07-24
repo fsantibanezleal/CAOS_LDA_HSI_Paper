@@ -139,8 +139,8 @@ def main() -> int:
     )
     fig.text(
         0.01, 0.005,
-        "Indian Pines: V20 wins F-1 (0.858), F-2 (0.88) and F-7 (0.44) — "
-        "first triple-axis win in the sweep. "
+        "Indian Pines: V20 wins F-2 (0.88) and F-7 (0.44); F-1 is a tie "
+        "(V2 0.861 vs V20 0.858). "
         "F-7 mean ranking: V12 0.534 / V3 0.524 / V20 0.520 (within 0.014 NMI of each other). "
         "Source: data/derived/v_sweep/{f1_per_fold,f2_coherence,f7_topic_to_label}/ in CAOS_LDA_HSI.",
         fontsize=8, color="#475569", ha="left",

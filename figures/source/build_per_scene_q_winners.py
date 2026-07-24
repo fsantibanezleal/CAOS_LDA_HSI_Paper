@@ -99,7 +99,7 @@ def main() -> int:
     )
     fig.text(
         0.5, 0.98,
-        "Colour = recipe family from the wordification taxonomy. V20 (purple) emerges at Q=32 on Indian Pines, Salinas, Salinas-A, Pavia U, Botswana.",
+        "Colour = recipe family from the wordification taxonomy. V20 (purple) emerges at Q=32 on Salinas-A, Pavia U, KSC, Botswana.",
         ha="center", fontsize=9, color="#475569", style="italic",
     )
 
