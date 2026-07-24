@@ -1,5 +1,5 @@
 % ---------------------------------------------------------------------
-% CAOS_LDA_HSI journal manuscript #3 — preprint (target venue redacted)
+% CAOS_LDA_HSI journal manuscript #4 — preprint (target venue redacted)
 %
 % Title  : Which Backbone Picks Which Wordification? A Factorial Study
 %          of Topic-Model Families on Hyperspectral Imagery
@@ -37,7 +37,7 @@ Topic-Model Families on Hyperspectral Imagery}
     programme, Santiago, Chile
     (e-mail: \texttt{fsantibanezleal@ug.uchile.cl};
     ORCID: 0000-0002-0150-3246).}%
-  \thanks{Preprint, 2026. Third manuscript in the CAOS\_LDA\_HSI
+  \thanks{Preprint, 2026. Fourth manuscript in the CAOS\_LDA\_HSI
     programme. Companion papers: \emph{Beyond Accuracy} (P1, twelve-axis
     framework) and \emph{Which Wordification Matters?} (P3, 19-recipe
     sweep under fixed LDA backbone). Code and derived artefacts at
@@ -74,8 +74,8 @@ triplets); ProdLDA with its logistic-normal prior picks V3 (joint
 that quantifies how each recipe transfers across backbones, identify
 three robust backbone--recipe pairings, and recommend reporting the
 $(\text{backbone}, \text{wordification})$ pair as a single hyper-decision
-in any future LDA-on-HSI work. LDVAE-T is the fifth proposed backbone
-but is parked pending public code.
+in any future LDA-on-HSI work. LDVAE-T, a Dirichlet-prior unmixing VAE,
+is a candidate fifth backbone but is parked pending public code.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -168,8 +168,8 @@ the practical canonical too.
     logistic-normal backbones favour large-vocabulary recipes (V3).
   \item A per-recipe \emph{affinity score} \eqref{eq:affinity} that
     measures how a recipe transfers across the four backbones,
-    identifying V12 / V20 (tied at the top of the coherence affinity
-    ranking) and V13 (consistently at the per-backbone minimum) as the
+    identifying V12 (top of the coherence affinity ranking, V20 second)
+    and V13 (lowest affinity, at or near the per-backbone minimum) as the
     extremes.
   \item A revised practical recommendation: the
     $(\text{backbone}, \text{wordification})$ pair is a single
@@ -237,8 +237,8 @@ backbone from scratch. For each cell we report:
 \end{itemize}
 
 All recipes share the per-row min--max normalisation and uniform
-quantiser of \eqref{eq:quantiser}; the four recipes that dominate the
-factorial are V1 (band-frequency, \eqref{eq:v1}), V3 (joint band--bin,
+quantiser of \eqref{eq:quantiser}; the five recipes with dedicated
+equations are V1 (band-frequency, \eqref{eq:v1}), V3 (joint band--bin,
 \eqref{eq:v3}), V8 (NFINDR endmember-fraction, \eqref{eq:v8}), V12
 (GMM-token, \eqref{eq:v12}) and V20 (MI-weighted bands, \eqref{eq:v20}).
 
@@ -270,8 +270,8 @@ now cover V1..V15, V17..V20).}
 \toprule
 Backbone & V1 & V2 & V3 & V4 & V5 & V6 & V7 & V8 & V9 & V10 & V11 & V12 & V13 & V14 & V15 & V17 & V18 & V19 & V20 & best \\
 \midrule
-LDA      & 0.64 & 0.44 & 0.84 & 0.45 & 0.43 & 0.53 & 0.29 & 0.32 & 0.71 & 0.33 & 0.23 & \textbf{0.88} & 0.25 & 0.63 & 0.36 & 0.42 & 0.57 & 0.38 & 0.88 & V12 \\
-HDP      & 0.54 & 0.44 & 0.31 & 0.44 & 0.44 & 0.32 & \textbf{0.61} & 0.31 & 0.35 & 0.35 & 0.50 & 0.34 & 0.31 & 0.31 & 0.39 & 0.59 & 0.42 & 0.50 & 0.41 & V7 \\
+LDA      & 0.64 & 0.44 & 0.84 & 0.45 & 0.43 & 0.53 & 0.29 & 0.32 & 0.71 & 0.33 & 0.23 & \textbf{0.88} & 0.25 & 0.63 & 0.36 & 0.42 & 0.57 & 0.38 & 0.85 & V12 \\
+HDP      & 0.54 & 0.44 & 0.31 & 0.44 & 0.44 & 0.32 & \textbf{0.61} & 0.31 & 0.35 & 0.35 & 0.50 & 0.34 & 0.31 & 0.31 & 0.52 & 0.59 & 0.42 & 0.50 & 0.41 & V7 \\
 ProdLDA  & 0.75 & 0.44 & \textbf{0.86} & 0.43 & 0.43 & 0.53 & 0.51 & 0.31 & 0.73 & 0.33 & 0.34 & 0.83 & 0.25 & 0.47 & 0.37 & 0.42 & 0.48 & 0.37 & 0.74 & V3 \\
 ETM      & 0.66 & 0.44 & 0.79 & 0.43 & 0.44 & 0.55 & 0.26 & 0.31 & 0.73 & 0.32 & 0.24 & \textbf{0.82} & 0.25 & 0.62 & 0.36 & 0.43 & 0.58 & 0.35 & 0.77 & V12 \\
 \bottomrule
@@ -285,7 +285,7 @@ in every backbone except HDP (where the stick-breaking prior favours
 sparse-event recipes — V7 for absorption triplets, V17 for sparse-
 coding dictionary atoms, V15 for spectral indices). Under LDA / ETM
 V12 wins; under ProdLDA V3 wins; V20 trails the per-backbone winner
-by 0.05 $c_v$ on average. The cross-backbone affinity ranking below
+by about 0.06 $c_v$ on average (excluding HDP). The cross-backbone affinity ranking below
 quantifies this.
 
 \begin{figure}[!t]
@@ -325,21 +325,21 @@ then averaged).}
 Recipe & $\mathcal{A}$ \\
 \midrule
 V12  & 0.76 \\
-V20  & 0.76 \\
+V20  & 0.75 \\
 V1   & 0.74 \\
 V3   & 0.73 \\
-V9   & 0.63 \\
-V18  & 0.47 \\
-V17  & 0.46 \\
-V14  & 0.42 \\
-V7   & 0.39 \\
-V6   & 0.38 \\
-V2   & 0.36 \\
+V9   & 0.64 \\
+V18  & 0.46 \\
+V17  & 0.45 \\
+V14  & 0.41 \\
+V7   & 0.38 \\
+V6   & 0.37 \\
 V4   & 0.35 \\
-V5   & 0.35 \\
-V19  & 0.32 \\
-V15  & 0.22 \\
-V11  & 0.20 \\
+V2   & 0.34 \\
+V5   & 0.34 \\
+V15  & 0.32 \\
+V19  & 0.30 \\
+V11  & 0.19 \\
 V10  & 0.14 \\
 V8   & 0.09 \\
 V13  & 0.01 \\
@@ -347,16 +347,16 @@ V13  & 0.01 \\
 \end{tabular}
 \end{table}
 
-\textbf{V12 and V20 tie for the highest cross-backbone affinity}
-($\mathcal{A} = 0.76$), with V1 ($0.74$) and V3 ($0.73$) close behind:
-all four sit near the per-backbone top under every prior. V20 is the
+\textbf{V12 has the highest cross-backbone affinity}
+($\mathcal{A} = 0.76$), with V20 ($0.75$), V1 ($0.74$) and V3 ($0.73$)
+close behind: all four sit near the per-backbone top under every prior. V20 is the
 only \emph{label-aware} recipe in this leading group, making it the
 most cross-backbone-portable label-aware recipe in the sweep and a
 near-replacement for V12 / V3 when label information is available.
 V3, although it only wins coherence outright under ProdLDA, remains a
 top-4 affinity recipe because it is consistently strong everywhere
 except HDP. \textbf{V13 (learned VQ-VAE) has the lowest affinity}
-($\mathcal{A} = 0.01$), scoring at the per-backbone minimum across all
+($\mathcal{A} = 0.01$), at or near the per-backbone minimum in all
 four: the reconstruction-optimal VQ-VAE codebook does not align with
 any of the four backbones' priors. Note that V8 scores low here
 ($0.09$) on \emph{coherence} affinity specifically --- it is a
@@ -367,9 +367,9 @@ $c_v$; the F-7 factorial below ranks it very differently.
 \centering
 \includegraphics[width=\columnwidth]{p4-affinity-bars.pdf}
 \caption{Cross-backbone affinity $\mathcal{A}(V_i)$ \eqref{eq:affinity}
-per recipe (Table~\ref{tab:affinity}). V12 and V20 tie at the top
-($0.76$); V13 sits at the per-backbone minimum ($0.01$). V20 is the
-only label-aware recipe in the leading group.}
+per recipe (Table~\ref{tab:affinity}). V12 tops the ranking ($0.76$),
+V20 second ($0.75$); V13 has the lowest affinity ($0.01$), at or near
+the per-backbone minimum. V20 is the only label-aware recipe in the leading group.}
 \label{fig:affinity-bars}
 \end{figure}
 
@@ -420,11 +420,12 @@ V1  (band-frequency)        & 0.455 & 0.081 & 0.091 & 0.381 & 0.252 \\
 The F-7 backbone factorial reveals \emph{three distinct cross-backbone
 families}:
 
-\paragraph{Family 1 — consistently strong.} V8, V20, V2. Top-5 under
-every backbone, smallest cross-backbone standard deviation
-($\sigma \le 0.07$). V8 is the leader at mean $0.431$ but wins
-outright only under ProdLDA. V20 is the unique label-aware recipe in
-this family.
+\paragraph{Family 1 — consistently strong.} V8, V20, V2. V8 is top-5
+under every backbone with the smallest cross-backbone standard
+deviation ($\sigma = 0.06$) and leads at mean $0.431$ (winning outright
+only under ProdLDA). V20 and V2 are strong on average but less
+cross-backbone-consistent (V20 $\sigma = 0.12$, ranking 6th under HDP;
+V2 7th under LDA and HDP); V20 is the unique label-aware recipe here.
 
 \paragraph{Family 2 — backbone-specialist.} V11 (product quantisation)
 wins HDP ($0.571$) and ETM ($0.530$) but collapses to $0.292$ under
@@ -484,8 +485,8 @@ consider with no spatial or learned structure --- and it wins ProdLDA.
 \includegraphics[width=0.95\textwidth]{p4-backbone-scene-winners.pdf}
 \caption{Per-scene F-7 NMI winner under each backbone. Tile colour
 encodes the winning recipe's family from the wordification taxonomy.
-HDP is dominated by V11 (5/6 scenes, including V19 on Salinas — both
-learnt-unsupervised codebook family); ETM also picks V11 on 4/6
+HDP's top winner is V11 (4/6 scenes; V13 on Indian Pines, V19 (manifold
+family) on Salinas); ETM also picks V11 on 3/6
 scenes. LDA has the most diverse per-scene winners. ProdLDA favours
 V8 / V12 / V2 — the absorption / intensity-bin family.}
 \label{fig:per-scene-backbone-winners}
@@ -564,9 +565,12 @@ We make three recommendations:
 % =====================================================================
 
 \begin{itemize}
-  \item LDVAE-T (Giannetti \& Qureshi 2025) was the fifth proposed
-    backbone; no public code at the time of writing. When code
-    becomes available, the LDVAE-T row should be added.
+  \item LDVAE-T~\cite{giannetti2025ldvaet}, a spectral-unmixing VAE with
+    a Dirichlet-prior latent (an abundance/endmember model, not an
+    off-the-shelf topic-model classification backbone), was considered as
+    a candidate fifth backbone but has no public code at the time of
+    writing; adapting it to the wordification factorial and adding its row
+    is left to future work.
   \item F-1 (Bayesian classification) is only run under LDA. Running
     F-1 under HDP / ProdLDA / ETM requires extending the topic-routed
     classifier pipeline to each backbone, deferred.
