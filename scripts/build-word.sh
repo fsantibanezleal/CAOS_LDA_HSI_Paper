@@ -17,10 +17,15 @@ for variant in conference journal journal_v_sweep journal_backbone_factorial jou
     mkdir -p "$out_dir"
     (
         cd "$repo/$variant/tex"
-        pandoc -s "main.tex" \
-            --bibliography "../../bibliography/refs.bib" \
+        # companion.bib holds the citations of the companion papers of the series
+        bibs=(--bibliography "../../bibliography/refs.bib")
+        [ -f companion.bib ] && bibs+=(--bibliography "companion.bib")
+        # pandoc cannot parse the preamble's \abstract / \IEEEkeywords redefinitions
+        python "$repo/scripts/word_source.py" main.tex > /dev/null
+        pandoc -s "main.pandoc.tex" "${bibs[@]}" \
             --citeproc \
             -o "$out_dir/main.docx"
+        rm -f main.pandoc.tex
         echo "wrote $out_dir/main.docx"
     )
 done

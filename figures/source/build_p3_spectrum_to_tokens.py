@@ -1,4 +1,4 @@
-"""P3 methods schematic — how ONE pixel spectrum becomes tokens.
+"""P3 methods schematic: how ONE pixel spectrum becomes tokens.
 
 A 4-panel "spectrum -> token bag" figure that makes the wordification
 abstraction concrete. The left of every panel shows the SAME real
@@ -9,10 +9,13 @@ four representative recipes produces from that one spectrum:
   V1  band-frequency        token = band id, count = quantised intensity
                             (one emission per band; weight = bin value)
   V8  NFINDR endmember      NFINDR(K) + NNLS unmix -> K abundance
-       fractions             fractions, each quantised into a bin
-  V12 GMM responsibilities  a 1-D GMM(Q) over intensities; every band's
-                            value is assigned a component g -> (band,g)
-  V20 MI-weighted bands     V1 (band,bin) joints, but each band emits
+       fractions             fractions; token = endmember id, count =
+                            abundance / max abundance quantised to Q levels
+  V12 GMM component tokens  one 1-D GMM(Q) fitted to the raw band
+                            intensities of all sampled pixels; every band
+                            value takes its most probable component g
+                            -> (band, g)
+  V20 MI-weighted bands     V3 (band,bin) joints, but each band emits
                             round(MI_b/maxMI * 8) copies; low-MI bands
                             fall silent.
 
@@ -20,22 +23,15 @@ The four recipes are intentionally one-per-family (pure-spectral,
 chemistry-aware, learnt-codebook, label-aware) so the panel doubles as
 a tour of the P3 design axes.
 
-Data provenance — everything here is computed live from authoritative
-derived artifacts, no hand-typed numbers:
-  - the pixel spectrum + its V1 quantised levels come from
-    data/derived/real/real_samples.json (example_documents).
-  - the V8 endmembers are the real NFINDR fit from
-    data/derived/endmember_baseline/indian-pines-corrected.json,
-    unmixed with the same scipy NNLS + sum-to-one penalty the pipeline
-    uses (build_wordifications_v6plus.py).
-  - V12 fits sklearn GaussianMixture(Q) on this pixel's intensities,
-    matching wordify_v12_gmm.
-  - V20 computes per-band MI against the 16 Indian-Pines class means
-    (a faithful stand-in for the corpus-level mutual_info_classif the
-    builder runs over the full stratified sample) and re-weights V1
-    exactly as build_wordifications_v20.py does.
+Data provenance: the panel draws one stored document of the V-sweep
+corpus, data/p3_example_document.json, extracted by recomputing the
+stratified sample of build_wordifications_v6plus.build_for_scene
+(220 pixels per class, random_state 42) and reading that document's
+stored Q = 8 uniform doc-term rows for V1, V8, V12 and V20. Its V8
+abundances are recomputed with the pipeline's delta-augmented NNLS
+against the stored NFINDR endmembers. No token is recomputed here.
 
-If the real artifacts cannot be loaded the panel falls back to a clearly
+If the document file cannot be loaded the panel falls back to a clearly
 labelled 'illustrative' synthetic spectrum.
 
 Output: figures/p3-spectrum-to-tokens.{pdf,png}  (png at 180 dpi)
@@ -60,7 +56,7 @@ ENDMEMBER_JSON = (
     HSI_ROOT / "data" / "derived" / "endmember_baseline"
     / "indian-pines-corrected.json"
 )
-# Authoritative V20 doc-term matrix — its per-band copy multiplicity is the
+# Authoritative V20 doc-term matrix: its per-band copy multiplicity is the
 # real corpus-level MI weighting (mutual_info_classif over the full
 # stratified sample) baked in by build_wordifications_v20.py.
 V20_DOCTERM = (
@@ -68,6 +64,8 @@ V20_DOCTERM = (
     / "indian-pines-corrected" / "doc_term.npz"
 )
 OUT_DIR = REPO_ROOT / "figures"
+# One stored document of the V-sweep corpus (see the module docstring).
+EXAMPLE_DOCUMENT = Path(__file__).resolve().parent / "data" / "p3_example_document.json"
 
 SCENE_ID = "indian-pines-corrected"
 PIXEL_CLASS = "Soybean-notill"   # a mixed agricultural pixel -> non-trivial bags
@@ -87,6 +85,27 @@ C_ARROW = "#94a3b8"
 # --------------------------------------------------------------------------
 # data loading
 # --------------------------------------------------------------------------
+def load_stored_document() -> dict | None:
+    """Return the stored V-sweep document drawn by the figure, or None."""
+    if not EXAMPLE_DOCUMENT.exists():
+        return None
+    with EXAMPLE_DOCUMENT.open(encoding="utf-8") as h:
+        doc = json.load(h)
+    return {
+        "wavelengths": np.asarray(doc["wavelengths"], dtype=float),
+        "spectrum01": np.asarray(doc["spectrum01"], dtype=float),
+        "class_name": doc["class_name"],
+        "row_col": doc["row_col"],
+        "v1_counts": np.asarray(doc["v1_counts"], dtype=int),
+        "v8_abundance": np.asarray(doc["v8_abundance"], dtype=float),
+        "v8_counts": np.asarray(doc["v8_counts"], dtype=int),
+        "v12_component": np.asarray(doc["v12_component"], dtype=int),
+        "v20_copies": np.asarray(doc["v20_copies"], dtype=int),
+        "v20_bin": np.asarray(doc["v20_bin"], dtype=int),
+        "illustrative": False,
+    }
+
+
 def load_real_pixel() -> dict | None:
     """Return {wavelengths, spectrum01, class_name, quantized_levels,
     endmembers01 (K,B), class_means01 (C,B), illustrative=False} or None."""
@@ -278,13 +297,21 @@ def render(data: dict) -> None:
     spec = data["spectrum01"]
     B = spec.size
 
-    # --- compute the four tokenisations ---
-    v1 = v1_tokens(spec)
-    v8 = v8_abundances(spec, data["endmembers01"])
-    v12_comp, v12_means = v12_components(spec)
-    v20w = v20_weights(data)
-    # v20 token = (band, bin) with copies = v20w; needs same V1 bins
-    v1_bins = v1  # identical quantiser
+    # --- the four tokenisations: stored rows, or the illustrative fallback ---
+    if "v1_counts" in data:
+        v1 = data["v1_counts"]
+        v8 = data["v8_abundance"]
+        v8_counts = data["v8_counts"]
+        v12_comp = data["v12_component"]
+        v20w = data["v20_copies"]
+        v20_bin = data["v20_bin"]
+    else:
+        v1 = v1_tokens(spec)
+        v8 = v8_abundances(spec, data["endmembers01"])
+        v8_counts = np.clip(np.floor(v8 / max(v8.max(), 1e-12) * Q), 0, Q - 1).astype(int)
+        v12_comp, _ = v12_components(spec)
+        v20w = v20_weights(data)
+        v20_bin = v1  # V20 uses V3's bins, the same quantiser as V1
 
     fig = plt.figure(figsize=(15.5, 9.2))
     gs = GridSpec(
@@ -295,20 +322,23 @@ def render(data: dict) -> None:
 
     # ---- title block ----
     illus = data["illustrative"]
-    src = (
-        "illustrative synthetic spectrum"
-        if illus else
-        f"real {data['class_name']} pixel — Indian Pines (200 bands, 400-2500 nm)"
-    )
+    if illus:
+        src = "illustrative synthetic spectrum"
+    elif "row_col" in data:
+        r, c = data["row_col"]
+        src = (f"stored document of a sampled {data['class_name']} pixel of Indian Pines "
+               f"(row {r}, column {c}; {B} bands, 400-2500 nm)")
+    else:
+        src = f"real {data['class_name']} pixel from Indian Pines ({B} bands, 400-2500 nm)"
     fig.text(0.5, 0.965,
-             "One spectrum, four token bags — the wordification step of LDA-on-HSI",
+             "One spectrum, four token bags: the wordification step of LDA-on-HSI",
              ha="center", fontsize=15.5, fontweight="bold", color="#0f172a")
     fig.text(0.5, 0.93,
              f"The identical pixel spectrum (left of each row) is turned into a "
              f"bag-of-tokens by four recipes, one per design family.   Source: {src}.",
              ha="center", fontsize=9.5, color="#475569", style="italic")
     if illus:
-        fig.text(0.5, 0.905, "ILLUSTRATIVE — real derived artifacts were not loadable",
+        fig.text(0.5, 0.905, "ILLUSTRATIVE: real derived artifacts were not loadable",
                  ha="center", fontsize=9, color="#b91c1c", fontweight="bold")
 
     # ============================ V1 ============================
@@ -336,9 +366,8 @@ def render(data: dict) -> None:
                  xycoords="axes fraction",
                  arrowprops=dict(arrowstyle="-|>", color=C_ARROW, lw=1.8))
     axR.text(0.02, 0.18,
-             "Every band fires once; its weight is the bin height. "
-             "Canonical Procemin-2022 baseline — the reference all other "
-             "recipes are scored against.",
+             f"Each band token is repeated as often as its intensity bin; this document has "
+             f"{int(np.sum(v1))} tokens. The Procemin 2022 band-frequency recipe, the canonical baseline.",
              fontsize=7.4, color="#64748b", style="italic")
 
     # ============================ V8 ============================
@@ -349,41 +378,40 @@ def render(data: dict) -> None:
     axR.set_xlim(0, 1); axR.set_ylim(0, 1)
     K = v8.size
     axR.text(0.0, 0.92,
-             f"NFINDR extracts K={K} endmembers; NNLS unmix -> abundance "
-             "fractions; each fraction quantised.   token = endmember id",
+             f"NFINDR gives K={K} endmembers; NNLS unmixing gives abundance fractions.   "
+             "token = endmember id, count = abundance / max abundance in Q bins",
              fontsize=8.2, color="#334155")
-    # tiny abundance bar strip, then chips for the non-trivial endmembers
+    # tiny abundance bar strip, then chips for the endmembers that emit tokens
     order = np.argsort(v8)[::-1]
-    keep = [int(k) for k in order if v8[k] > 0.02][:6]
+    keep = [int(k) for k in order if v8_counts[k] > 0][:6]
     bw = 0.92 / K
     for k in range(K):
         h = 0.26 * (v8[k] / max(v8.max(), 1e-9))
         axR.add_patch(mpatches.Rectangle(
             (0.04 + k * bw, 0.56), bw * 0.8, max(h, 0.004),
             facecolor=C_V8, edgecolor="white", linewidth=0.5,
-            alpha=0.55 + 0.45 * (v8[k] > 0.02)))
-    axR.text(0.04, 0.84, "abundance simplex (sum=1)", fontsize=6.8,
+            alpha=0.55 + 0.45 * (v8_counts[k] > 0)))
+    axR.text(0.04, 0.84, "abundance fractions (sum = 1)", fontsize=6.8,
              color="#64748b")
     cw, ch, gap = 0.135, 0.20, 0.018
     for i, k in enumerate(keep):
         x = 0.02 + i * (cw + gap)
-        binq = int(np.clip(np.floor(v8[k] / max(v8.max(), 1e-9) * Q), 0, Q - 1))
         draw_token_chip(axR, x, 0.20, cw, ch,
-                        f"em{k:02d}_q{binq:02d}", C_V8, fs=6.6)
+                        f"em{k:02d}", C_V8, count=int(v8_counts[k]), fs=6.6)
     axR.text(0.02, 0.03,
-             f"Only {len(keep)} of {K} endmembers carry weight in this pixel — "
-             "the bag is short and chemistry-anchored.",
+             f"{len(keep)} of {K} endmembers emit tokens in this pixel "
+             f"({int(np.sum(v8_counts))} tokens): the bag is short and chemistry-anchored.",
              fontsize=7.4, color="#64748b", style="italic")
 
     # ============================ V12 ===========================
     axL = fig.add_subplot(gs[2, 0])
     panel_spectrum(axL, data, C_V12,
-                   title="V12 · GMM responsibilities  (learnt codebook)")
+                   title="V12 · GMM component tokens  (learnt codebook)")
     axR = fig.add_subplot(gs[2, 1]); axR.axis("off")
     axR.set_xlim(0, 1); axR.set_ylim(0, 1)
     axR.text(0.0, 0.92,
-             f"a 1-D GMM(Q={Q}) is fit on the intensities; each band's value is "
-             "assigned a component g.   token = (band, component) joint",
+             f"one 1-D GMM (Q={Q}) fitted to the raw band intensities of all sampled pixels; each band value "
+             "takes its most probable component g.   token = (band, g)",
              fontsize=8.2, color="#334155")
     # histogram of component assignments
     comp_counts = np.bincount(v12_comp, minlength=Q)
@@ -405,8 +433,8 @@ def render(data: dict) -> None:
         draw_token_chip(axR, x, 0.20, cw, ch,
                         f"b{b:03d}_g{int(v12_comp[b])}", C_V12, fs=6.6)
     axR.text(0.02, 0.03,
-             "Bins are data-driven (EM-fit means) rather than equi-spaced — "
-             "this is V12's only change versus V3's fixed alphabet.",
+             "The components are shared by all pixels and follow the intensity distribution; "
+             "V3 instead splits each spectrum's own min-max range into Q equal bins.",
              fontsize=7.4, color="#64748b", style="italic")
 
     # ============================ V20 ===========================
@@ -419,7 +447,7 @@ def render(data: dict) -> None:
     axR.set_xlim(0, 1); axR.set_ylim(0, 1)
     n_zero = int((v20w == 0).sum())
     axR.text(0.0, 0.92,
-             "V1 (band,bin) joints, but band b emits round(MI_b/maxMI × 8) "
+             "V3 (band,bin) joints, but band b emits round(MI_b/maxMI × 8) "
              f"copies.   {n_zero} of {B} bands fall silent (MI≈0).",
              fontsize=8.2, color="#334155")
     # MI weight profile across bands
@@ -436,21 +464,20 @@ def render(data: dict) -> None:
     for i, b in enumerate(top_mi):
         x = 0.02 + i * (cw + gap)
         draw_token_chip(axR, x, 0.145, cw, ch,
-                        f"miw_b{b:03d}_q{int(v1_bins[b]):02d}", C_V20,
+                        f"miw_b{b:03d}_q{int(v20_bin[b]):02d}", C_V20,
                         count=int(v20w[b]), fs=6.0)
     axR.text(0.02, 0.03,
-             "Discriminative bands dominate the bag; uninformative ones vanish. "
-             "The only label-aware recipe in the sweep — P3's headline winner.",
+             f"Copies run from 0 to 8 (mean {np.mean(v20w):.1f}): low-MI bands are down-weighted and "
+             f"{int((np.asarray(v20w) == 0).sum())} band is silent. The only label-aware recipe in the sweep.",
              fontsize=7.4, color="#64748b", style="italic")
 
     # footer
     fig.text(
         0.5, 0.022,
-        "All four bags come from the same pixel. V1/V20 keep the band grid; "
-        "V8 collapses to a chemistry simplex; V12 swaps equi-spaced bins for "
-        "EM-learnt ones; V20 re-weights by label mutual information. "
-        "Tokens & weights computed live from the Indian-Pines derived artifacts "
-        "(real_samples.json + NFINDR endmember_baseline).",
+        "All four bags come from the same pixel. V1 and V20 keep the band grid; "
+        "V8 collapses to the endmember simplex; V12 replaces per-spectrum equal bins with a mixture "
+        "fitted to all sampled pixels; V20 re-weights by label mutual information. "
+        "Tokens are the stored Q = 8 documents of this pixel in the V-sweep corpus.",
         ha="center", fontsize=7.6, color="#475569",
     )
 
@@ -463,12 +490,14 @@ def render(data: dict) -> None:
 
 
 def main() -> int:
-    data = load_real_pixel()
+    data = load_stored_document()
     if data is None:
+        data = load_real_pixel()
+    if data is None or ("v1_counts" not in data and data.get("endmembers01") is None):
         data = synthetic_pixel()
     print(
         f"  pixel: {data['class_name']} | B={data['spectrum01'].size} | "
-        f"endmembers={'yes' if data['endmembers01'] is not None else 'no'} | "
+        f"stored document={'yes' if 'v1_counts' in data else 'no'} | "
         f"illustrative={data['illustrative']}",
         flush=True,
     )

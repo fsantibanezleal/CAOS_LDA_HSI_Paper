@@ -1,4 +1,4 @@
-"""P4 figure — cross-backbone affinity score A(V_i) for all 19 recipes.
+"""P4 figure: cross-backbone affinity score A(V_i) for all 19 recipes.
 
 Implements eq:affinity exactly:
 
@@ -173,7 +173,7 @@ def main() -> int:
     fig.text(
         0.012, 0.005,
         "Source: data/derived/v_sweep/{f2_coherence,hdp_backbone,prodlda_backbone,etm_backbone}/ in CAOS_LDA_HSI. "
-        f"eq:affinity. Leader {top_recipe} (A={affinity[top_recipe]:.3f}); "
+        f"Leader {top_recipe} (A={affinity[top_recipe]:.3f}); "
         f"V20 ranks #{ranked.index('V20') + 1} (A={affinity['V20']:.3f}). "
         "19 recipes (V16 undefined). All backbones fully covered at Q=8.",
         fontsize=7.0, color="#475569", ha="left",

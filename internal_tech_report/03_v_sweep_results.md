@@ -195,6 +195,13 @@ Spread (best - worst) = 0.0085. Every recipe's HDI94 contains every
 other recipe's posterior mean. **On F-1 alone the recipes are
 statistically indistinguishable.**
 
+> Correction (P3 v1.3, 2026-09-18): these unpaired intervals include the spread between
+> scenes. Paired over the 30 (scene, fold) cells, V12 exceeds each other recipe by 0.004 to
+> 0.009 macro-F1 and the 94% interval excludes zero for every recipe except V2
+> (`scripts/f1_paired_bootstrap.py`). The F-1 differences are consistent but below 0.01; the
+> recipes are not statistically indistinguishable. The NUTS location below (about +0.40) is
+> not identified separately from the scene offsets and is not an F-1 level.
+
 ### PyMC NUTS posterior (populated c374)
 
 NUTS finished after ~7h on Windows with rhat > 1.01 warnings on some

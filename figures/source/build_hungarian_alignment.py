@@ -123,7 +123,7 @@ def main() -> int:
         "pixels", fontsize=9)
 
     fig.suptitle(
-        f"Hungarian alignment on Salinas-A (SWIR mask) — "
+        f"Hungarian alignment on Salinas-A (SWIR mask): "
         f"paired ARI = {paired_ari:.3f}, swap rate = {swap_rate:.3f}, "
         f"n = {canon_v.shape[0]} px",
         fontsize=10, y=1.02,

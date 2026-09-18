@@ -1,4 +1,4 @@
-"""P3 per-recipe radar charts — top contenders V1/V3/V12/V14/V18/V20.
+"""P3 per-recipe radar charts: top contenders V1/V3/V12/V14/V18/V20.
 
 Each radar shows the same 8 axes normalised to [0, 1] over the
 recipe-level means. F-14 jaccard is inverted so all axes are "higher
@@ -115,9 +115,11 @@ def main() -> int:
     angles += angles[:1]
     axis_labels = [a[0] for a in AXES]
 
+    # Wide column spacing keeps the F-1 label of one radar clear of the F-18 label of the next
     fig, axes = plt.subplots(
-        2, 3, figsize=(14, 9.5),
+        2, 3, figsize=(15, 10),
         subplot_kw={"projection": "polar"},
+        gridspec_kw={"wspace": 0.55, "hspace": 0.45},
     )
     for ax_idx, recipe in enumerate(FOCUS_RECIPES):
         ax = axes[ax_idx // 3, ax_idx % 3]
@@ -131,18 +133,19 @@ def main() -> int:
         ax.set_ylim(0, 1.02)
         ax.set_yticks([0.25, 0.5, 0.75, 1.0])
         ax.set_yticklabels(["", "0.5", "", "1.0"], fontsize=8)
+        # Padded above the top spoke label (F-7) so the title does not print over it
         ax.set_title(f"{recipe}", fontsize=13, fontweight="bold",
-                     color=colour, pad=12)
+                     color=colour, pad=26)
         ax.grid(alpha=0.3, linewidth=0.5)
 
     fig.suptitle(
-        "Per-recipe radar — 8 evaluation axes normalised to [0, 1] across 19 recipes\n"
+        "Per-recipe radar: 8 evaluation axes normalised to [0, 1] across 19 recipes\n"
         "(F-14 jaccard inverted so '1' always means 'best on this axis').",
         fontsize=12, fontweight="bold", y=1.005,
     )
     fig.text(
         0.5, 0.005,
-        "V20 (purple) and V12 (orange) cover the most surface area — they are top-tier on coherence + counterfactual robustness + ETM backbone. "
+        "V20 (purple) and V12 (orange) cover the most surface area: they are top-tier on coherence, counterfactual robustness and the ETM backbone. "
         "V18 (cyan) tops the F-18 reliability axis. V1 (grey) is mid-pack on most axes. V14 (green) is a balanced multi-scale alternative.",
         fontsize=8.5, color="#475569", ha="center",
     )
