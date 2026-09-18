@@ -26,7 +26,7 @@ SCENES = [
     "indian-pines-corrected", "salinas-corrected", "salinas-a-corrected",
     "pavia-university", "kennedy-space-center", "botswana",
 ]
-# All recipes (V13 excluded — Q-insensitive)
+# All recipes (V13 excluded: Q-insensitive)
 RECIPES = [
     "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10",
     "V11", "V12", "V14", "V15", "V17", "V18", "V19", "V20",
@@ -41,7 +41,7 @@ RECIPE_COLOURS = {
     "V20": "#9333ea",   # Bold purple (label-aware, biggest gain)
     "V2":  "#0ea5e9",   # Bold cyan (intensity-bin)
     "V8":  "#10b981",   # Bold green (NFINDR endmember)
-    "V6":  "#06b6d4",   # F-7 mono UP but F-2 mono DOWN — dotted
+    "V6":  "#06b6d4",   # F-7 mono UP but F-2 mono DOWN: dotted
 }
 NEUTRAL = "#cbd5e1"  # grey for non-mono-UP recipes
 
@@ -114,14 +114,15 @@ def main() -> int:
         ax.legend(loc="upper left", fontsize=9.5, frameon=False)
 
     fig.suptitle(
-        "Full 19-recipe Q-sensitivity — only V20/V2/V8 are monotonic ↑ on both axes",
+        "Full 19-recipe Q-sensitivity: only V20/V2/V8 increase monotonically on both axes",
         fontsize=13.5, fontweight="bold", y=1.0,
     )
+    # Category counts below were recounted from the plotted means (F-7 panel).
     fig.text(
         0.5, 0.005,
         "Three recipes climb monotonically on F-2 and F-7 across Q=8/16/32: V20 (purple ★, label-aware), V2 (cyan, intensity-bin), V8 (green, NFINDR endmember). "
-        "V6 (dashed cyan) climbs on F-7 only — F-2 regresses. V20 has the steepest gains and highest absolute values on both axes. "
-        "Eight recipes decline monotonically; six peak at Q=16 then regress.",
+        "V6 (dashed cyan) climbs on F-7 only; its F-2 declines. V20 has the largest F-2 gain of the three and the highest F-7 at Q=32. "
+        "Of the grey recipes on F-7, seven decline monotonically, four peak at Q=16 and three dip at Q=16.",
         ha="center", fontsize=8.5, color="#475569",
     )
 

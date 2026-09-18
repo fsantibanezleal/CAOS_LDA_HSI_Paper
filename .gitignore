@@ -80,3 +80,6 @@ figures/source/__pycache__/
 **/.venv*
 venv/
 **/venv/
+
+# Word export pre-pass (scripts/word_source.py), deleted after each export
+main.pandoc.tex

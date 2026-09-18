@@ -128,10 +128,10 @@ def main() -> int:
 
     fig.text(
         0.01, 0.005,
-        "Reading: F-2 / F-7 / F-22 / HDP / ProdLDA / ETM form a positively-correlated cluster — "
-        "recipes with strong topic-word coherence also produce label-aligned, robust topics under multiple backbones. "
-        "F-18 anti-correlates with F-2 (the vocabulary-size confounder Stammbach et al. flagged). "
-        "F-14 (inverted) correlates positively with F-1 / F-22 — diverse topics are more robust.",
+        "Reading: F-2, ProdLDA and ETM form the tightest positively correlated cluster (coherent topics stay "
+        "coherent under the neural backbones); F-22 correlates positively with F-7 (robust topics tend to be label-aligned). "
+        "The strongest anti-correlation is F-14 (inverted) with F-18, the vocabulary-size confounder. "
+        "HDP correlates only weakly with every other axis.",
         fontsize=7.5, color="#475569", ha="left",
     )
 

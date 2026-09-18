@@ -125,22 +125,24 @@ def main() -> int:
             ax.set_ylim(0, max(1.05, float(np.nanmax(arr)) + 0.08 if valid.any() else 1.0))
             ax.grid(axis="y", alpha=0.18, linewidth=0.5)
             if row_idx == 0:
-                ax.set_title(scene_short, fontsize=11, fontweight="bold")
+                # Padded so the two-line winner labels above the bars stay below the title
+                ax.set_title(scene_short, fontsize=11, fontweight="bold", pad=30)
             if col_idx == 0:
                 ax.set_ylabel(axis_label.split("(")[0].strip(), fontsize=10)
             ax.spines["top"].set_visible(False)
             ax.spines["right"].set_visible(False)
 
+    fig.subplots_adjust(top=0.84)
     fig.suptitle(
         "Wordification matters: per-axis winners on six labelled HSI scenes "
         "(V1..V15, V17..V20)\nGreen ★ = winner per cell; purple = V20 "
-        "(mutual-information-weighted bands, new)",
+        "(mutual-information-weighted bands)",
         fontsize=12, fontweight="bold", y=0.995,
     )
     fig.text(
         0.01, 0.005,
-        "Indian Pines: V20 wins F-2 (0.88) and F-7 (0.44); F-1 is a tie "
-        "(V2 0.861 vs V20 0.858). "
+        "Indian Pines: V20 wins F-2 (0.88) and F-7 (0.44); on F-1 V2 leads "
+        "(V2 0.861, V20 0.858). "
         "F-7 mean ranking: V12 0.534 / V3 0.524 / V20 0.520 (within 0.014 NMI of each other). "
         "Source: data/derived/v_sweep/{f1_per_fold,f2_coherence,f7_topic_to_label}/ in CAOS_LDA_HSI.",
         fontsize=8, color="#475569", ha="left",

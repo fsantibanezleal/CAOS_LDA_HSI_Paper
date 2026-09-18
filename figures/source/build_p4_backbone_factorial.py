@@ -1,4 +1,4 @@
-"""P4 / wiki figure — backbone × wordification factorial heatmap.
+"""P4 / wiki figure: backbone × wordification factorial heatmap.
 
 Reads F-2 c_v means from each of the four backbone directories under
 ``data/derived/v_sweep/`` and produces a publication-grade heatmap
@@ -93,7 +93,7 @@ def main() -> int:
                               fill=False, hatch="////",
                               edgecolor="#94a3b8", linewidth=0.4),
                 )
-                ax.text(c, r, "—", ha="center", va="center",
+                ax.text(c, r, "–", ha="center", va="center",
                         fontsize=8.5, color="#64748b")
                 continue
             colour_text = "white" if v < 0.55 else "#0f172a"
@@ -116,11 +116,13 @@ def main() -> int:
     ax.set_xticklabels(RECIPES, fontsize=9, rotation=0)
     ax.set_yticks(np.arange(len(BACKBONES)))
     ax.set_yticklabels([b[0] for b in BACKBONES], fontsize=10)
+    legend_line = ("Green ★ = winner per row; V20 (MI-weighted, label-aware) in bold purple, "
+                   "yellow on dark cells")
+    if np.isnan(data).any():
+        legend_line += "; hatched = no value"
     ax.set_title(
-        "Backbone × wordification factorial — F-2 $c_v$ coherence "
-        "(mean across 6 labelled scenes)\n"
-        "Green ★ = winner per row; purple = V20 (MI-weighted, label-aware); "
-        "hatched = not yet run",
+        "Backbone × wordification factorial: F-2 $c_v$ coherence "
+        "(mean across 6 labelled scenes)\n" + legend_line,
         fontsize=11.5, pad=12,
     )
     ax.set_xlabel("Wordification recipe", fontsize=10)
@@ -130,11 +132,17 @@ def main() -> int:
     cb.set_label("F-2 $c_v$ mean", fontsize=9)
     cb.ax.tick_params(labelsize=8)
 
+    ranks = []
+    for r_idx, (name, _, _) in enumerate(BACKBONES):
+        row = data[r_idx]
+        if np.isnan(row[v20_idx]):
+            continue
+        rank = 1 + int(np.sum(row[~np.isnan(row)] > row[v20_idx]))
+        ranks.append(f"{name} {rank}")
     fig.text(
         0.01, 0.005,
         "Source: data/derived/v_sweep/{f2_coherence,hdp_backbone,prodlda_backbone,etm_backbone}/ in CAOS_LDA_HSI. "
-        "V20 places top-3 in LDA, ProdLDA, ETM; tied with V12/V3 on LDA. "
-        "HDP V13/V15/V17/V19 cells deferred to a future cycle.",
+        "Rank of V20 within each backbone row: " + ", ".join(ranks) + ".",
         fontsize=7.5, color="#475569", ha="left",
     )
 

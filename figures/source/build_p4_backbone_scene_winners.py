@@ -1,4 +1,4 @@
-"""P4 — per-scene × backbone F-7 winner grid.
+"""P4: per-scene × backbone F-7 winner grid.
 
 For each (backbone, scene) pair, identify which recipe produces the
 highest F-7 NMI. Tile the result as a 4 × 6 grid; each cell labels
@@ -74,7 +74,7 @@ def main() -> int:
     for bi, (bname, path_fn) in enumerate(BACKBONES):
         for si, (scene_id, _) in enumerate(SCENES):
             best_v = -1.0
-            best_r = "—"
+            best_r = "–"
             for r in RECIPES:
                 v = load_nmi(path_fn(scene_id, r))
                 if v is None:
@@ -106,7 +106,7 @@ def main() -> int:
             ax.text(si, bi - 0.05, str(winner), ha="center", va="center",
                     fontsize=14.5, fontweight="bold", color="white")
             ax.text(si, bi + 0.22,
-                    f"NMI = {nmi:.3f}" if not np.isnan(nmi) else "—",
+                    f"NMI = {nmi:.3f}" if not np.isnan(nmi) else "–",
                     ha="center", va="center", fontsize=8.5, color="white")
 
     # Scene labels above the grid (closer to cells)
@@ -120,12 +120,12 @@ def main() -> int:
     # Title above the scene labels
     fig.text(
         0.5, 1.02,
-        "Per-scene F-7 NMI winner under each backbone — 6 labelled scenes × 4 backbones",
+        "Per-scene F-7 NMI winner under each backbone: 6 labelled scenes × 4 backbones",
         ha="center", fontsize=13, fontweight="bold",
     )
     fig.text(
         0.5, 0.98,
-        "Colour = recipe family from the wordification taxonomy (cf. wordification-taxonomy.pdf)",
+        "Colour = recipe family of the wordification taxonomy",
         ha="center", fontsize=9.5, color="#475569", style="italic",
     )
 

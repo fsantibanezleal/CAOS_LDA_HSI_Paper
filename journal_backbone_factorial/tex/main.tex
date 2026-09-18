@@ -1,15 +1,13 @@
 % ---------------------------------------------------------------------
-% CAOS_LDA_HSI journal manuscript #4 — preprint (target venue redacted)
+% CAOS_LDA_HSI series, paper P4: preprint (target venue redacted)
 %
 % Title  : Which Backbone Picks Which Wordification? A Factorial Study
 %          of Topic-Model Families on Hyperspectral Imagery
 % Target : redacted while the preprint circulates
 % Class  : IEEEtran journal option
-% Status : PREPRINT v1.0 — populated with results from c378 (ProdLDA),
-%          c379 (ETM), c368 (HDP) over the V1..V20 design space, with
-%          the c423/c432-c436 sweep refresh and the canonical equation
-%          set \input from ../../equations/canonical.tex.
-%          LDVAE-T (fifth backbone) parked pending public code.
+% Scope  : LDA, HDP, ProdLDA and ETM over the V1..V20 design space; the
+%          canonical equation set is \input from
+%          ../../equations/canonical.tex.
 % ---------------------------------------------------------------------
 
 \documentclass[journal,a4paper,10pt]{IEEEtran}
@@ -17,6 +15,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{dsfont}% \mathds{1}: indicator function in the canonical equation set
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
@@ -28,6 +27,42 @@
 
 \graphicspath{{../../figures/}}
 
+% IEEEtran hard-codes an em-dash after the abstract and index-terms names; the CAOS
+% content standard (ADR-0067) excludes em-dashes, so the separator is a full stop.
+\makeatletter
+\def\abstract{\normalfont
+    \if@twocolumn
+      \@IEEEabskeysecsize\bfseries\textit{\abstractname}.\ \relax
+    \else
+      \bgroup\par\addvspace{0.5\baselineskip}\centering\vspace{-1.78ex}\@IEEEabskeysecsize\textbf{\abstractname}\par\addvspace{0.5\baselineskip}\egroup\quotation\@IEEEabskeysecsize
+    \fi\@IEEEgobbleleadPARNLSP}
+\def\IEEEkeywords{\normalfont
+    \if@twocolumn
+      \@IEEEabskeysecsize\bfseries\textit{\IEEEkeywordsname}.\ \relax
+    \else
+      \bgroup\par\addvspace{0.5\baselineskip}\centering\@IEEEabskeysecsize\textbf{\IEEEkeywordsname}\par\addvspace{0.5\baselineskip}\egroup\quotation\@IEEEabskeysecsize
+    \fi\@IEEEgobbleleadPARNLSP}
+\makeatother
+
+% Page-1 header block (conventions/manuscript-header-standard.md). The four document
+% macros are set by the publishing tool when the version DOI is reserved.
+\newcommand{\doctype}{Preprint}
+\newcommand{\docversion}{v1.4}
+\newcommand{\docdate}{18 September 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.22826861}
+\newcommand{\conceptdoi}{10.5281/zenodo.21504111}
+\newcommand{\docrepo}{github.com/fsantibanezleal/CAOS\_LDA\_HSI}
+\newcommand{\headerblock}{%
+\begin{center}
+\fbox{\parbox{0.94\textwidth}{\small\raggedright
+\textbf{\doctype} \quad$\cdot$\quad \docversion, \docdate \quad$\cdot$\quad Licence CC BY 4.0\\[2pt]
+CAOS open-research programme \quad$\cdot$\quad CAOS\_LDA\_HSI, topic models on hyperspectral imagery (paper P4)\\[2pt]
+Version DOI \href{https://doi.org/\versiondoi}{\texttt{\versiondoi}} \quad$\cdot$\quad
+concept DOI (always latest) \href{https://doi.org/\conceptdoi}{\texttt{\conceptdoi}}\\[2pt]
+Not peer reviewed. Source code, data and computational records: \href{https://\docrepo}{\texttt{\docrepo}}
+}}
+\end{center}}
+
 \title{Which Backbone Picks Which Wordification? A Factorial Study of
 Topic-Model Families on Hyperspectral Imagery}
 
@@ -37,45 +72,54 @@ Topic-Model Families on Hyperspectral Imagery}
     programme, Santiago, Chile
     (e-mail: \texttt{fsantibanezleal@ug.uchile.cl};
     ORCID: 0000-0002-0150-3246).}%
-  \thanks{Preprint, 2026. Fourth manuscript in the CAOS\_LDA\_HSI
-    programme. Companion papers: \emph{Beyond Accuracy} (P1, twelve-axis
-    framework) and \emph{Which Wordification Matters?} (P3, 19-recipe
-    sweep under fixed LDA backbone). Code and derived artefacts at
+  \thanks{Companion papers: \emph{Beyond
+    Accuracy}~\cite{santibanezleal2026framework} (P1, twelve-axis
+    framework) and \emph{Which Wordification
+    Matters?}~\cite{santibanezleal2026sweep} (P3, 19-recipe sweep under
+    a fixed LDA backbone). Code and derived artefacts at
     \url{https://github.com/fsantibanezleal/CAOS_LDA_HSI}.}%
   \thanks{This work has been partially funded by AMTC Basal
     (ANID/PIA AFB220002) and ANID FONDECYT Postdoctorado 3220094.}%
 }
 
-\markboth{Preprint, 2026 --- target venue redacted}{Santib\'a\~nez-Leal:
+\markboth{\doctype\ \docversion, 2026 \textperiodcentered\ CAOS open-research programme}{Santib\'a\~nez-Leal:
 Backbone $\times$ Wordification Factorial on HSI}
+
+\IEEEaftertitletext{\vspace{-0.6\baselineskip}\headerblock\vspace{0.2\baselineskip}}
 
 \IEEEtitleabstractindextext{%
 \begin{abstract}
-The companion paper showed that nineteen wordification recipes
+The companion paper~\cite{santibanezleal2026sweep} showed that nineteen wordification recipes
 (V1--V15, V17--V20) produce measurably different topic bases under a
-fixed LDA backbone, with no universal winner --- V12 (Gaussian-mixture
-tokens) leads coherence and topic--label coupling on most scenes, V20
-(mutual-information-weighted bands) is the most counterfactually robust,
-and V1 (band-frequency tokens, the canonical) wins seed-test
-reliability, while F-1 macro-F1 does not discriminate. The present manuscript asks the orthogonal
+fixed LDA backbone, with no universal winner: V12 (Gaussian-mixture
+tokens) has the highest mean coherence and topic--label coupling
+(winning two of six scenes on each), V20 (mutual-information-weighted
+bands) has the highest counterfactual robustness F-22, and V1 (band-frequency
+tokens, the canonical) is the most reliable of the per-band recipes
+under reseeding, while F-1 macro-F1 separates the recipes by less than
+0.01. This paper asks the orthogonal
 question: \emph{does the recipe winner depend on the topic-model
 backbone?} We run the full V1--V20 sweep (nineteen recipes; V16 is
-scaffolded only) under three additional backbones --- Hierarchical
-Dirichlet Process (HDP, nonparametric K), Product LDA (ProdLDA,
-logistic-normal prior + amortised inference) and the Embedded Topic
-Model (ETM, joint word--topic embedding) --- producing a
+scaffolded only) under three additional backbones, namely the
+Hierarchical Dirichlet Process (HDP, nonparametric K), the amortised
+neural topic model labelled ProdLDA (run in its mixture-decoder form,
+with a standard logistic-normal prior) and the Embedded Topic Model
+(ETM, the same prior and encoder with a word--topic embedding
+decoder), producing a
 $4 \times 19$ factorial on six labelled-scene benchmarks
 (456 cells in the headline F-2 coherence axis). The headline finding
 is that \textbf{the wordification ranking inverts across backbones}.
-LDA and ETM, both with Dirichlet-like priors, agree that V12 wins; HDP
-with its stick-breaking truncation prior picks V7 (absorption-feature
-triplets); ProdLDA with its logistic-normal prior picks V3 (joint
-(band, bin) vocabulary). We give a per-recipe \emph{affinity score}
+LDA and ETM agree that V12 wins, HDP picks V7 (absorption-feature
+triplets) and ProdLDA picks V3 (joint (band, bin) vocabulary). ETM
+and ProdLDA differ only in the decoder parameterisation, so their
+different winners come from the decoder or from optimisation; the runs
+do not separate the two. We give a per-recipe \emph{affinity score}
 that quantifies how each recipe transfers across backbones, identify
-three robust backbone--recipe pairings, and recommend reporting the
+three empirical backbone--recipe pairings, and recommend reporting the
 $(\text{backbone}, \text{wordification})$ pair as a single hyper-decision
 in any future LDA-on-HSI work. LDVAE-T, a Dirichlet-prior unmixing VAE,
-is a candidate fifth backbone but is parked pending public code.
+is a candidate fifth backbone; it is not evaluated because no public
+implementation is available.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -88,6 +132,7 @@ backbone choice, learned tokenisation.
 \usepackage{orcidlink}
 
 \begin{document}
+\bstctlcite{IEEEexample:BSTcontrol}
 
 \maketitle
 \IEEEdisplaynontitleabstractindextext
@@ -103,25 +148,32 @@ backbone choice, learned tokenisation.
 \section{Introduction}\label{sec:intro}
 % =====================================================================
 
-The first two manuscripts in this programme (P1, P3) hold the topic
+The companion papers P1~\cite{santibanezleal2026framework} and
+P3~\cite{santibanezleal2026sweep} hold the topic
 model backbone fixed (online-VB LDA) while varying the
 \emph{wordification recipe} that converts a pixel spectrum into a
 multiset of LDA-consumable tokens. P3 shows that the recipe matters
-on every F-axis of the twelve-axis evaluation framework introduced
-in P1, with a single recipe (V12, Gaussian-mixture-component tokens)
-winning four of six F-axes under LDA.
+on every axis it reports from the twelve-axis evaluation framework
+introduced in P1, with V12 (Gaussian-mixture-component tokens)
+reaching the highest mean F-2 and F-7 under LDA while winning two of
+the six scenes on each.
 
 This paper inverts the question. We hold the recipe \emph{set}
 \{V1, \ldots, V20\} constant and vary the backbone across four
 topic-model families: LDA (baseline carried over from P3),
-Hierarchical Dirichlet Process (HDP, Teh et al.\ 2006), Product LDA
-(ProdLDA, Srivastava \& Sutton 2017), and the Embedded Topic Model
-(ETM, Dieng et al.\ 2020). All four share the basic generative
-structure --- topics are distributions over a discrete vocabulary,
-documents are mixtures of topics --- but each carries a different
-prior over the topic simplex, a different inference procedure, and
-in ETM's case a different way of parameterising the topic--word
-distribution as a softmax of embedding dot products.
+Hierarchical Dirichlet Process (HDP)~\cite{teh2006hdp}, Product LDA
+(ProdLDA)~\cite{srivastava2017autoencoding}, and the Embedded Topic
+Model (ETM)~\cite{dieng2020topic}. All four share the basic generative
+structure (topics are distributions over a discrete vocabulary,
+documents are mixtures of topics). LDA and HDP place a Dirichlet and a
+Dirichlet-process prior on the topic proportions. The model run under
+the ProdLDA label is the mixture-decoder form of Srivastava and
+Sutton's amortised topic model (their NVLDA), with a standard normal
+prior on the topic logits; the product-of-experts decoder that defines
+ProdLDA was not run (\S\ref{sec:backbones}). ETM shares that prior and
+the amortised encoder and parameterises the topic--word distribution
+as a softmax of embedding dot products, so the two neural backbones
+differ only in the decoder.
 
 \subsection{The headline finding}
 \label{subsec:headline}
@@ -152,7 +204,7 @@ ETM      & V12 (GMM-token) & 0.816 \\
 This is the formal version of the observation that the wordification
 choice and the backbone choice cannot be made independently. P3's
 recommendation that V1 retain canonical-default status assumed an LDA
-backbone; the present manuscript shows that switching backbone changes
+backbone; this paper shows that switching backbone changes
 the practical canonical too.
 
 \subsection{Contributions}
@@ -162,10 +214,11 @@ the practical canonical too.
     backbones (LDA, HDP, ProdLDA, ETM) and nineteen wordification
     recipes (V1--V20; V16 scaffolded only) on six labelled HSI scenes.
     456 F-2 cells, 456 F-14 cells.
-  \item Identification of three robust backbone--recipe affinities:
-    Dirichlet-prior backbones favour dense-vocabulary recipes (V12,
-    V3); truncation-prior backbones favour sparse-event recipes (V7);
-    logistic-normal backbones favour large-vocabulary recipes (V3).
+  \item Three empirical backbone--recipe affinities on F-2: LDA and
+    ETM pick V12, with V3 and V20 close behind, HDP picks the
+    sparse-event recipe V7, and ProdLDA picks V3. ETM and ProdLDA share their prior and encoder,
+    so their disagreement comes from the decoder parameterisation or
+    from optimisation, which this study does not separate.
   \item A per-recipe \emph{affinity score} \eqref{eq:affinity} that
     measures how a recipe transfers across the four backbones,
     identifying V12 (top of the coherence affinity ranking, V20 second)
@@ -181,10 +234,10 @@ the practical canonical too.
 % =====================================================================
 
 All four backbones are formally defined by the canonical equation set
-shared across the manuscript series: LDA by \eqref{eq:lda-gen}, HDP by
+shared across the paper series: LDA by \eqref{eq:lda-gen}, HDP by
 \eqref{eq:hdp-gen}, ProdLDA by \eqref{eq:prodlda-gen}, and ETM by
 \eqref{eq:etm-beta}. The
-prose below records only the hyperparameters and implementation that
+subsections below give only the hyperparameters and implementation that
 specialise each generic backbone to this study.
 
 \subsection{Online-VB LDA (P1, P3)}
@@ -192,10 +245,17 @@ The canonical fixed-K LDA \eqref{eq:lda-gen} with online variational
 Bayes inference
 \cite{hoffman2010online}. Symmetric Dirichlet priors $\alpha = 0.45$
 on topic mixtures and $\eta = 0.20$ on topic-word distributions.
-$K$ chosen by the same policy as P3: $K = \mathrm{clip}(\lfloor
-\overline{\mathrm{doc len}} / 2 \rfloor, 3, K_{P1})$ where
-$K_{P1} = \max(4, \min(12, n_{\mathrm{classes}}))$. Implementation:
-\texttt{sklearn.LatentDirichletAllocation}, random seed 42.
+$K$ chosen by the same policy as P3, from the mean document length
+$\bar{L}$ of each recipe and scene:
+\[
+K = \begin{cases}
+K_{P1}, & \bar{L} \ge 8,\\
+\mathrm{clip}\big(\mathrm{round}(\bar{L}/2),\, 3,\, K_{P1}\big), & 2.5 \le \bar{L} < 8,\\
+4, & \bar{L} < 2.5,
+\end{cases}
+\]
+where $K_{P1} = \max(4, \min(12, n_{\mathrm{classes}}))$. Implementation:
+\path{sklearn.LatentDirichletAllocation}, random seed 42.
 
 \subsection{Hierarchical Dirichlet Process (HDP)}
 Bayesian nonparametric topic model with two-level stick breaking
@@ -206,21 +266,33 @@ seed 42. The number of effective topics is data-driven; the topic
 the inference output.
 
 \subsection{Product LDA (ProdLDA)}
-Logistic-normal variational topic model with a product-of-experts
-likelihood \eqref{eq:prodlda-gen} \cite{srivastava2017autoencoding}.
-Laplace-approximated Dirichlet prior on the latent
-$\delta_d \in \mathbb{R}^K$; $\theta_d = \mathrm{softmax}(\delta_d)$;
-two-layer MLP encoder, Pyro implementation. 80 epochs, batch 128,
-learning rate $1\mathrm{e}{-3}$, random seed 42.
+The model run under the ProdLDA label is the amortised variational
+topic model of Srivastava and Sutton~\cite{srivastava2017autoencoding}
+in its mixture-decoder form (their NVLDA), \eqref{eq:prodlda-gen}: a
+standard normal prior $\delta_d \sim \mathcal{N}(0, I)$ on
+$\delta_d \in \mathbb{R}^K$, $\theta_d = \mathrm{softmax}(\delta_d)$,
+$w_{dn} \sim \mathrm{Cat}(\sum_k \theta_{dk} \beta_k)$ with
+$\beta_k = \mathrm{softmax}(\omega_k)$ from a free $K \times |V|$ matrix
+of logits $\omega_k$. The product-of-experts decoder that defines ProdLDA was not
+run. Encoder: two hidden layers of 100 units producing the Gaussian
+posterior over $\delta_d$; Pyro implementation, Adam, 80 epochs, batch
+128, learning rate $10^{-3}$, random seed 42.
 
 \subsection{Embedded Topic Model (ETM)}
-Joint word--topic embedding model \cite{dieng2020topic}. The
-topic--word distribution is the canonical embedded decoder
+Joint word--topic embedding model \cite{dieng2020topic} with the same
+$\mathcal{N}(0, I)$ prior and the same amortised encoder as the
+ProdLDA-labelled model. Its decoder is
 $\beta_k = \mathrm{softmax}(\rho^\top \alpha_k)$ of
 \eqref{eq:etm-beta}, with word-embedding matrix
-$\rho \in \mathbb{R}^{L\times|V|}$ ($L = 64$) and per-topic embedding
-$\alpha_k \in \mathbb{R}^{L}$. Same 80-epoch / batch-128 / seed-42
-protocol.
+$\rho \in \mathbb{R}^{L\times|V|}$ ($L = 64$), per-topic embedding
+$\alpha_k \in \mathbb{R}^{L}$ and the mixture likelihood of Dieng et
+al. The two neural backbones therefore differ only in the decoder
+parameterisation: a free $K \times |V|$ topic--word matrix against the
+rank-$L$ factorisation $\rho^\top \alpha_k$. With $L = 64$ and
+$K \le 12$ the factorisation does not restrict which topic--word
+matrices can be represented, so the two decoders differ in
+parameterisation, not in capacity. Same 80-epoch / batch-128
+/ learning-rate-$10^{-3}$ / seed-42 protocol.
 
 \section{Method: factorial design}\label{sec:method}
 
@@ -231,7 +303,8 @@ backbone from scratch. For each cell we report:
 
 \begin{itemize}
   \item F-2 $c_v$ coherence \eqref{eq:f2} on the top-10 words per topic,
-    using the same KSG-style sliding-window-NPMI estimator as P1.
+    using the same estimator as P1 ($c_v$: sliding-window NPMI with
+    cosine aggregation).
   \item F-14 mean off-diagonal top-10 jaccard between topics
     \eqref{eq:f14} (lower = more diverse).
 \end{itemize}
@@ -242,26 +315,30 @@ equations are V1 (band-frequency, \eqref{eq:v1}), V3 (joint band--bin,
 \eqref{eq:v3}), V8 (NFINDR endmember-fraction, \eqref{eq:v8}), V12
 (GMM-token, \eqref{eq:v12}) and V20 (MI-weighted bands, \eqref{eq:v20}).
 
-F-7 NMI was added under each non-LDA backbone in the c432--c437
-extension (see \S\ref{subsec:f7-backbone}); F-1 classification,
-F-22 counterfactual and F-18 reliability are run for the LDA backbone
-only (carried over from P3) because they would require running a
-separate downstream classifier pipeline per backbone, which is
-deferred.
+F-7 NMI is also reported under each non-LDA backbone
+(\S\ref{subsec:f7-backbone}); F-1 classification, F-22 counterfactual
+and F-18 reliability are reported for the LDA backbone only (carried
+over from P3), because they would require a separate downstream
+classifier pipeline per backbone, which is left to future work.
 
 % =====================================================================
 \section{Results}\label{sec:results}
 % =====================================================================
 
-\subsection{F-2 $c_v$ factorial}
+\subsection{F-2 \texorpdfstring{$c_v$}{cv} factorial}
 
 Table~\ref{tab:f2-factorial} reports the mean F-2 $c_v$ across the six
-labelled scenes for every (backbone, recipe) pair.
+labelled scenes for every (backbone, recipe) pair, and
+Fig.~\ref{fig:backbone-factorial} shows the same matrix as a heatmap.
 
 \begin{table*}[ht]
 \caption{F-2 $c_v$ mean across the six labelled scenes,
-\emph{full} $19 \times 4$ factorial after c423 (HDP / ProdLDA / ETM
-now cover V1..V15, V17..V20).}
+full $19 \times 4$ factorial (HDP, ProdLDA and ETM cover
+V1..V15, V17..V20). The HDP value for V15 (0.52) was computed on the
+stored V15 wordification that holds the $Q=32$ vocabulary (192 tokens;
+96 on Pavia~U); every other cell uses the $Q=8$ vocabulary (V15: 48
+tokens; 24 on Pavia~U). The V15 cell of Fig.~\ref{fig:backbone-factorial}
+and V15's affinity in Table~\ref{tab:affinity} inherit it.}
 \label{tab:f2-factorial}
 \centering
 \scriptsize
@@ -278,26 +355,27 @@ ETM      & 0.66 & 0.44 & 0.79 & 0.43 & 0.44 & 0.55 & 0.26 & 0.31 & 0.73 & 0.32 &
 \end{tabular}
 \end{table*}
 
-The c423 sweep refresh completes the missing cells of the previous
-revision (HDP V13/V15/V17/V19; ProdLDA V15/V17/V19; ETM V15/V17/V19).
-V20 (mutual-information-weighted bands) is one of the top-3 recipes
-in every backbone except HDP (where the stick-breaking prior favours
-sparse-event recipes — V7 for absorption triplets, V17 for sparse-
-coding dictionary atoms, V15 for spectral indices). Under LDA / ETM
+V20 (mutual-information-weighted bands) ranks second under LDA, third
+under ETM, fourth under ProdLDA and, leaving out the flagged V15 cell
+(eleventh with it), tenth under HDP, where the leaders are V7 (absorption triplets, 0.61) and V17 (sparse-coding
+dictionary atoms, 0.59), followed by V1 (0.54). Under LDA / ETM
 V12 wins; under ProdLDA V3 wins; V20 trails the per-backbone winner
 by about 0.06 $c_v$ on average (excluding HDP). The cross-backbone affinity ranking below
 quantifies this.
 
-\begin{figure}[!t]
+\begin{figure*}[!t]
 \centering
-\includegraphics[width=\columnwidth]{p4-backbone-factorial.pdf}
-\caption{F-2 $c_v$ across the $19 \times 4$ backbone factorial. Each
-panel is one backbone; recipes are sorted by that backbone's $c_v$.
-The per-backbone winner (bold cell in Table~\ref{tab:f2-factorial})
-moves between recipes --- V12 for LDA / ETM, V3 for ProdLDA, V7 for
-HDP --- making the recipe ranking backbone-dependent.}
+\includegraphics[width=0.99\textwidth]{p4-backbone-factorial.pdf}
+\caption{F-2 $c_v$ across the $19 \times 4$ backbone factorial: a
+single heatmap with one row per backbone and the recipes in index
+order. $\star$ and a green border mark each row's winner (bold cell in
+Table~\ref{tab:f2-factorial}); V20's value is in bold purple (yellow on
+dark cells), and the footer gives V20's rank within each row (the HDP
+rank counts the flagged V15 cell of Table~\ref{tab:f2-factorial};
+without it V20 is tenth). The winner moves between recipes (V12 for LDA / ETM, V3 for ProdLDA, V7
+for HDP), making the recipe ranking backbone-dependent.}
 \label{fig:backbone-factorial}
-\end{figure}
+\end{figure*}
 
 \subsection{Per-recipe affinity score}
 
@@ -309,8 +387,10 @@ recipe $V_i$. $\mathcal{A} \in [0, 1]$; higher means the recipe
 consistently scores near the per-backbone top across all four
 backbones. Table~\ref{tab:affinity} reports $\mathcal{A}$ computed
 directly from the full $19 \times 4$ cells of
-Table~\ref{tab:f2-factorial}, so every recipe --- including the
-label-aware V14 / V18 / V20 --- sits on one common scale.
+Table~\ref{tab:f2-factorial}, so every recipe, including the
+multi-scale V14 (continuous-wavelet tokens), the graph-Laplacian V18
+and the label-aware V20, sits on one common scale
+(Fig.~\ref{fig:affinity-bars}).
 
 \begin{table}[ht]
 \caption{Cross-backbone affinity scores $\mathcal{A}(V_i)$
@@ -349,7 +429,10 @@ V13  & 0.01 \\
 
 \textbf{V12 has the highest cross-backbone affinity}
 ($\mathcal{A} = 0.76$), with V20 ($0.75$), V1 ($0.74$) and V3 ($0.73$)
-close behind: all four sit near the per-backbone top under every prior. V20 is the
+close behind. On the within-backbone normalised scale, V12, V20 and V3
+score between 0.80 and 1.00 under LDA, ProdLDA and ETM, and V1
+between 0.64 and 0.82; under HDP the four score 0.10 (V12), 0.32
+(V20), 0.76 (V1) and 0.01 (V3). V20 is the
 only \emph{label-aware} recipe in this leading group, making it the
 most cross-backbone-portable label-aware recipe in the sweep and a
 near-replacement for V12 / V3 when label information is available.
@@ -357,38 +440,46 @@ V3, although it only wins coherence outright under ProdLDA, remains a
 top-4 affinity recipe because it is consistently strong everywhere
 except HDP. \textbf{V13 (learned VQ-VAE) has the lowest affinity}
 ($\mathcal{A} = 0.01$), at or near the per-backbone minimum in all
-four: the reconstruction-optimal VQ-VAE codebook does not align with
-any of the four backbones' priors. Note that V8 scores low here
-($0.09$) on \emph{coherence} affinity specifically --- it is a
+four: none of the four backbones gives the reconstruction-optimal
+VQ-VAE codebook coherent topics. Note that V8 scores low here
+($0.09$) on \emph{coherence} affinity specifically: it is a
 small-vocabulary recipe whose strength is label coupling (F-7), not
 $c_v$; the F-7 factorial below ranks it very differently.
 
-\begin{figure}[!t]
+\begin{figure*}[!t]
 \centering
-\includegraphics[width=\columnwidth]{p4-affinity-bars.pdf}
+\includegraphics[width=0.70\textwidth]{p4-affinity-bars.pdf}
 \caption{Cross-backbone affinity $\mathcal{A}(V_i)$ \eqref{eq:affinity}
 per recipe (Table~\ref{tab:affinity}). V12 tops the ranking ($0.76$),
 V20 second ($0.75$); V13 has the lowest affinity ($0.01$), at or near
 the per-backbone minimum. V20 is the only label-aware recipe in the leading group.}
 \label{fig:affinity-bars}
-\end{figure}
+\end{figure*}
 
-\subsection{F-7 NMI under each backbone — V8 cross-backbone leadership}
+\subsection{F-7 NMI under each backbone: V8 cross-backbone leadership}
 \label{subsec:f7-backbone}
 
-The c432--c437 extension computes F-7, the label-normalised mutual
+We compute F-7, the label-normalised mutual
 information $I(\hat Z;Y)/H(Y)$ \eqref{eq:f7} (the asymmetric uncertainty
 coefficient $U(Y\mid\hat Z)$, not the symmetric NMI), between the argmax
 topic per document and the
 ground-truth labels for
 the six labelled scenes, repeated under each backbone. The procedure
-is: (1) fit the backbone via its deterministic builder, (2) project
+is: (1) fit the backbone via its deterministic builder (LDA with the
+per-recipe K of \S\ref{sec:backbones}; ProdLDA and ETM with
+$K = K_{P1}$ for every recipe in these F-7 runs; HDP with its 20-topic
+truncation), (2) project
 each sampled labelled pixel through the fitted model to obtain the
 topic mixture $\theta_d$, (3) take $z^*_d = \arg\max_k \theta_{d, k}$,
 (4) compute the F-7 score $I(z^*;y)/H(y)$ of \eqref{eq:f7}. For HDP we use gensim's
 \texttt{HdpModel.\_\_getitem\_\_} corpus projection; for ProdLDA and
-ETM the trained encoder produces $\theta$ directly. The resulting
-$19 \times 4 = 76$-cell F-7 matrix is in Table~\ref{tab:f7-backbone}.
+ETM the trained encoder produces $\theta$ directly. The result is a
+$19 \times 4 = 76$-cell matrix of six-scene means;
+Table~\ref{tab:f7-backbone} shows the twelve recipes with the highest
+four-backbone mean (48 cells). The per-scene values of all 76 cells
+are in the code repository under
+\path{data/derived/v_sweep/f7_topic_to_label/} (LDA) and
+\path{data/derived/v_sweep/backbones_f7/} (HDP, ProdLDA, ETM).
 
 \begin{table}[ht]
 \caption{F-7 NMI mean across the six labelled scenes for the top-12
@@ -417,24 +508,31 @@ V1  (band-frequency)        & 0.455 & 0.081 & 0.091 & 0.381 & 0.252 \\
 \end{tabular}
 \end{table}
 
-The F-7 backbone factorial reveals \emph{three distinct cross-backbone
-families}:
+Fig.~\ref{fig:per-scene-backbone-winners} shows the per-scene F-7 winner
+under each backbone. The F-7 backbone factorial reveals
+\emph{three distinct cross-backbone families}:
 
-\paragraph{Family 1 — consistently strong.} V8, V20, V2. V8 is top-5
-under every backbone with the smallest cross-backbone standard
-deviation ($\sigma = 0.06$) and leads at mean $0.431$ (winning outright
-only under ProdLDA). V20 and V2 are strong on average but less
-cross-backbone-consistent (V20 $\sigma = 0.12$, ranking 6th under HDP;
-V2 7th under LDA and HDP); V20 is the unique label-aware recipe here.
+\paragraph{Family 1: consistently strong} V8, V20, V2. V8 is top-5
+under every backbone, shares with V2 the smallest cross-backbone
+standard deviation ($\sigma = 0.06$ for both) and leads at mean $0.431$
+(winning outright only under ProdLDA). V2 holds that small spread at a
+lower level (7th under LDA and HDP); V20 is strong on average but less
+cross-backbone-consistent ($\sigma = 0.12$, 6th under HDP) and is the
+unique label-aware recipe here. All three have long documents and take
+$K = K_{P1}$ under every backbone, so their comparison is not affected
+by the topic-count difference discussed next.
 
-\paragraph{Family 2 — backbone-specialist.} V11 (product quantisation)
-wins HDP ($0.571$) and ETM ($0.530$) but collapses to $0.292$ under
-LDA and $0.088$ under ProdLDA — the widest cross-backbone spread in
-the sweep. V19 (UMAP coordinates) shows a similar HDP-favoured
-profile.
+\paragraph{Family 2: apparent backbone specialists} V11 (product
+quantisation) wins HDP ($0.571$) and ETM ($0.530$) but collapses to
+$0.292$ under LDA and $0.088$ under ProdLDA, the widest cross-backbone
+spread in the sweep. V19 (UMAP coordinates) shows a similar
+HDP-favoured profile. Both recipes emit three or four tokens per
+document and take $K = 3$ under LDA, which caps F-7, bounded by
+$\log K / H(Y)$, at a six-scene mean of 0.46; their HDP and ETM means
+exceed that cap (\S\ref{subsec:v11-mechanism}).
 
-\paragraph{Family 3 — LDA-dominant.} V12, V3, V14. Top-5 under LDA
-but middle of the pack under the alternative priors. V12's F-7 LDA
+\paragraph{Family 3: LDA-dominant} V12, V3, V14. Top-5 under LDA
+but middle of the pack under the other backbones. V12's F-7 LDA
 win disappears entirely under HDP / ETM (where V11 wins) and gets
 edged out by V8 / V2 under ProdLDA.
 
@@ -442,42 +540,31 @@ The take-away is that the backbone factorial swap dimension matters
 \emph{as much as the recipe dimension}: V11 looks like a poor
 choice under LDA but is the headline winner under HDP / ETM, and
 V12's LDA leadership does not generalise. This corroborates the P3
-narrative that no recipe-backbone choice is canonical.
+finding that no recipe-backbone choice is canonical.
 
 \subsection{Three backbone--recipe affinities}\label{sec:affinities}
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\columnwidth]{p4-prior-geometry.pdf}
-\caption{Why each prior favours a different vocabulary geometry. The
-Dirichlet-like priors of LDA / ETM \eqref{eq:lda-gen}, \eqref{eq:etm-beta}
-reward dense vocabularies (V12 / V3); HDP's stick-breaking truncation
-\eqref{eq:hdp-gen} rewards sparse-event vocabularies (V7); ProdLDA's
-logistic-normal prior \eqref{eq:prodlda-gen} rewards large vocabularies
-that let a few tokens discriminate strongly (V3).}
-\label{fig:prior-geometry}
-\end{figure}
+The F-2 factorial (Table~\ref{tab:f2-factorial}) shows three empirical
+affinities. They describe which recipe each backbone favours; the runs
+do not identify why.
 
-\textbf{Dirichlet prior + dense vocabulary.} LDA and ETM both use a
-Dirichlet-like prior over the topic simplex. They both pick V12 (GMM-
-token, 1600 word types from $B \times Q$ joint vocab with $B=200,
-Q=8$). The Dirichlet prior favours topics whose word distributions
-have meaningful mass on many tokens; V12's dense vocabulary delivers.
+\textbf{LDA and ETM: dense GMM tokens.} LDA and ETM both pick V12
+(GMM-token, 1600 word types from the $B \times Q$ joint vocabulary with
+$B=200$, $Q=8$), with V3 and V20 close behind (LDA: V12 0.88, V20
+0.85, V3 0.84; ETM: V12 0.82, V3 0.79, V20 0.77).
 
-\textbf{Truncation prior + sparse event vocabulary.} HDP's
-stick-breaking truncation prior gives high weight to a few sticks
-(topics with concentrated mass) and decays geometrically thereafter.
-This rewards recipes whose tokens carry semantic weight individually
-rather than via density. V7 (absorption triplets, at most six tokens
-per document) fits this profile exactly.
+\textbf{HDP: sparse-event tokens.} HDP picks V7 (absorption triplets,
+at most six tokens per document; 0.61), followed by V17 (0.59).
 
-\textbf{Logistic-normal prior + large vocabulary.} ProdLDA's
-logistic-normal prior over $\mathbf{z}$ allows the encoder to push
-topic mixtures arbitrarily far from the simplex centre. This rewards
-recipes whose vocabulary is large enough that a few tokens
-discriminate strongly between topics. V3's joint (band, bin) vocab
-($B \times Q = 1600$ types) is the largest discrete vocabulary we
-consider with no spatial or learned structure --- and it wins ProdLDA.
+\textbf{ProdLDA: the joint (band, bin) vocabulary.} ProdLDA picks V3
+(joint (band, bin) vocabulary, $B \times Q = 1600$ types; 0.86), with
+V12 second (0.83).
+
+ETM and the ProdLDA-labelled model share the $\mathcal{N}(0, I)$ prior
+and the amortised encoder (\S\ref{sec:backbones}); the only implemented
+difference is the decoder parameterisation. Their different winners
+(V12 against V3) therefore come from the decoder parameterisation or
+from optimisation, and no ablation in this study separates the two.
 
 % =====================================================================
 \begin{figure*}[!t]
@@ -488,54 +575,54 @@ encodes the winning recipe's family from the wordification taxonomy.
 HDP's top winner is V11 (4/6 scenes; V13 on Indian Pines, V19 (manifold
 family) on Salinas); ETM also picks V11 on 3/6
 scenes. LDA has the most diverse per-scene winners. ProdLDA favours
-V8 / V12 / V2 — the absorption / intensity-bin family.}
+V8 / V12 / V2.}
 \label{fig:per-scene-backbone-winners}
 \end{figure*}
 
-\subsection{Why V11 wins HDP and ETM but bombs LDA and ProdLDA}
+\subsection{V11: winner under HDP and ETM, weak under LDA and ProdLDA}
 \label{subsec:v11-mechanism}
 
 V11 (product quantisation, $M = 4$ sub-vectors $\times$ $K_s = 8$
-codewords) has the smallest vocabulary in the sweep --- $M K_s = 32$
-tokens, two orders of magnitude smaller than V12's $B Q \approx 1600$.
-A small vocabulary interacts very differently with each backbone's
-prior:
+codewords) has a vocabulary of $M K_s = 32$ tokens, fifty times smaller
+than V12's $B Q \approx 1600$; only V2 ($Q = 8$), V8 (its 6--12
+endmembers), V10 and V19 ($3Q = 24$) have smaller vocabularies.
+A small vocabulary fares very differently under each backbone, but
+the backbones also differ in topic count, and F-7 cannot exceed
+$\log K / H(Y)$. Under LDA, V11's four-token documents take $K = 3$
+(\S\ref{sec:backbones}), which caps F-7 at 0.40 to 0.61 across the six
+scenes (six-scene mean 0.46); V11 reaches 0.77 to 0.82 of that cap on
+Botswana and Salinas. The F-7 runs of ETM use $K = K_{P1}$ (12 on four
+scenes) and HDP keeps up to 20 topics, so V11's 0.571 under HDP and
+0.530 under ETM are out of reach of any three-topic fit. The contrast
+below therefore mixes the backbone with the topic count:
 
 \begin{itemize}
-  \item \textbf{Under HDP} (stick-breaking truncation), the
-    Dirichlet-Process prior is sparsity-inducing in the
-    \emph{topic} dimension: only a handful of effective topics
-    survive. A small vocabulary makes each surviving topic a
-    high-information indicator on the sub-vector codeword space,
-    which the HDP can cleanly attach to a labelled class. V11's
-    coarse quantisation \emph{matches the HDP's coarse topic
-    discovery}.
-  \item \textbf{Under ETM} (low-rank embedded decoder), the topic-
-    word distribution is constrained to $\beta_k = \mathrm{softmax}(\rho\,\alpha_k)$
-    with word embeddings $\rho \in \mathbb{R}^{V \times E}$ and topic
-    embedding $\alpha_k \in \mathbb{R}^{E}$. A small vocabulary
-    means $\rho$ is tiny ($32 \times E$) and the embedded geometry
-    can be fully learnt from few PQ codewords. V11's coarse
-    vocabulary \emph{matches the ETM's low-dimensional decoder}.
-  \item \textbf{Under LDA} (symmetric Dirichlet over a large
-    vocabulary), the conjugate prior expects each topic to be a
-    full distribution over $V$ tokens. A $V = 32$ vocabulary means
-    each topic-word vector is over-determined by very few tokens,
-    making the topic-mixture argmax noisy and the F-7 NMI weak
-    (V11 LDA $= 0.292$).
-  \item \textbf{Under ProdLDA} (logistic-normal prior, neural
-    encoder $q_\phi$), the encoder must compress each pixel's full
-    spectrum into a topic-mixture vector, with $\theta$ supervised
-    only by the reconstruction loss. The 32-token vocabulary
-    starves the encoder of distinguishable features, and the
-    argmax topic becomes degenerate (V11 ProdLDA $= 0.088$, near
-    chance).
+  \item \textbf{Under HDP}, V11 is the best recipe ($0.571$). HDP keeps
+    all of its 20 truncation topics for V11 (effective number 19.9 to
+    20.0 in the F-2 runs), against 1.2 to 6.2 for V12. Across the
+    nineteen recipes HDP's F-7 follows the number of topics it keeps
+    (Spearman $\rho = 0.59$), and the recipes on which it keeps one or
+    two topics (V1, V4, V5, V6) score F-7 near zero.
+  \item \textbf{Under ETM} (embedded decoder), the topic-word
+    distribution is $\beta_k = \mathrm{softmax}(\rho^{\top}\alpha_k)$
+    of \eqref{eq:etm-beta}, with word embeddings
+    $\rho \in \mathbb{R}^{L \times |V|}$ and topic embedding
+    $\alpha_k \in \mathbb{R}^{L}$; for V11, $\rho$ is $L \times 32$.
+    V11 is the best recipe under ETM ($0.530$).
+  \item \textbf{Under LDA}, V11 reaches only $0.292$, below the 0.46
+    cap of its three topics; within that cap, topic--word distributions
+    that overlap strongly over only 32 tokens may further blur the
+    argmax topic, which the runs do not measure.
+  \item \textbf{Under ProdLDA}, V11 collapses to $0.088$, near
+    chance, although the ProdLDA-labelled model shares ETM's prior and
+    encoder. The two differ only in the decoder parameterisation, so
+    the collapse comes from the free topic--word matrix or from
+    optimisation; the runs do not separate the two.
 \end{itemize}
 
-The same mechanism explains V19 (UMAP coords, vocab $= 24$): wins
-HDP at 0.530 but collapses to 0.051 under ProdLDA. The size of the
-vocabulary alone changes the F-7 winner; the recipe-backbone choice
-is genuinely two-dimensional.
+V19 (UMAP coords, vocab $= 24$) follows the same pattern: it is
+second under HDP at 0.530, after V11 (0.571), but collapses to 0.051
+under ProdLDA. The recipe--backbone choice is two-dimensional.
 
 \section{Practical recommendation}\label{sec:recommendation}
 % =====================================================================
@@ -568,22 +655,40 @@ We make three recommendations:
   \item LDVAE-T~\cite{giannetti2025ldvaet}, a spectral-unmixing VAE with
     a Dirichlet-prior latent (an abundance/endmember model, not an
     off-the-shelf topic-model classification backbone), was considered as
-    a candidate fifth backbone but has no public code at the time of
-    writing; adapting it to the wordification factorial and adding its row
-    is left to future work.
+    a candidate fifth backbone but has no public implementation; adapting
+    it to the wordification factorial and adding its row is left to
+    future work.
+  \item The backbone labelled ProdLDA is the mixture-decoder form of
+    \eqref{eq:prodlda-gen}; the product-of-experts ProdLDA was not run,
+    and no ablation separates the decoder parameterisation from
+    optimisation in the ETM--ProdLDA comparison.
   \item F-1 (Bayesian classification) is only run under LDA. Running
     F-1 under HDP / ProdLDA / ETM requires extending the topic-routed
-    classifier pipeline to each backbone, deferred.
+    classifier pipeline to each backbone, which is left to future work.
   \item HDP's $K_{\text{effective}}$ is extracted as the number of
     topics holding at least $1\%$ of corpus mass under the top-level
     stick-breaking weights (the \texttt{hdp\_to\_lda} expected topic
     prevalence), feeding F-16 model-selection adequacy
-    $|K_{\text{effective}}-\#\text{classes}|$; F-16 is surfaced in the
-    interactive sweep rather than tabulated here.
+    $|K_{\text{effective}}-\#\text{classes}|$; F-16 is shown in the
+    interactive web application rather than tabulated here.
 \end{itemize}
 
 % =====================================================================
+\section*{Data availability}
+% =====================================================================
+
+{\raggedright
+Per-cell results (one JSON record per scene, recipe and backbone) are
+archived in the code repository
+\url{https://github.com/fsantibanezleal/CAOS_LDA_HSI} under
+\path{data/derived/v_sweep/}: \path{f2_coherence/} and
+\path{f7_topic_to_label/} for LDA, \path{hdp_backbone/},
+\path{prodlda_backbone/} and \path{etm_backbone/} for F-2 and F-14
+under the other three backbones, and \path{backbones_f7/} for their
+F-7.\par}
+
+% =====================================================================
 \bibliographystyle{IEEEtran}
-\bibliography{../../bibliography/refs}
+\bibliography{../../bibliography/refs,companion}
 
 \end{document}

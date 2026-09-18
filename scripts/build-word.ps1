@@ -21,7 +21,13 @@ foreach ($variant in @("conference", "journal", "journal_v_sweep", "journal_back
     $out = Join-Path $outDir "main.docx"
     Push-Location (Join-Path $root "$variant\tex")
     try {
-        & $pandoc -s "main.tex" --bibliography "..\..\bibliography\refs.bib" --citeproc -o $out
+        # companion.bib holds the citations of the companion papers of the series
+        $bibs = @("--bibliography", "..\..\bibliography\refs.bib")
+        if (Test-Path "companion.bib") { $bibs += @("--bibliography", "companion.bib") }
+        # pandoc cannot parse the preamble's \abstract / \IEEEkeywords redefinitions
+        & python (Join-Path $root "scripts\word_source.py") "main.tex" | Out-Null
+        & $pandoc -s "main.pandoc.tex" @bibs --citeproc -o $out
+        Remove-Item "main.pandoc.tex" -ErrorAction SilentlyContinue
         Write-Host "wrote $out"
     } finally {
         Pop-Location

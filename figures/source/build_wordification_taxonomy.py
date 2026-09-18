@@ -1,4 +1,4 @@
-"""Wordification taxonomy figure — group all 20 recipes by family.
+"""Wordification taxonomy figure: group all 20 recipes by family.
 
 A taxonomic tree that groups V1..V20 by the seven design axes
 discussed in P3 §2.1. Used as a navigational figure in P3 and the
@@ -9,6 +9,7 @@ Output: figures/wordification-taxonomy.{pdf,svg,png}
 from __future__ import annotations
 
 import sys
+import textwrap
 from pathlib import Path
 
 import matplotlib
@@ -56,22 +57,22 @@ GROUPS = [
 META = {
     "V1": ("B", "Canonical baseline"),
     "V2": ("Q", "Band-agnostic"),
-    "V3": ("B·Q", "Cross-backbone star"),
+    "V3": ("B·Q", "Joint (band, bin)"),
     "V4": ("B", "1st-derivative"),
     "V5": ("B", "2nd-derivative"),
     "V6": ("≈B", "Db4 DWT"),
     "V7": ("≤C_b Q²", "Absorption features"),
-    "V8": ("K_e·Q", "NFINDR endmembers"),
+    "V8": ("K_e", "NFINDR endmembers"),
     "V9": ("R·Q", "Felzenszwalb regions"),
     "V10": ("3·Q", "VNIR/SWIR groups"),
     "V11": ("M·K_s", "Product quantisation"),
     "V12": ("B·Q", "GMM components"),
     "V13": ("M·K_c = 128", "VQ-VAE, ST-est"),
-    "V14": ("16·Q = 128", "Morlet CWT"),
+    "V14": ("16·8·Q = 1024", "Morlet CWT"),
     "V15": ("≤48", "NDVI / MNDWI / NBR"),
     "V16": ("128–256", "HyperSIGMA (scaffold)"),
     "V17": ("K·Q = 512", "MiniBatch dict"),
-    "V18": ("K_e·Q = 128", "Sym-normalised Laplacian"),
+    "V18": ("16·Q = 128", "Sym-normalised Laplacian"),
     "V19": ("3·Q = 24", "3-D UMAP"),
     "V20": ("B·Q", "MI-weighted, label-aware"),
 }
@@ -85,16 +86,16 @@ def main() -> int:
 
     # Title
     ax.text(50, 96.5,
-            "Wordification taxonomy — 20 recipes for LDA-on-HSI",
+            "Wordification taxonomy: 20 recipes for LDA-on-HSI",
             ha="center", fontsize=15, fontweight="bold")
     ax.text(50, 93,
             "Each group bundles recipes that share token-alphabet semantics. "
             "Vocabulary size and core mechanism are noted per recipe.",
             ha="center", fontsize=10, color="#475569", style="italic")
 
-    # Layout the 7 groups vertically
+    # Layout the 7 groups vertically; the group area stops above the legend band
     n_groups = len(GROUPS)
-    group_h = 86 / n_groups
+    group_h = 80 / n_groups
     y_start = 88
 
     for g_idx, (name, recipes, colour, description) in enumerate(GROUPS):
@@ -106,10 +107,12 @@ def main() -> int:
             boxstyle="round,pad=0.3",
             facecolor=colour, edgecolor="white", alpha=0.85,
         ))
-        ax.text(12, y + 1.4, name, ha="center", fontsize=10.5,
+        ax.text(12, y + 2.2, name, ha="center", fontsize=10.5,
                 color="white", fontweight="bold")
-        ax.text(12, y - 1.6, description, ha="center", fontsize=8.5,
-                color="white", style="italic")
+        # Wrap the description on two lines so it stays inside the group bar
+        ax.text(12, y - 1.7, textwrap.fill(description, 36), ha="center",
+                va="center", fontsize=8.2, color="white", style="italic",
+                linespacing=1.15)
 
         # Connector
         ax.plot([23.5, 27], [y, y], color=colour, linewidth=2.2, alpha=0.7)
@@ -171,10 +174,11 @@ def main() -> int:
         facecolor="#f1f5f9", edgecolor="#cbd5e1", alpha=0.7,
     ))
     ax.text(2.5, legend_y - 0.6,
-            "★ = triple-axis winner on Indian Pines (F-1 0.858, F-2 0.88, F-7 0.44) — V20 is the only label-aware recipe in the sweep.",
+            "★ = V20, the only label-aware recipe in the sweep: on Indian Pines it wins F-2 (0.88) and F-7 (0.44); "
+            "on F-1 (0.858) it is second to V2 (0.861).",
             fontsize=8.5, color="#0f172a", fontweight="bold")
     ax.text(2.5, legend_y - 2.2,
-            "⚙ = scaffolded only (V16 reserves the foundation-model slot; HyperSIGMA weights not yet vendored).",
+            "⚙ = scaffolded only (V16 reserves the foundation-model slot and is not evaluated).",
             fontsize=8.5, color="#475569")
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
