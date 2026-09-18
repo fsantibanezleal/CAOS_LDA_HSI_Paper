@@ -4,13 +4,11 @@ Companion to build_p5_dispersion_scatter.py. Same recipes, same F-15
 values, but the x-axis is the nominal vocabulary size |V| (log scale)
 instead of the token-mass dispersion N_eff.
 
-The point of the pair: the relationship against nominal |V| is visibly
-looser than against N_eff (lower Spearman ρ, and obvious counterexamples
-— V14 sits at |V|=1024 yet scores F-15 0.95 while V3/V12 at |V|=1600
-collapse to 0.12/0.16, and V9 at |V|=536 is a trivial 1.0). So one
-cannot reduce F-15 to "small vocabularies win"; the operative variable
-is how the token *mass* is spread (N_eff), not how many word *types*
-exist (|V|).
+Against nominal |V| the relationship is looser than against N_eff (lower
+Spearman rho): V14 sits at |V| = 1024 with F-15 0.95 (16 tokens per
+document) while V3 and V12 score 0.12 and 0.16. V9 (F-15 1.0) and V2 / V8
+are fixed at 1.0 by the rule's construction, and the V3 / V12 values
+depend on the tie order of their equal-count documents (P5, Section V).
 
 Output: figures/p5-f15-vocab.{pdf,png}
 """
@@ -83,7 +81,7 @@ def main() -> int:
     ax.grid(True, which="both", alpha=0.25, linewidth=0.5)
 
     ax.set_title(
-        "P5 contrast — F-15 vs nominal vocabulary |V| (looser than vs N$_{eff}$)\n"
+        "F-15 alignment against nominal vocabulary |V|\n"
         f"Spearman ρ(F-15, |V|) = {rho_vnom:.2f}   "
         f"(vs ρ(F-15, N$_{{eff}}$) = {rho_neff:.2f}; companion mechanism figure)",
         fontsize=11.5, pad=12,
@@ -107,11 +105,11 @@ def main() -> int:
               framealpha=0.92, edgecolor="#cbd5e1")
 
     fig.text(
-        0.01, 0.005,
-        "Same F-15 values and recipes as p5-dispersion-scatter; x-axis is nominal |V| (from f15 JSON) instead of N_eff. "
-        "Counterexamples to the |V| reading: V14 |V|=1024 → F-15 0.95; V9 |V|=536 → 1.0; V3/V12 |V|=1600 → 0.12/0.16. "
-        "The dispersion fit (companion figure) is tighter.",
-        fontsize=7.0, color="#475569", ha="left",
+        0.01, -0.01,
+        "Same F-15 values and recipes as p5-dispersion-scatter; x-axis is nominal |V| (from f15 JSON) instead of N_eff.\n"
+        "V14 (|V| = 1024, 16 tokens per document) scores 0.95; V2, V8 and V9 sit at 1.0 by construction of the rule;\n"
+        "V3 and V12 depend on the tie order of their equal-count documents (0.03 to 0.18).",
+        fontsize=7.0, color="#475569", ha="left", va="top",
     )
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)

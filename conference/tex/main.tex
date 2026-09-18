@@ -1,13 +1,10 @@
 % ---------------------------------------------------------------------
-% CAOS_LDA_HSI conference manuscript — preprint (target venue redacted)
+% CAOS_LDA_HSI conference paper (preprint)
 %
 % Title  : A Band-Mask Robustness Diagnostic for Latent Dirichlet
 %          Allocation on Hyperspectral Imagery
-% Target : redacted while the preprint circulates; restore the venue
-%          name and submission date before actual submission.
-% Length : 4-5 pages (full-paper track length budget)
-% Class  : IEEEtran conference option (typesetting only — keeping the
-%          class does not commit us to a venue)
+% Class  : IEEEtran conference option (typesetting only; the class does
+%          not imply a venue)
 % ---------------------------------------------------------------------
 
 \documentclass[conference,a4paper,10pt]{IEEEtran}
@@ -28,16 +25,60 @@
 
 \graphicspath{{../figures/}}
 
+% IEEEtran hard-codes an em-dash after the abstract and index-terms names; the CAOS
+% content standard (ADR-0067) excludes em-dashes, so the separator is a full stop.
+\makeatletter
+\def\abstract{\normalfont
+    \if@twocolumn
+      \@IEEEabskeysecsize\bfseries\textit{\abstractname}.\ \relax
+    \else
+      \bgroup\par\addvspace{0.5\baselineskip}\centering\vspace{-1.78ex}\@IEEEabskeysecsize\textbf{\abstractname}\par\addvspace{0.5\baselineskip}\egroup\quotation\@IEEEabskeysecsize
+    \fi\@IEEEgobbleleadPARNLSP}
+\def\IEEEkeywords{\normalfont
+    \if@twocolumn
+      \@IEEEabskeysecsize\bfseries\textit{\IEEEkeywordsname}.\ \relax
+    \else
+      \bgroup\par\addvspace{0.5\baselineskip}\centering\@IEEEabskeysecsize\textbf{\IEEEkeywordsname}\par\addvspace{0.5\baselineskip}\egroup\quotation\@IEEEabskeysecsize
+    \fi\@IEEEgobbleleadPARNLSP}
+\makeatother
+
+% Page-1 header block (conventions/manuscript-header-standard.md). The four document
+% macros are set by the publishing tool when the version DOI is reserved.
+\newcommand{\doctype}{Preprint}
+\newcommand{\docversion}{v1.3}
+\newcommand{\docdate}{18 September 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.22823287}
+\newcommand{\conceptdoi}{10.5281/zenodo.21504109}
+\newcommand{\docrepo}{github.com/fsantibanezleal/CAOS\_LDA\_HSI}
+\newcommand{\headerblock}{%
+\begin{center}
+\fbox{\parbox{0.94\textwidth}{\small\raggedright
+\textbf{\doctype} \quad$\cdot$\quad \docversion, \docdate \quad$\cdot$\quad Licence CC BY 4.0\\[2pt]
+CAOS open-research programme \quad$\cdot$\quad CAOS\_LDA\_HSI, interpretable topic models for hyperspectral imagery\\[2pt]
+Version DOI \href{https://doi.org/\versiondoi}{\texttt{\versiondoi}} \quad$\cdot$\quad
+concept DOI (always latest) \href{https://doi.org/\conceptdoi}{\texttt{\conceptdoi}}\\[2pt]
+Not peer reviewed. Source code, data and computational records: \href{https://\docrepo}{\texttt{\docrepo}}
+}}
+\end{center}}
+
 \title{A Band-Mask Robustness Diagnostic for Latent Dirichlet
 Allocation on Hyperspectral Imagery}
 
 \author{%
-  \IEEEauthorblockN{Felipe Santib\'a\~nez-Leal}
+  \IEEEauthorblockN{Felipe Santib\'a\~nez-Leal~\orcidlink{0000-0002-0150-3246}}
   \IEEEauthorblockA{Independent Researcher\\
   Santiago, Chile\\
   ORCID: 0000-0002-0150-3246\\
   Email: \texttt{fsantibanezleal@ug.uchile.cl}}%
 }
+
+% IEEEtran's conference option locks out \IEEEaftertitletext (it would silently drop the
+% header block); \IEEEoverridecommandlockouts is the class's own switch to re-enable it.
+\IEEEoverridecommandlockouts
+\IEEEaftertitletext{\vspace{-0.6\baselineskip}\headerblock\vspace{0.2\baselineskip}}
+
+\usepackage[hidelinks]{hyperref}
+\usepackage{orcidlink}
 
 \begin{document}
 
@@ -55,10 +96,11 @@ discriminant) and compares the masked dominant-topic maps against the
 canonical fit via the adjusted Rand index after a Hungarian topic-id
 alignment. Applied to six standard hyperspectral scenes (Indian
 Pines, Salinas, Salinas-A, Pavia~U, Kennedy~Space~Center, Botswana)
-and five HIDSAG mineral subsets, the diagnostic yields a striking
-result: topic identities on Salinas-A under SWIR-only restriction
+and five HIDSAG mineral subsets, the diagnostic separates the
+scenes: topic identities on Salinas-A under SWIR-only restriction
 recover the canonical assignment with paired ARI~$=0.77$, while
-KSC and Botswana paired ARI is~$\approx 0.01$ under every mask.
+KSC paired ARI is~$\approx 0.01$ under every mask, and Botswana falls
+to $\approx 0.01$ only under SWIR (elsewhere $0.11$--$0.13$).
 The diagnostic therefore separates scenes on which any
 ``interpretable spectral mixture'' claim is band-robust from scenes
 on which it is not. We release the full sweep (44 LDA refit
@@ -85,16 +127,16 @@ sample) becomes a document of quantised band-frequency tokens, and the
 inferred topic--word distributions $\phi_k$ act as basis spectra in
 a non-negative simplex. The approach yields per-pixel posterior
 mixtures $\theta_d \in \Delta^{K-1}$ that admit several downstream
-uses --- as features for a linear classifier, as a soft gate over
+uses: as features for a linear classifier, as a soft gate over
 per-topic specialists, or as a mineralogical fingerprint when the
 basis spectra align with reference libraries
-\cite{zou2017pmlda,liu2019hsilda,bioucasdias2012unmixing}.
+\cite{zou2017pmlda,bioucasdias2012unmixing}.
 
 The literature on the \emph{reliability} of these topic recoveries
 has focused on two axes: (i) seed-to-seed variation
 \cite{griffiths2004finding} and (ii) the choice of capacity $K$.
-We argue that a third axis --- robustness to the choice of
-\emph{spectral window} --- is at least as informative and is rarely
+We argue that a third axis, robustness to the choice of
+\emph{spectral window}, is at least as informative and is rarely
 reported. A topic basis that flips identity when one removes the
 atmospheric water bands, or when only VNIR or SWIR is retained,
 provides weak grounds for claims like ``topic~$k$ corresponds to a
@@ -117,15 +159,15 @@ benchmarks and five HIDSAG mineral subsets, totalling 44 refit
 attempts (43 successful; Pavia U $\times$ SWIR is VNIR-only and
 auto-skipped).
 The sweep reveals a sharp split between scenes whose canonical
-topics are band-robust (paired ARI 0.4--0.77) and scenes whose
+topics are band-robust (paired ARI 0.35--0.77) and scenes whose
 topics are band-fragile (paired ARI~$\approx 0.01$).
 
-\item A \textbf{public, deterministic artefact set} (1734 JSON and
+\item A \textbf{public, deterministic artefact set} (3895 JSON and
 binary files, including the dominant-topic maps, the per-pixel
 posteriors~$\theta$, the per-topic label distributions
 $P(L \mid t)$, and the full Hungarian alignment per (scene, mask)
 tuple), served by a FastAPI backend and verified by a
-109-endpoint smoke harness.
+109-endpoint test harness.
 \end{enumerate}
 
 The rest of the paper is organised as follows. Section~\ref{sec:method}
@@ -146,8 +188,8 @@ artefacts. Section~\ref{sec:conclusion} concludes.
 
 Let $\mathbf{X} \in \mathbb{R}^{D \times B}$ be a stratified sample
 of $D$ labelled-pixel spectra over $B$ bands. We tokenise each pixel
-into a discrete band-frequency document using the V1 recipe of the
-companion code repository \cite{plaza2009recent}: each spectrum is
+into a discrete band-frequency document using the V1 recipe
+introduced in~\cite{santibanezleal2022procemin}: each spectrum is
 min-max normalised across bands and quantised into $Q+1 = 13$ levels,
 yielding integer counts $c_{d,b} \in \{0, \ldots, 12\}$. The
 resulting doc-term matrix is fit with the online variational Bayes
@@ -183,8 +225,8 @@ $[1350, 1430] \cup [1800, 1950] \cup [2480, 2500]$~nm
 (atmospheric water-vapour absorption bands),
 \item \textbf{Top-50 Fisher}: keep the 50 bands with the highest
 per-band Fisher discriminant ratio against the ground-truth label
-(uses the unmasked spectrum's Fisher ranking; a clean information-
-theoretic ablation is out of scope of the diagnostic).
+(uses the unmasked spectrum's Fisher ranking; a clean
+information-theoretic ablation is out of scope of the diagnostic).
 \end{itemize}
 
 For each mask we refit LDA on the restricted doc-term matrix with
@@ -275,13 +317,16 @@ proxy, since HIDSAG has no per-pixel ground truth).
 
 \subsection{Metrics reported}
 
-For every (scene, mask) tuple we report:
+For every (scene, mask) tuple we compute:
 (i) the paired ARI of Equation~\ref{eq:paired-ari};
 (ii) the swap rate under Hungarian alignment of Equation~\ref{eq:swap-rate};
 (iii) the train-set perplexity of the masked fit;
 (iv) the ARI of the masked dominant-topic map against the
 ground-truth label (a sanity check that the masked fit still
 discriminates the same classes as the canonical fit).
+Section~\ref{sec:results} reports (i) and (ii); (iii) and (iv) are
+recorded in the per-tuple artefacts described in
+Section~\ref{sec:repro}.
 
 % ---------------------------------------------------------------------
 \section{Results}
@@ -292,8 +337,9 @@ discriminates the same classes as the canonical fit).
 \centering
 \includegraphics[width=\columnwidth]{paired-ari-heatmap.pdf}
 \caption{Paired ARI across (scene, mask) tuples on the six labelled
-benchmarks. KSC and Botswana paired ARI is $\approx 0.01$ across all
-four masks; Salinas-A under SWIR-only reaches $0.77$.}
+benchmarks. KSC paired ARI is $\approx 0.01$ across all four masks
+(Botswana only under SWIR; $0.11$--$0.13$ under the other three);
+Salinas-A under SWIR-only reaches $0.77$.}
 \label{fig:paired-ari-heatmap}
 \end{figure}
 
@@ -315,7 +361,7 @@ Scene & vnir & swir & no-water & top-50 Fisher \\
 Indian Pines       & 0.427 & 0.527 & 0.499 & 0.398 \\
 Salinas            & 0.540 & 0.435 & 0.502 & 0.507 \\
 Salinas-A          & 0.521 & \textbf{0.766} & 0.533 & 0.352 \\
-Pavia University   & 0.415 & ---   & 0.415 & 0.387 \\
+Pavia University   & 0.415 & --    & 0.415 & 0.387 \\
 Kennedy Space C.   & 0.009 & 0.011 & 0.007 & 0.013 \\
 Botswana           & 0.108 & 0.013 & 0.127 & 0.117 \\
 \bottomrule
@@ -327,14 +373,16 @@ The dominant observation is the sharp split between
 
 \begin{itemize}
 \item \textbf{Band-fragile}: KSC paired ARI ranges from $0.007$ to
-$0.013$ across all four masks --- i.e.\ the masked LDA assigns
+$0.013$ across all four masks: the masked LDA assigns
 pixels to topics with at most chance-level agreement with the
-canonical fit. Botswana sits in the same regime save for VNIR and
-no-water at $\approx 0.11$, still well below the labelled-scene
-average. The canonical-fit topic identity on these scenes is
-\emph{not} recoverable from any reasonable band subset.
+canonical fit. Botswana is at chance only under SWIR ($0.013$); under
+VNIR ($0.108$), no-water ($0.127$) and \mbox{top-50} Fisher ($0.117$) it sits
+at $0.11$--$0.13$, still below the band-robust scenes but not
+chance-level. On KSC the canonical-fit topic identity is \emph{not}
+recoverable from any reasonable band subset.
 \item \textbf{Band-robust}: Salinas-A under SWIR-only reaches paired
-ARI~$=0.77$ --- the masked fit recovers nearly the same partition.
+ARI~$=0.77$: the masked fit recovers nearly the same partition
+(Fig.~\ref{fig:hungarian-example}).
 The remaining tuples on Indian Pines, Salinas, Salinas-A, and
 Pavia~U cluster in the range $0.35$--$0.54$, indicating partial
 robustness: the topics deform but maintain a measurable correlation
@@ -342,21 +390,23 @@ with the canonical assignment.
 \end{itemize}
 
 Swap rates under Hungarian alignment confirm the same picture
-(KSC swap rates 0.53--0.64; Salinas-A swir swap rate 0.18; full
-table available in the public artefact set --- see
+(KSC swap rates 0.53--0.64; Salinas-A swir swap rate 0.18; the full
+table is in the public artefact set described in
 Section~\ref{sec:repro}).
 
 % Figure: per-topic Hungarian alignment example
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\columnwidth]{hungarian-alignment-example.pdf}
+\includegraphics[width=0.8\textwidth]{hungarian-alignment-example.pdf}
 \caption{Hungarian topic-id alignment for Salinas-A under SWIR-only
-(paired ARI $=0.77$). Five of six canonical topics realign to
-masked topics with confusion-matrix dominance $> 0.65$; the sixth
-splits across two masked topics, accounting for most of the residual
-swap rate.}
+(paired ARI $=0.77$). Five of six canonical topics have a dominant
+masked topic with confusion-matrix share $> 0.65$; the sixth ($c_0$)
+splits across two masked topics (38 and 28 pixels). Most of the
+residual swap rate comes from $c_1$ (120 of the 232 unmatched pixels):
+its dominant masked topic is also the dominant topic of $c_4$, and the
+one-to-one Hungarian assignment gives it to $c_4$.}
 \label{fig:hungarian-example}
-\end{figure}
+\end{figure*}
 
 \subsection{HIDSAG mineral subsets}
 
@@ -366,8 +416,8 @@ subsets (no Pavia-style auto-skip occurs because the
 between-covariate-variance variant of the Fisher mask retains 50
 bands on MINERAL1, GEOCHEM, and PORPHYRY; GEOMET and MINERAL2 have a
 single dominant covariate value, in which case the variance ranking
-is degenerate and the mask falls back to keep-all-bands, which we
-report transparently in the artefact metadata. Paired-ARI comparison
+is degenerate and the mask falls back to keep-all-bands; the fallback
+is recorded in the artefact metadata. Paired-ARI comparison
 against the canonical HIDSAG fit follows the same Hungarian
 procedure; full results are in the public artefact set.
 
@@ -382,19 +432,20 @@ scenes on which it is not. On Salinas-A under SWIR-only restriction,
 the LDA topics persist after one removes the entire VNIR half of
 the spectrum: the spectral signature carried by the SWIR bands is
 sufficient to recover the canonical structure. This is consistent
-with the prior literature on agricultural HSI, where SWIR
-reflectance dominates cellulose/lignin discrimination.
+with the location of the cellulose and lignin absorption features in
+the short-wave infrared~\cite{curran1989foliar}.
 
-On KSC and Botswana the diagnostic returns a partial-negative
-result. Paired ARI~$\approx 0.01$ means a masked-LDA observer would
+On KSC under every mask, and on Botswana under the SWIR mask, the
+diagnostic returns a partial-negative result. Paired
+ARI~$\approx 0.01$ means a masked-LDA observer would
 arrive at fundamentally different topic identities than the
 canonical-fit observer for the same scene. Two interpretations are
 consistent with this finding: (i) the canonical fit is exploiting
 band-level redundancy that does not survive restriction (an
 ill-identified topic basis), or (ii) the topics are weakly
 identified to begin with on those scenes (a small-sample-with-many-classes
-issue: KSC has 13 classes in 5,200 sampled pixels; Botswana has
-14 classes in 3,248 sampled pixels). The diagnostic does not
+issue: KSC has 13 classes sampled to 2,686 documents of 5,211 labelled
+pixels; Botswana has 14 classes sampled to 2,775 of 3,248). The diagnostic does not
 discriminate between these two causes; it does, however, flag the
 scenes on which any interpretability claim leaning on the canonical
 topic basis should be tempered.
@@ -412,24 +463,26 @@ the same classifier built on a band-robust basis.
 \label{sec:repro}
 % ---------------------------------------------------------------------
 
-The full sweep ships as 24 (labelled scene, mask) tuples plus 20
+The full sweep is released as 24 (labelled scene, mask) tuples plus 20
 (HIDSAG subset, mask) tuples = 44 LDA refits with the per-tuple
 JSON summary (top words at $\lambda = 0.5$, $K \times K$ cosine
 distance matrix, $P(L \mid t)$, perplexity, ARI vs label, full
-Hungarian alignment), the per-pixel \texttt{dominant\_topic\_map.bin}
+Hungarian alignment), the per-pixel \path{dominant_topic_map.bin}
 (uint8 $H \times W$ with sentinel 255 for unlabelled), and the
-per-pixel \texttt{theta\_grid.bin} (float32 $H \times W \times K$
+per-pixel \path{theta_grid.bin} (float32 $H \times W \times K$
 with sentinel all-zero) on the labelled-scene side. Total derived
-footprint: 1734 deterministic artefacts, 449~MB.
+footprint: 3895 deterministic artefacts, 449~MB.
 
+{\raggedright
 A FastAPI backend serves the artefacts at three endpoints:
-\texttt{/api/band-masks}, \texttt{/api/band-masks/\{scene\}/\{mask\}},
-\texttt{/api/band-masks/canonical-comparison}, plus the HIDSAG
-companions. A 109-endpoint smoke harness verifies endpoint health
-and SPA-shell content on every deploy.
+\path{/api/band-masks}, \path|/api/band-masks/{scene}/{mask}|,
+\path{/api/band-masks/canonical-comparison}, plus the HIDSAG
+companions. A test harness covering 109 endpoints verifies endpoint
+health and the content of the single-page-application shell at each
+deployment.\par}
 
-The full source --- builders, FastAPI app, React frontend, and the
-companion technical documentation wiki --- is available at
+The full source (builders, FastAPI app, React frontend, and the
+companion technical documentation wiki) is available at
 \url{https://github.com/fsantibanezleal/CAOS_LDA_HSI}. The live
 interactive deployment is at \url{https://lda-hsi.fasl-work.com}.
 
@@ -447,8 +500,8 @@ plus a Hungarian topic-id alignment. Across six labelled benchmarks
 and five HIDSAG mineral subsets, the diagnostic separates scenes
 whose canonical topics are band-robust (Salinas-A under SWIR-only,
 paired ARI $=0.77$) from scenes whose canonical topics are
-band-fragile (KSC and Botswana, paired ARI $\approx 0.01$). The
-full sweep, including 1734 deterministic JSON and binary artefacts,
+band-fragile (KSC under every mask, Botswana under SWIR, paired ARI
+$\approx 0.01$). The full sweep, including 3895 deterministic JSON and binary artefacts,
 is publicly released to support follow-on work.
 
 Future directions include extending the diagnostic to non-canonical
@@ -478,7 +531,7 @@ mineralogy with industrial partners in Chilean mining geosciences.
 
 The author is a co-author of the HIDSAG dataset descriptor
 publication~\cite{hidsag2023} and the accompanying data
-release~\cite{hidsag2023figshare}. The present manuscript is
+release~\cite{hidsag2023figshare}. The present paper is
 methodologically distinct: it proposes a band-mask robustness
 diagnostic for LDA on HSI and applies it, among other benchmarks,
 to the HIDSAG mineralogical subsets. HIDSAG is cited as a data
