@@ -59,10 +59,10 @@ SCENES = [
     "indian-pines-corrected", "salinas-corrected", "salinas-a-corrected",
     "pavia-university", "kennedy-space-center", "botswana",
 ]
-# V15 is excluded from every F-15 analysis: its archived uniform_Q8 doc-term file
+# Every recipe is included. V15's uniform_Q8 corpus was regenerated in 2026-09 (issue #817); before that it
 # holds the Q=32 vocabulary (192 tokens; 96 on Pavia U), so its archived F-15 was
 # computed against token indices that do not match the Q=8 topics (48; 24 on Pavia U).
-EXCLUDED = {"V15"}
+EXCLUDED: set[str] = set()
 RECIPES = [r for r in [f"V{i}" for i in range(1, 16)] + ["V17", "V18", "V19", "V20"]
            if r not in EXCLUDED]
 
@@ -144,10 +144,26 @@ def collect() -> list[dict]:
     return rows
 
 
+def _ranks(x: np.ndarray) -> np.ndarray:
+    """Ranks with ties averaged. Plain argsort ranks break ties by position, which is itself a tie
+    artefact: six recipes share F-15 = 1.000 here, and their order would set part of the coefficient."""
+    x = np.asarray(x, dtype=float)
+    order = np.argsort(x, kind="mergesort")
+    ranks = np.empty(len(x), dtype=float)
+    ranks[order] = np.arange(len(x), dtype=float)
+    i = 0
+    while i < len(x):
+        j = i
+        while j + 1 < len(x) and x[order[j + 1]] == x[order[i]]:
+            j += 1
+        if j > i:
+            ranks[order[i:j + 1]] = (i + j) / 2.0
+        i = j + 1
+    return ranks
+
+
 def spearman(a: np.ndarray, b: np.ndarray) -> float:
-    ar = np.argsort(np.argsort(a))
-    br = np.argsort(np.argsort(b))
-    return float(np.corrcoef(ar, br)[0, 1])
+    return float(np.corrcoef(_ranks(a), _ranks(b))[0, 1])
 
 
 def main() -> int:
