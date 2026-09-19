@@ -47,9 +47,9 @@
 % Page-1 header block (conventions/manuscript-header-standard.md). The four document
 % macros are set by the publishing tool when the version DOI is reserved.
 \newcommand{\doctype}{Preprint}
-\newcommand{\docversion}{v1.3}
-\newcommand{\docdate}{18 September 2026}
-\newcommand{\versiondoi}{10.5281/zenodo.22826849}
+\newcommand{\docversion}{v1.4}
+\newcommand{\docdate}{19 September 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.22850125}
 \newcommand{\conceptdoi}{10.5281/zenodo.21504117}
 \newcommand{\docrepo}{github.com/fsantibanezleal/CAOS\_LDA\_HSI}
 \newcommand{\headerblock}{%
@@ -133,7 +133,7 @@ identifies V8 (NFINDR endmember-fraction) as the most
 cross-backbone-consistent recipe by a clear margin (mean 0.431); V20 (0.397) and
 V2 (0.395) rank second and third, with V20 the only \emph{label-aware}
 recipe in the consistently-strong family. The per-backbone F-7 winners are V12 (LDA, 0.534),
-V11 (HDP, 0.571), V8 (ProdLDA, 0.328) and V11 (ETM, 0.530). V13 (vector-quantised VAE) underperforms
+V11 (HDP, 0.571), V8 (ProdLDA, 0.328) and V20 (ETM, 0.490). V13 (vector-quantised VAE) underperforms
 sharply; V18 (graph-Laplacian eigenvector tokens) places third on F-7
 mean among the extension recipes (V13--V20). The per-axis
 winner depends both on the scene and on which
@@ -1090,14 +1090,10 @@ the mean F-2 $c_v$ across the six labelled scenes for one
 (backbone, recipe) pair; one row per backbone, recipes in index
 order. Green border + $\star$ = per-backbone winner; V20 (the
 label-aware recipe) is labelled in bold purple (yellow on dark cells),
-and the footer gives its rank within each row (LDA 2, HDP 11, ProdLDA
-4, ETM 3; under HDP, V20 is tenth without the V15 cell noted at the
-end of this caption). No recipe dominates every backbone: LDA and ETM pick V12,
+and the footer gives its rank within each row (LDA 2, HDP 10, ProdLDA
+4, ETM 3). No recipe dominates every backbone: LDA and ETM pick V12,
 with V3 and V20 close behind; HDP picks V7 (sparse absorption tokens);
-ProdLDA picks V3. The HDP cell for V15 (0.52) was computed on the
-stored V15 wordification that holds the $Q=32$ vocabulary (192 tokens;
-96 on Pavia~U); every other V15 value at $Q=8$ in this paper uses the
-$Q=8$ vocabulary (48 tokens; 24 on Pavia~U).}
+ProdLDA picks V3. Every cell uses the $Q=8$ vocabulary.}
 \label{fig:backbone-factorial}
 \end{figure*}
 
@@ -1144,10 +1140,10 @@ Table~\ref{tab:f7-4backbone} adds F-7 NMI under each non-LDA backbone.
 \begin{table}[ht]
 \caption{F-7 NMI mean across the six labelled scenes, top-12 recipes
 $\times$ four topic-model backbones (full sweep, 456/456 cells).
-Bold = per-backbone winner. Recipes sorted by 4-backbone mean. LDA uses
-the per-recipe K of \S\ref{subsec:k-policy}; the F-7 runs of ProdLDA and
-ETM use $K = K_{\text{P1}}$ for every recipe, and HDP truncates at 20
-topics.}
+Bold = per-backbone winner. Recipes sorted by 4-backbone mean. LDA,
+ProdLDA and ETM use the per-recipe K of \S\ref{subsec:k-policy}, so the
+three fixed-K backbones are compared at one topic count per cell; HDP
+truncates at 20 topics.}
 \label{tab:f7-4backbone}
 \centering
 \scriptsize
@@ -1157,15 +1153,15 @@ topics.}
 Recipe & LDA & HDP & ProdLDA & ETM & \textbf{Mean} \\
 \midrule
 \textbf{V8}  (NFINDR)       & 0.463 & 0.451 & \textbf{0.328} & 0.482 & \textbf{0.431} \\
-V20 (MI-weighted)           & 0.520 & 0.356 & 0.221 & 0.490 & 0.397 \\
+V20 (MI-weighted)           & 0.520 & 0.356 & 0.221 & \textbf{0.490} & 0.397 \\
 V2  (intensity-bin)         & 0.453 & 0.347 & 0.324 & 0.456 & 0.395 \\
-V11 (product quantisation)  & 0.292 & \textbf{0.571} & 0.088 & \textbf{0.530} & 0.370 \\
 V12 (GMM-token)             & \textbf{0.534} & 0.220 & 0.238 & 0.488 & 0.370 \\
 V3  (joint band-bin)        & 0.524 & 0.200 & 0.169 & 0.443 & 0.334 \\
-V19 (UMAP coord)            & 0.286 & 0.530 & 0.051 & 0.394 & 0.315 \\
-V15 (spectral indices)      & 0.313 & 0.438 & 0.058 & 0.449 & 0.315 \\
-V13 (VQ-VAE)                & 0.311 & 0.399 & 0.113 & 0.406 & 0.307 \\
 V14 (CWT-Morlet)            & 0.457 & 0.220 & 0.114 & 0.430 & 0.306 \\
+V11 (product quantisation)  & 0.292 & \textbf{0.571} & 0.018 & 0.329 & 0.303 \\
+V15 (spectral indices)      & 0.313 & 0.438 & 0.052 & 0.297 & 0.275 \\
+V19 (UMAP coord)            & 0.286 & 0.530 & 0.016 & 0.261 & 0.273 \\
+V13 (VQ-VAE)                & 0.311 & 0.399 & 0.027 & 0.327 & 0.266 \\
 V18 (graph-Laplacian)       & 0.428 & 0.198 & 0.080 & 0.330 & 0.259 \\
 V1  (band-frequency)        & 0.455 & 0.081 & 0.091 & 0.381 & 0.252 \\
 \bottomrule
@@ -1176,36 +1172,40 @@ V1  (band-frequency)        & 0.455 & 0.081 & 0.091 & 0.381 & 0.252 \\
 The 4-backbone $\times$ 19-recipe $\times$ 6-scene Q=8 factorial
 contains a non-trivial number of degenerate cells (F-7 below 0.01, an
 argmax topic that carries no label information): LDA 1/114, ETM 1/114,
-but \textbf{HDP 25/114 (22\%)} and \textbf{ProdLDA 41/114 (36\%)}. For
+but \textbf{HDP 25/114 (22\%)} and \textbf{ProdLDA 53/114 (46\%)}. For
 HDP, 22 of the 25 are on V1, V4, V5 and V6, the recipes for which HDP
-keeps between 1.2 and 2.2 effective topics (six-scene means of the F-2
-runs); across the nineteen recipes HDP's F-7 follows the number of
-topics it keeps (Spearman $\rho = 0.59$). The cross-backbone mean
+keeps between 1.2 and 2.3 effective topics ($N_{\mathrm{eff}}$,
+six-scene means of the F-2 runs); across the nineteen recipes HDP's F-7
+follows that effective number (Spearman $\rho = 0.59$). ProdLDA's
+degenerate cells concentrate on the recipes whose per-recipe $K$ is 3 or
+4: at those counts its encoder collapses onto one topic in most scenes.
+The cross-backbone mean
 reported in the table above averages these zeros together with the
 other fits.
 
 Excluding zero cells from the per-backbone means yields V8 0.431
 (unchanged, since V8 has no degenerate cells), V20 0.408 ($+0.011$, one
-ProdLDA zero on Indian Pines), V11 0.381 ($+0.011$), V12 0.393
-($+0.023$). V8 retains cross-backbone leadership under either
+ProdLDA zero on Indian Pines), V11 0.311 ($+0.008$, four ProdLDA zeros),
+V12 0.393 ($+0.023$). V8 retains cross-backbone leadership under either
 treatment of zeros. The F-7 value of every (backbone, recipe, scene)
 cell is archived in the code repository.
 
 \textbf{V8 (NFINDR endmember-fraction)} is the most
-cross-backbone-consistent recipe at mean F-7 NMI $= 0.431$; it lands top-5 under
+cross-backbone-consistent recipe at mean F-7 NMI $= 0.431$; it lands top-4 under
 every backbone, winning outright only under ProdLDA, and shares with V2
 the smallest standard deviation across the four backbones
 ($\sigma = 0.06$ for both). V20
 is the second-most consistent at $0.397$, retaining LDA strength
-($0.520$) and tying V12 on ETM ($0.490$ vs $0.488$; V11 leads ETM at
-$0.530$). V11 (product
-quantisation, vocab $M K_s = 32$) wins HDP and ETM outright but
-collapses under ProdLDA (0.088) and ranks low under LDA (0.292). F-7 is
-bounded by $\log K / H(Y)$, and under LDA V11's four-token documents
-take $K = 3$, which caps its six-scene mean at 0.46; its HDP and ETM
-means (0.571 and 0.530) exceed that cap, so this apparent
-backbone-specialist profile reflects the topic count at least as much
-as the backbone. The same holds for V19 under HDP (0.530).
+($0.520$) and winning ETM ahead of V12 ($0.490$ vs $0.488$). V11 (product
+quantisation, vocab $M K_s = 32$) wins HDP outright ($0.571$) but
+reaches only $0.292$ under LDA, $0.329$ under ETM and $0.018$ under
+ProdLDA. F-7 is bounded by $\log K / H(Y)$, and V11's four-token
+documents take $K = 3$ under all three fixed-K backbones, which caps its
+six-scene mean at 0.46; only HDP, which keeps up to 20 topics, exceeds
+that cap, so V11's profile is a nonparametric-backbone effect rather
+than a recipe that beats the others at equal topic count. The same
+holds for V19 under HDP (0.530 against 0.286 under LDA and 0.261 under
+ETM).
 V20's interpretability advantage relative to V8 and V11 is that it
 is the only \emph{label-aware} recipe in the consistently-strong
 family; V8 and V11 are label-unaware compressions of the spectrum.
@@ -1273,8 +1273,7 @@ F-14 inverted so all axes read ``higher = better''.
 F-2 / ETM and F-2 / ProdLDA cluster tightly ($\rho \ge 0.76$);
 F-14 anti-correlates with F-18 ($\rho = -0.74$, the vocabulary-size
 confounder); F-22 / F-7 correlate at $\rho = 0.58$ (robust topics tend
-to be label-aligned). The HDP column includes the V15 cells computed
-on the $Q=32$ vocabulary (Fig.~\ref{fig:backbone-factorial}).}
+to be label-aligned).}
 \label{fig:corr}
 \end{figure}
 
