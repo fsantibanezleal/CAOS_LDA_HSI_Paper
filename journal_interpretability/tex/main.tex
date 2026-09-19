@@ -50,9 +50,9 @@
 % Page-1 header block (conventions/manuscript-header-standard.md). The four document
 % macros are set by the publishing tool when the version DOI is reserved.
 \newcommand{\doctype}{Preprint}
-\newcommand{\docversion}{v1.3}
-\newcommand{\docdate}{18 September 2026}
-\newcommand{\versiondoi}{10.5281/zenodo.22826864}
+\newcommand{\docversion}{v1.4}
+\newcommand{\docdate}{19 September 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.22850133}
 \newcommand{\conceptdoi}{10.5281/zenodo.21504113}
 \newcommand{\docrepo}{github.com/fsantibanezleal/CAOS\_LDA\_HSI}
 \newcommand{\headerblock}{%
@@ -120,12 +120,13 @@ documents rather than by agreement between documents and topics. It is
 1.0 by construction for V2 and V8 (at most 12 word types, so a topic's
 top-10 covers the vocabulary) and for V9 (a one-token document can be
 judged aligned or ambiguous but never misaligned), and stays near 1.0
-for recipes with three or four tokens per document. V3 and V12, whose
-documents hold each of their 200 tokens once, score 0.12 and 0.16, but
-their top-10 is set by the order in which tied counts are sorted, and
-their F-15 moves between 0.03 and 0.18 with that order. V20 re-weights
-V3's identical $(\mathrm{band},\mathrm{bin})$ alphabet and scores 0.47
-to 0.67 under every tie order; its topics are also less dispersed
+for recipes with three or four tokens per document. Where a document
+holds each of its tokens once, its top-10 is a tie, so we report the
+exact expectation of the rule under uniformly random tie-breaking
+rather than one sort order: V3 and V12 then score 0.17, against 0.03 to
+0.18 across individual orders. V20 re-weights
+V3's identical $(\mathrm{band},\mathrm{bin})$ alphabet and scores 0.65;
+its topics are also less dispersed
 (effective vocabulary $N_{\mathrm{eff}}=\exp\!\big(H(\phi_k)\big)$ of
 309 against 431 for V3 and 400 for V12), but its per-band copies also
 make each document's top-10 its highest-copy bands, so the comparison
@@ -134,8 +135,8 @@ measures the documents' token structure more than topic
 interpretability, and an LLM oracle given the same token lists would
 face the same construction effects. We recommend reporting F-13 SHAP
 top-$K$ attributions as the primary interpretability artefact, F-22 as
-the topic-stability artefact, and F-15 only after the rule is corrected
-for these effects.
+the topic-stability artefact, and F-15 only with its construction
+effects reported beside it.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -308,10 +309,8 @@ mean across the six scenes.
 \textbf{F-15 and the dispersion metric.} F-15 applies rule
 \eqref{eq:f15} to $20$ sampled documents per $(V,\text{scene})$ cell,
 with $N=10$ and $\tau=3$. Here $\mathrm{top}_k(n_d)$ lists the
-document's $k$ highest-count tokens among those with non-zero count,
-in the order of a descending sort of the counts
-(\texttt{numpy.argsort}, which leaves the order among equal counts to
-the sorting algorithm),
+document's $k$ highest-count tokens among those with non-zero count;
+where equal counts straddle the cut, the list is not unique,
 $\mathrm{supp}(n_d)$ is the set of tokens with non-zero count, and
 $\mathrm{top}_N(\phi_{\hat z_d})$ is the top-$N$ list of the document's
 argmax topic. A document is \emph{aligned} if its top-10 tokens share
@@ -324,7 +323,16 @@ than three non-zero tokens and none of them is among the topic's
 top-10. Ambiguous documents are excluded from the denominator: F-15 is
 the number of aligned documents divided by the number of aligned and
 misaligned ones. Exclusion affects V9 (36 of its 120 sampled documents)
-and V17 (26 of 120) and no other recipe. Alongside F-15 we compute,
+and V17 (26 of 120) and no other recipe. Because ties make the two
+top-$N$ lists ambiguous, we evaluate each judged document under
+uniformly random tie-breaking, independently in the document and in its
+argmax topic, and report the exact expectation
+$\sum_d P(\mathrm{YES}_d) / \sum_d (P(\mathrm{YES}_d) +
+P(\mathrm{NO}_d))$, computed by hypergeometric counting in rational
+arithmetic (\path{research_core/f15_alignment.py} of the code
+repository). The value equals the single-sort rule wherever no tie
+crosses a cut, and it does not change if the tokens or the topics are
+renumbered. Alongside F-15 we compute,
 for each topic-word distribution $\phi_k$, the token-mass dispersion
 of \eqref{eq:dispersion},
 \[
@@ -337,9 +345,10 @@ top-$N$ is more likely to overlap a document's top-$N$; a high
 $N_{\mathrm{eff}}$ spreads mass thinly and depresses the overlap even
 when the topic is coherent. We report the per-recipe mean of
 $N_{\mathrm{eff}}(\phi_k)$ over topics and scenes, paired with F-15 and
-$|\mathcal{V}|$ (Fig.~\ref{fig:dispersion}). To measure the effect of
-tied counts we re-apply the rule to the archived fits with ties broken
-by band index and at random (five seeds).
+$|\mathcal{V}|$ (Fig.~\ref{fig:dispersion}). To show what the tie
+handling is worth, we also re-apply the single-sort rule to the same
+fits with ties broken by the archived order, by band index and at
+random (five seeds).
 
 % =====================================================================
 \section{F-13 SHAP results}\label{sec:f13}
@@ -436,13 +445,10 @@ Per-recipe mean F-15 across the 6 labelled scenes:
 \caption{F-15 LLM-judge alignment fraction (deterministic stand-in
 judge applying the rule of \S\ref{sec:method}). Numeric vocabulary
 sizes are means over the six scenes, except for V8, whose vocabulary
-is its set of 6--12 endmembers per scene. V15 has no F-15 value: its
-archived $Q=8$ document file holds the $Q=32$ vocabulary (192 tokens;
-96 on Pavia~U), so F-15 could not be computed against the $Q=8$
-topics (48 tokens; 24 on Pavia~U). V15 is excluded from the F-15
-analyses, including Figs.~\ref{fig:dispersion} and~\ref{fig:f15vocab}.
-The 1.000 of V2, V8 and V9 is fixed by the rule, and V3 and V12 depend
-on the order of tied counts (Table~\ref{tab:f15ties}).}
+is its set of 6--12 endmembers per scene. Values are the expectation of
+the rule under uniformly random tie-breaking (\S\ref{sec:method}); the
+1.000 of V2, V8 and V9 is fixed by the rule itself
+(Table~\ref{tab:f15ties}).}
 \label{tab:f15}
 \centering
 \small
@@ -455,20 +461,20 @@ V6  & 1.000 & $\approx B$ \\
 V8  & 1.000 & 6--12 \\
 V9  & 1.000 & $R \cdot Q$ \\
 V10 & 1.000 & 24 \\
-V18 & 1.000 & 128 \\
 V19 & 1.000 & 24 \\
-V11 & 0.992 & 32 \\
-V5  & 0.967 & $B$ \\
-V13 & 0.950 & 128 \\
-V14 & 0.950 & 1024 \\
-V4  & 0.917 & $B$ \\
-V1  & 0.792 & $B$ \\
-V7  & 0.783 & $\le C_b Q^2$ \\
-V20 & 0.642 & $B Q$ \\
-V17 & 0.570 & 512 \\
-V12 & 0.158 & $B Q$ \\
-V3  & 0.117 & $B Q$ \\
-V15 & -- & 44 \\
+V18 & 0.998 & 128 \\
+V15 & 0.988 & 44 \\
+V11 & 0.979 & 32 \\
+V5  & 0.969 & $B$ \\
+V14 & 0.955 & 1024 \\
+V13 & 0.952 & 128 \\
+V4  & 0.926 & $B$ \\
+V7  & 0.807 & $\le C_b Q^2$ \\
+V1  & 0.800 & $B$ \\
+V20 & 0.653 & $B Q$ \\
+V17 & 0.542 & 512 \\
+V12 & 0.171 & $B Q$ \\
+V3  & 0.167 & $B Q$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -490,47 +496,53 @@ rule can judge such a document aligned or ambiguous but never
 misaligned (a misaligned outcome needs at least three non-zero tokens),
 so V9's 1.000 (84 aligned, 0 misaligned, 36 ambiguous) is fixed by the
 rule. The recipes with three or four tokens per document (V10, V11,
-V13, V19) score 0.95 to 1.00 whatever the tie order, since their whole
-document enters its own top-10.
+V13, V19) score 0.95 to 1.00, since their whole document enters its own
+top-10.
 
 \emph{(iii) Tied counts.} V3 and V12 documents hold each of their 200
-tokens once, so their top-10 is chosen by the sort's order among equal
-counts, not by the document's content. With ties broken by band index
-or at random, V3 moves between 0.033 and 0.180 and V12 between 0.067
-and 0.173, around the archived 0.117 and 0.158, and their order
-reverses.
+tokens once, so no sort order of the counts carries information about
+the document: every one of their judged documents is tie-dependent (119
+and 120 of 120). A single sort therefore reports one arbitrary draw,
+between 0.033 and 0.180 for V3 and between 0.067 and 0.173 for V12,
+with the two recipes changing places between orders. Under the
+expectation of the rule they are 0.167 and 0.171, which is what
+Table~\ref{tab:f15} reports.
 
-\begin{table}[ht]
-\caption{F-15 under three orders of tied document counts (six-scene
-means): the archived order (a descending \texttt{numpy.argsort}), band
-index, and random (mean of five seeds); outcomes over the 120 judged
-documents in the archived order (aligned / misaligned / ambiguous); the
-number of those documents whose non-zero counts are all equal; and the
-mean document length on Indian Pines.}
+\begin{table*}[ht]
+\caption{What the tie handling is worth (six-scene means): the
+reported expectation over tie orders, then the single-sort rule under
+three orders (the archived descending \texttt{numpy.argsort}, band
+index, and random over five seeds); the expected outcomes over the 120
+judged documents (aligned / misaligned / ambiguous); the number of
+judged documents whose outcome depends on the tie order; the number
+whose non-zero counts are all equal; and the mean document length on
+Indian Pines. V15 is computed on the regenerated $Q=8$ corpus.}
 \label{tab:f15ties}
 \centering
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{lcccccc}
+\begin{tabular}{lccccccrr}
 \toprule
-Recipe & archived & index & random & outcomes & equal-count & tokens/doc \\
+Recipe & expectation & archived & index & random & E[outcomes] & tie-dep. & equal-count & tokens/doc \\
 \midrule
-V2  & 1.000 & 1.000 & 1.000 & 120 / 0 / 0   & 0   & 200 \\
-V8  & 1.000 & 1.000 & 1.000 & 120 / 0 / 0   & 9   & 14 \\
-V9  & 1.000 & 1.000 & 1.000 & 84 / 0 / 36   & 120 & 1 \\
-V10 & 1.000 & 1.000 & 1.000 & 120 / 0 / 0   & 120 & 3 \\
-V13 & 0.950 & 0.967 & 0.957 & 114 / 6 / 0   & 120 & 4 \\
-V14 & 0.950 & 0.958 & 0.955 & 114 / 6 / 0   & 120 & 16 \\
-V1  & 0.792 & 0.733 & 0.817 & 95 / 25 / 0   & 0   & 450 \\
-V20 & 0.642 & 0.467 & 0.667 & 77 / 43 / 0   & 0   & 1187 \\
-V12 & 0.158 & 0.067 & 0.173 & 19 / 101 / 0  & 120 & 200 \\
-V3  & 0.117 & 0.033 & 0.180 & 14 / 106 / 0  & 120 & 200 \\
+V2  & 1.000 & 1.000 & 1.000 & 1.000 & 120 / 0 / 0        & 0   & 0   & 200 \\
+V8  & 1.000 & 1.000 & 1.000 & 1.000 & 120 / 0 / 0        & 0   & 9   & 14 \\
+V9  & 1.000 & 1.000 & 1.000 & 1.000 & 84 / 0 / 36        & 0   & 120 & 1 \\
+V10 & 1.000 & 1.000 & 1.000 & 1.000 & 120 / 0 / 0        & 0   & 120 & 3 \\
+V15 & 0.988 & 0.992 & --    & --    & 118.6 / 1.4 / 0    & 4   & 120 & 6 \\
+V14 & 0.955 & 0.950 & 0.958 & 0.955 & 114.7 / 5.3 / 0    & 65  & 120 & 16 \\
+V13 & 0.952 & 0.950 & 0.967 & 0.957 & 114.3 / 5.8 / 0    & 7   & 120 & 4 \\
+V1  & 0.800 & 0.792 & 0.733 & 0.817 & 96.1 / 23.9 / 0    & 52  & 0   & 450 \\
+V20 & 0.653 & 0.642 & 0.467 & 0.667 & 78.4 / 41.6 / 0    & 97  & 0   & 1187 \\
+V12 & 0.171 & 0.158 & 0.067 & 0.173 & 20.6 / 99.4 / 0    & 120 & 120 & 200 \\
+V3  & 0.167 & 0.117 & 0.033 & 0.180 & 20.1 / 99.9 / 0    & 119 & 120 & 200 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 The one contrast that survives every tie order is V20 against V3 and
-V12 (0.47 to 0.67 against at most 0.18), at the same nominal
+V12 (0.653 against 0.167 and 0.171 under the expectation, 0.47 to 0.67
+against at most 0.18 across single orders), at the same nominal
 vocabulary (mean $|\mathcal{V}|\approx1376$; V3 and V20 share the
 identical $(\mathrm{band},\mathrm{bin})$ alphabet). The effective
 vocabulary $N_{\mathrm{eff}}=\exp(H)$ of \eqref{eq:dispersion} separates
@@ -543,18 +555,20 @@ is made of its highest-copy bands, the same bands whose repeated tokens
 dominate V20's topics, whereas V3 and V12 documents carry no such
 ranking. The document side of the rule therefore differs across the
 three recipes, and the V20 gap cannot be attributed to topic dispersion
-alone. Across the eighteen recipes F-15 correlates negatively with
-$N_{\mathrm{eff}}$ (Spearman $\rho = -0.71$) and with $|\mathcal{V}|$
-($\rho = -0.60$); both correlations carry the construction effects
+alone. Across the nineteen recipes F-15 correlates negatively with
+$N_{\mathrm{eff}}$ (Spearman $\rho = -0.77$, average ranks for the tied
+values) and with $|\mathcal{V}|$ ($\rho = -0.68$); both correlations
+carry the construction effects
 above, since the small-vocabulary and short-document recipes have both
 a low $N_{\mathrm{eff}}$ and a forced or near-forced F-15.
 
-A defensible F-15 would compare the observed overlap with the overlap
-expected for matched random token lists, rank a document's tokens only
-where its counts are graded (or break ties by a content-based order),
-and count a recipe only where the rule can return every outcome; a
-semantic embedding distance between token identifiers is a further
-option. We flag these as future work and recommend reading
+The tie dependence is settled by the expectation above; what remains
+is that the rule still rewards small vocabularies and short documents.
+A defensible F-15 would also compare the observed overlap with the
+overlap expected for matched random token lists, and count a recipe
+only where the rule can return every outcome; a semantic embedding
+distance between token identifiers is a further option. We flag these
+as future work and recommend reading
 Table~\ref{tab:f15} as a description of how the rule behaves on each
 recipe, not as a ranking of topic interpretability.
 
@@ -564,15 +578,15 @@ recipe, not as a ranking of topic interpretability.
 \caption{F-15 LLM-judge alignment versus per-topic mean
 token-mass dispersion $N_{\mathrm{eff}}=\exp(H(\phi_k))$
 \eqref{eq:dispersion}, LDA backbone, six labelled scenes, $Q=8$,
-eighteen recipes (V15 excluded, Table~\ref{tab:f15}); the
-Spearman coefficients in the title are computed over the same
-eighteen. Point colours are categorical: green for the low-$N_{\mathrm{eff}}$
+nineteen recipes (Table~\ref{tab:f15}); the Spearman coefficients in
+the title are computed over the same nineteen, with average ranks for
+tied values. Point colours are categorical: green for the low-$N_{\mathrm{eff}}$
 recipes (V2, V8, V10, V14), purple for the high-$N_{\mathrm{eff}}$
 recipes (V3, V12, V17, V20), grey for the others. At the same alphabet
 size (mean nominal $|\mathcal{V}|\approx1376$), V3 / V12 / V20 (purple,
 lower right) fall in dispersion ($431\!>\!400\!>\!309$) while F-15 is
-$0.12$, $0.16$ and $0.64$; the V3 and V12 values depend on the order of
-their tied counts, and V2, V8 and V9 sit at 1.0 by construction
+$0.17$, $0.17$ and $0.65$; the V3 and V12 values are expectations over
+tie orders, and V2, V8 and V9 sit at 1.0 by construction
 (Table~\ref{tab:f15ties}), so the plotted association mixes dispersion
 with the rule's construction effects.}
 \label{fig:dispersion}
@@ -582,10 +596,10 @@ with the rule's construction effects.}
 \centering
 \includegraphics[width=\columnwidth]{p5-f15-vocab.pdf}
 \caption{F-15 versus nominal vocabulary $|\mathcal{V}|$ (log scale),
-eighteen recipes (V15 excluded, Table~\ref{tab:f15}). A pure
+nineteen recipes (Table~\ref{tab:f15}). A pure
 vocabulary-size account would place all points on a monotone
 decreasing curve. V14 ($|\mathcal{V}|=1024$, 16 tokens per document,
-F-15 $=0.95$) and V20 ($|\mathcal{V}|\approx1376$, F-15 $=0.64$) sit far
+F-15 $=0.96$) and V20 ($|\mathcal{V}|\approx1376$, F-15 $=0.65$) sit far
 above V3 / V12, so vocabulary size alone does not set F-15; V9
 ($|\mathcal{V}|=647$, F-15 $=1.0$) is fixed by the rule and is no
 evidence either way.}
@@ -672,10 +686,11 @@ For interpretability reporting, we recommend the following ordering:
     expert can immediately query.
   \item \textbf{F-22 counterfactual robustness.} Complements F-2/F-7
     by ruling out trivial-overfit explanations.
-  \item \textbf{F-15 LLM-judge.} Only after the rule is corrected for
-    its construction effects (\S\ref{sec:f15}). As defined it rewards
-    small vocabularies and short documents, cannot judge one-token
-    documents misaligned, and depends on the order of tied counts.
+  \item \textbf{F-15 LLM-judge.} Only with its construction effects
+    reported beside it (\S\ref{sec:f15}). The rule rewards small
+    vocabularies and short documents and cannot judge one-token
+    documents misaligned; its tie dependence is removed by taking the
+    expectation over tie orders.
 \end{enumerate}
 
 The V13--V20 extension (\S\ref{sec:v13-v20-interp}) further suggests
@@ -720,8 +735,9 @@ for reasons that have nothing to do with topic quality. The
 anti-correlation between F-15 and F-2 on V3 / V12 is not evidence that
 those recipes produce incoherent topics (P3 ranks V12 \emph{first}
 on F-2 and F-7) but evidence that a top-$N$ identity-overlap rule is
-governed by its construction: vocabulary size, tokens per document and
-the order of tied counts (\S\ref{sec:f15}). An actual LLM oracle, given
+governed by its construction: vocabulary size and tokens per document
+(\S\ref{sec:f15}), and, unless ties are averaged out as they are here,
+the order of tied counts. An actual LLM oracle, given
 the same token lists and asked for identity overlap, would inherit the
 same effects; only a judge equipped with
 \emph{semantic} comparison of token meanings (e.g.\ the spectral
@@ -761,8 +777,7 @@ behaviour that a true oracle might; the API builder
 (\path{build_v_sweep_f15_llm_alignment.py}) is provided for users
 who wish to substitute live judging. Our claims about F-15 concern the
 \emph{metric definition} \eqref{eq:f15} and its inputs (the top-$N$
-token lists) and hold for any judge that receives those lists,
-including the order of tied counts that defines them.
+token lists) and hold for any judge that receives those lists.
 
 \textbf{$N_{\mathrm{eff}}$ is computed on $\phi_k$.} We measure
 dispersion on the topic--word distributions, the quantity the
@@ -799,14 +814,15 @@ Third, and most important methodologically, F-15 as defined is
 governed by construction effects of its top-10 overlap rule rather
 than by agreement between documents and topics: it is 1.0 by
 construction for small vocabularies (V2, V8) and one-token documents
-(V9), near 1.0 for three- and four-token documents, and for recipes
-whose documents hold every token once (V3, V12) it depends on the
-order of tied counts (0.03 to 0.18). V20 stays far above V3 and V12
-under every tie order and has less dispersed topics
+(V9), and near 1.0 for three- and four-token documents. For recipes
+whose documents hold every token once (V3, V12) no sort order is
+informative, so we report the expectation over tie orders (0.167 and
+0.171) instead of one draw between 0.03 and 0.18. V20 stays far above
+V3 and V12 under every tie order and has less dispersed topics
 ($N_{\mathrm{eff}}$ 309 against 431 and 400), but its copies also rank
 the tokens of its documents, so the gap cannot be attributed to topic
-dispersion. We therefore recommend reporting F-15 only after the rule
-is corrected for these effects, and we caution that LLM-as-judge topic
+dispersion. We therefore recommend reporting F-15 only with these
+construction effects beside it, and we caution that LLM-as-judge topic
 evaluation inherits them unless the judge is given token
 \emph{semantics} rather than token strings. Extending these axes across
 the P4 backbones, and re-checking the F-15 results on the HIDSAG

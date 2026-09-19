@@ -45,9 +45,9 @@
 % Page-1 header block (conventions/manuscript-header-standard.md). The four document
 % macros are set by the publishing tool when the version DOI is reserved.
 \newcommand{\doctype}{Preprint}
-\newcommand{\docversion}{v1.4}
-\newcommand{\docdate}{18 September 2026}
-\newcommand{\versiondoi}{10.5281/zenodo.22826844}
+\newcommand{\docversion}{v1.5}
+\newcommand{\docdate}{19 September 2026}
+\newcommand{\versiondoi}{10.5281/zenodo.22850118}
 \newcommand{\conceptdoi}{10.5281/zenodo.21504115}
 \newcommand{\docrepo}{github.com/fsantibanezleal/CAOS\_LDA\_HSI}
 \newcommand{\headerblock}{%
@@ -473,26 +473,31 @@ the structure
 \text{score}_{m,s,f}
 &= \mu_m + \delta_s + \rho_f + \epsilon_{m,s,f}, \\
 \mu_m &\sim \mathcal{N}(0, 1), \\
-\delta_s &\sim \mathcal{N}(0, 0.5), \\
-\rho_f &\sim \mathcal{N}(0, 0.2), \\
+\delta_s &\sim \mathrm{ZeroSumNormal}(0.5), \\
+\rho_f &\sim \mathrm{ZeroSumNormal}(0.2), \\
 \epsilon_{m,s,f} &\sim \mathcal{N}(0, \sigma), \quad
 \sigma \sim \mathrm{HalfNormal}(0.5),
 \end{align}
 where $m$ ranges over methods, $s$ over scenes, $f$ over folds, and
-$\text{score}$ is the fold-level macro-F1. Sampling is performed with NUTS
-(1000 draws, 1000 tune, 2 chains) on the labelled-scene block; the
-HIDSAG block uses a parallel model with subsets in place of scenes and
-targets in place of folds. The archived fits record no convergence
-diagnostic such as the rank-normalised $\widehat{R}$ of Vehtari et
-al.~\cite{vehtari2021rhat}. The model fixes no reference scene, so
-$\mu_m$ is identified only up to the scene offsets $\delta_s$: every
-$\mu_m$ shares a common shift (about $-0.17$ from the observed mean on
-the labelled block) and a common posterior spread (about 0.19), and
-only differences between methods are identified. We therefore report
-the observed mean macro-F1 of each method, its paired difference from
-the raw-spectrum baseline over the cells (scene and fold, or subset
-and target) with a 94\% bootstrap interval ($B = 5000$ resamples of
-the paired differences), and the pairwise probability
+$\text{score}$ is the fold-level macro-F1. The scene and fold effects
+sum to zero, which identifies each $\mu_m$ as that method's mean score
+over the cells; on the HIDSAG block the subset offsets satisfy the
+weighted constraint $\sum_s n_s \delta_s = 0$ and the target effects
+sum to zero within each subset, so $\mu_m$ is again the method's mean
+over the targets. Sampling is performed with NUTS (numpyro, 4 chains,
+1000 draws, 1000 tune, target acceptance 0.9) on the labelled-scene
+block; the HIDSAG block uses a parallel model with subsets in place of
+scenes and targets in place of folds. Every quantity reported here
+(locations, all pairwise differences, group effects and $\sigma$)
+carries the rank-normalised $\widehat{R}$ of Vehtari et
+al.~\cite{vehtari2021rhat} and its bulk and tail effective sample
+sizes: across the two blocks $\widehat{R} \le 1.005$, bulk ESS $\ge
+2946$, tail ESS $\ge 2486$, with no divergent transitions. We report
+the observed mean macro-F1 of each method, the posterior location
+$\mu_m$ with its 94\% highest-density interval, its paired difference
+from the raw-spectrum baseline over the cells (scene and fold, or
+subset and target) with a 94\% bootstrap interval ($B = 5000$ resamples
+of the paired differences), and the pairwise probability
 $P[\mu_A > \mu_B]$ derived from the joint posterior. The model treats
 the residuals of different methods in the same cell as independent, so
 its $P[\mu_A > \mu_B]$ does not use the pairing; the folds of a scene
@@ -736,9 +741,10 @@ seeds $\{0, 1, 2, 3, 4\}$ for the seed-stability sweep. Their documents
 are band-frequency counts at scale $20$ (each min--max-normalised
 spectrum of the $220$-per-class sample multiplied by $20$ and rounded)
 rather than the $13$-level canonical tokenisation. The hierarchical
-Bayesian classifier of F-1 uses NUTS with $1000$ draws, $1000$ tune
-samples, 2 chains and a target acceptance of 0.9; the archived fits
-record no divergence or convergence diagnostics.
+Bayesian classifier of F-1 uses numpyro NUTS with $1000$ draws,
+$1000$ tune samples, 4 chains and a target acceptance of 0.9; the fits
+record $\widehat{R}$ and bulk and tail ESS for every reported quantity
+and report no divergent transitions.
 
 % ---------------------------------------------------------------------
 \section{Results}
@@ -755,8 +761,8 @@ record no divergence or convergence diagnostics.
 folds): mean paired macro-F1 difference of each method from
 \texttt{raw\_logistic} over the 30 (scene, fold) cells, with its 94\%
 bootstrap interval; the text gives the difference and the observed mean.
-(b) Pairwise $P[A > B]$ from the hierarchical Bayesian model (NUTS,
-1000 draws, 1000 tune, 2 chains). (c), (d) HIDSAG mineralogical subsets
+(b) Pairwise $P[A > B]$ from the hierarchical Bayesian model (numpyro
+NUTS, 1000 draws, 1000 tune, 4 chains). (c), (d) HIDSAG mineralogical subsets
 (19 targets across 5 subsets): the same two views. On both blocks the
 logistic regressions on topic proportions ($\theta$, cube-topic,
 region-topic) sit 0.27 to 0.34 below \texttt{raw\_logistic}; on the
@@ -771,38 +777,39 @@ classifier exceeds the raw-spectrum logistic baseline by 0.005 macro-F1
 (0.915 against 0.910; 94\% paired bootstrap interval 0.003 to 0.007,
 higher on 20 of the 30 cells), a small difference that the hierarchical
 model, which does not pair the cells, places at
-$P[\mu_{\text{soft}} > \mu_{\text{raw}}] = 0.641$. The theta-only
+$P[\mu_{\text{soft}} > \mu_{\text{raw}}] = 0.632$. The theta-only
 logistic regression trails the baseline by 0.325 on every one of the 30
 cells, confirming that $\theta$ alone discards information that the raw
 spectrum still contains; the routed classifiers recover it by keeping
 the raw spectrum as the input of each topic's expert.
 
-\begin{table}[t]
+\begin{table*}[t]
 \caption{F-1 on the labelled-scene block (six scenes $\times$ five
 folds $\times$ five methods = 150 observations): observed mean
-macro-F1, mean paired difference $\Delta$ from \texttt{raw\_logistic}
-with its 94\% bootstrap interval over the 30 cells, and
-$P = P[\mu_m > \mu_{\text{raw}}]$ from the hierarchical model. The
-model's posterior locations $\mu_m$ are not listed: they are identified
-only up to the scene offsets (\S\ref{subsec:b1}). All pairwise
+macro-F1, the model's posterior location $\mu$ with its 94\% HDI, mean
+paired difference $\Delta$ from \texttt{raw\_logistic} with its 94\%
+bootstrap interval over the 30 cells, and
+$P = P[\mu_m > \mu_{\text{raw}}]$ from the hierarchical model. The group
+effects sum to zero, so $\mu_m$ is the method's mean over the cells
+(\S\ref{subsec:b1}); $\sigma = 0.055$ [0.049, 0.062]. All pairwise
 probabilities are in the companion artefact
 (\texttt{cross\_classification\_bayesian.json}).}
 \label{tab:b1-labelled}
 \centering
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}lccccc@{}}
 \toprule
-Method & mean & $\Delta$ & 94\% interval & $P$ \\
+Method & mean & $\mu$ [94\% HDI] & $\Delta$ & 94\% interval & $P$ \\
 \midrule
-\texttt{topic\_routed\_soft}  & 0.915 & $+0.005$ & [$+0.003$, $+0.007$] & 0.641 \\
-\texttt{raw\_logistic}        & 0.910 & ref.     & --                   & --    \\
-\texttt{topic\_routed\_hard}  & 0.909 & $-0.001$ & [$-0.008$, $+0.006$] & 0.464 \\
-\texttt{pca\_K\_logistic}     & 0.847 & $-0.064$ & [$-0.099$, $-0.031$] & 0.000 \\
-\texttt{theta\_logistic}      & 0.586 & $-0.325$ & [$-0.359$, $-0.289$] & 0.000 \\
+\texttt{topic\_routed\_soft}  & 0.915 & 0.915 [0.896, 0.934] & $+0.005$ & [$+0.003$, $+0.007$] & 0.632 \\
+\texttt{raw\_logistic}        & 0.910 & 0.910 [0.891, 0.930] & ref.     & --                   & --    \\
+\texttt{topic\_routed\_hard}  & 0.909 & 0.909 [0.891, 0.928] & $-0.001$ & [$-0.008$, $+0.006$] & 0.468 \\
+\texttt{pca\_K\_logistic}     & 0.847 & 0.847 [0.827, 0.866] & $-0.064$ & [$-0.099$, $-0.031$] & 0.000 \\
+\texttt{theta\_logistic}      & 0.586 & 0.586 [0.567, 0.604] & $-0.325$ & [$-0.359$, $-0.289$] & 0.000 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 The HIDSAG block (Table~\ref{tab:b1-hidsag}) repeats the $\theta$-only
 result. The topic-logistic classifier trails the raw-logistic baseline
@@ -816,26 +823,27 @@ the raw spectrum exploits. This study has no HIDSAG results for the
 topic-routed classifiers, so it cannot say whether routing the raw
 spectrum through the topics would close the gap there.
 
-\begin{table}[t]
+\begin{table*}[t]
 \caption{F-1 on the HIDSAG block (19 targets across five subsets
 $\times$ five methods = 95 observations), in the format of
-Table~\ref{tab:b1-labelled}; intervals over the 19 paired targets.}
+Table~\ref{tab:b1-labelled}; intervals over the 19 paired targets;
+$\sigma = 0.136$ [0.114, 0.157].}
 \label{tab:b1-hidsag}
 \centering
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}lccccc@{}}
 \toprule
-Method & mean & $\Delta$ & 94\% interval & $P$ \\
+Method & mean & $\mu$ [94\% HDI] & $\Delta$ & 94\% interval & $P$ \\
 \midrule
-\texttt{raw\_logistic}           & 0.699 & ref.     & --                   & --    \\
-\texttt{pca\_logistic}           & 0.674 & $-0.025$ & [$-0.050$, $-0.003$] & 0.284 \\
-\texttt{topic\_logistic}         & 0.430 & $-0.268$ & [$-0.374$, $-0.176$] & 0.000 \\
-\texttt{region\_topic\_logistic} & 0.392 & $-0.307$ & [$-0.409$, $-0.212$] & 0.000 \\
-\texttt{cube\_topic\_logistic}   & 0.360 & $-0.339$ & [$-0.437$, $-0.246$] & 0.000 \\
+\texttt{raw\_logistic}           & 0.699 & 0.699 [0.637, 0.755] & ref.     & --                   & --    \\
+\texttt{pca\_logistic}           & 0.674 & 0.673 [0.615, 0.731] & $-0.025$ & [$-0.050$, $-0.003$] & 0.280 \\
+\texttt{topic\_logistic}         & 0.430 & 0.430 [0.374, 0.489] & $-0.268$ & [$-0.374$, $-0.176$] & 0.000 \\
+\texttt{region\_topic\_logistic} & 0.392 & 0.392 [0.332, 0.448] & $-0.307$ & [$-0.409$, $-0.212$] & 0.000 \\
+\texttt{cube\_topic\_logistic}   & 0.360 & 0.360 [0.302, 0.414] & $-0.339$ & [$-0.437$, $-0.246$] & 0.000 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 \subsection{F-2 + F-3: coherence and seed stability of LDA, ProdLDA, ETM}
 \label{subsec:res-b3}

@@ -35,8 +35,8 @@ circulates as preprints.
 | — | Internal technical report (design space, K-policy, V-sweep results, reproducibility audit, paper portfolio, HIDSAG results) | Internal notes (Markdown) | [`internal_tech_report/`](internal_tech_report/) | — | — |
 
 All five manuscripts are published as CC-BY-4.0 preprints on Zenodo. The DOIs
-above are the **concept DOIs** (each always resolves to the latest version;
-current version is v1.1, which adds the author ORCID icon + link). The manuscript
+above are the **concept DOIs** (each always resolves to the latest version:
+P1 v1.5, P2 v1.3, P3 v1.4, P4 v1.5 and P5 v1.4 as of 2026-09-19). The manuscript
 text and figures are CC-BY-4.0; the companion code and derived artefacts remain MIT.
 
 Each LaTeX manuscript ships in two formats:
