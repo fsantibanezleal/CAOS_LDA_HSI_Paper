@@ -112,10 +112,10 @@ def main() -> int:
         axes = [axes]
     for ax, (label, d, colour) in zip(axes, payloads):
         panel(ax, d, colour, label, x_range)
-    axes[-1].set_xlabel("wavelength (nm) — top-15 word λ per topic",
+    axes[-1].set_xlabel("wavelength (nm), top-15 word λ per topic",
                         fontsize=10)
     fig.suptitle(
-        f"Cross-method top-word λ comparison on {SCENE_LABEL} — "
+        f"Cross-method top-word λ comparison on {SCENE_LABEL}, "
         "LDA / ProdLDA / ETM",
         fontsize=11, y=0.995,
     )

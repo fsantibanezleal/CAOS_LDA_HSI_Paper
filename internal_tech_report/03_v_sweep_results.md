@@ -1,4 +1,4 @@
-# V-sweep results — full per-V per-scene per-axis numbers
+# V-sweep results: full per-V per-scene per-axis numbers
 
 This is the **single source of truth** for the V-sweep tables in P3.
 Any number that appears in the manuscript must match this file.
@@ -20,7 +20,7 @@ deferred to a follow-up). Source artefacts:
 - `data/derived/v_sweep/{hdp,prodlda,etm}_backbone/{scene}_{V}_uniform_Q8.json`
 - `data/derived/v_sweep/f1_bayesian_posterior.json` (pending NUTS run)
 
-## Coverage matrix (as of 2026-05-30 / c426 — **all 10 axes at 100%**)
+## Coverage matrix (as of 2026-05-30 / c426: **all 10 axes at 100%**)
 
 | Axis | Cells | Target (19 × 6) | Status |
 |---|---|---|---|
@@ -42,7 +42,7 @@ deferred to a follow-up). Source artefacts:
 × 6 scenes), plus the cross-scene transfer matrix (120 portable pairs)
 and the per-scene B-12 / F-15 LLM-judge cells.**
 
-## F-1 — topic-routed-soft macro-F1 (5-fold mean)
+## F-1: topic-routed-soft macro-F1 (5-fold mean)
 
 | Scene | V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 | V10 | V11 | V12 | V14 | V18 | V20 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -59,7 +59,7 @@ Spread (best − worst across all 15 recipes shown, mean of scenes)
 V2 0.9173, V20 0.9168 all sit inside a 0.008 band and within the
 bootstrap HDI of one another. On Indian Pines specifically, **V2
 wins F-1 (0.861)**, with V20 second (0.858), V8 0.857, V11/V12 0.853
-— a tie within noise, NOT a V20 win. V20's genuine Indian-Pines wins
+, a tie within noise, NOT a V20 win. V20's genuine Indian-Pines wins
 are F-2 (0.88) and F-7 (0.44); F-1 is a non-discriminating axis and
 V20's F-1 number is additionally label-leakage-contaminated by its
 MI weighting (see §1 of the reproducibility audit). The earlier
@@ -69,7 +69,7 @@ V14 and V18 are competitive (0.9145, 0.9132) but never win F-1
 outright. Their differences from V1 are within the bootstrap HDI
 shown below.
 
-## F-2 — top-10 c_v coherence (full 19-recipe matrix)
+## F-2: top-10 c_v coherence (full 19-recipe matrix)
 
 | Scene | V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 | V10 | V11 | V12 | V13 | V14 | V15 | V17 | V18 | V19 | V20 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -84,7 +84,7 @@ V1: 2 (KennedySC, Salinas-A). V3: 1 (Botswana). V12: 2 (PaviaU, Salinas).
 V20: 1 (IndianPines). V20 is the only new recipe to take a scene from
 the original V1..V12 ranking.
 
-## F-7 — normalised mutual information (topic-argmax vs label, full 19-recipe matrix)
+## F-7: normalised mutual information (topic-argmax vs label, full 19-recipe matrix)
 
 | Scene | V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 | V10 | V11 | V12 | V13 | V14 | V15 | V17 | V18 | V19 | V20 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -100,7 +100,7 @@ V3 wins 2 (KennedySC, Salinas-A). V12 wins 2 (PaviaU, Salinas).
 V20 wins 1 (IndianPines). V8 wins 1 (Botswana). **V1 wins 0/6**.
 
 Mean ranking (top 5): V12 (0.534), V3 (0.524), V20 (0.520), V8 (0.463),
-V14 (0.457). The top three are within 0.014 NMI — the F-7 ceiling is
+V14 (0.457). The top three are within 0.014 NMI, the F-7 ceiling is
 essentially saturated for fixed-K LDA. Further gains will need
 either a different backbone (HDP, ProdLDA, ETM) or V16 foundation
 embeddings.
@@ -118,41 +118,41 @@ embeddings.
 
 V12 is still the most consistent winner across the three axes. V3 is
 specialised on label-coupling. V20 (new, MI-weighted bands) is the
-first label-aware recipe in the sweep — it wins both F-2 and F-7 on
+first label-aware recipe in the sweep, it wins both F-2 and F-7 on
 Indian Pines. V1 is *not* the best on any axis on the hard scenes;
 it wins on the easiest scene (Salinas-A) where the spread is essentially
 noise.
 
-## V13..V20 extension — per-recipe mechanistic notes
+## V13..V20 extension: per-recipe mechanistic notes
 
-- **V13 (VQ-VAE codebook, M=4 sub-vectors, K=32 codewords)** — worst
+- **V13 (VQ-VAE codebook, M=4 sub-vectors, K=32 codewords)**: worst
   recipe in the sweep on F-2 mean (0.25) and second-worst on F-7 mean
   (0.31). The ST-estimator-trained codebook is reconstruction-optimal
   but the resulting tokens are non-Dirichlet-compatible. Don't use.
-- **V14 (CWT-Morlet 16 scales × 8 positions)** — 2nd on F-7 mean among
+- **V14 (CWT-Morlet 16 scales × 8 positions)**: 2nd on F-7 mean among
   the new recipes (0.46). Beats V6 (Db4 DWT, mean 0.32) on every scene.
   The multi-scale alphabet with explicit location-frequency cells
   produces topics whose top words map to absorption bands at specific
-  centres — interpretable in a way V6 is not.
-- **V15 (spectral indices NDVI/MNDWI/NBR/NDSI/EVI/SAVI)** — F-2 mean
+  centres, interpretable in a way V6 is not.
+- **V15 (spectral indices NDVI/MNDWI/NBR/NDSI/EVI/SAVI)**: F-2 mean
   0.36, F-7 mean 0.31. Weakest in raw performance among the new
   recipes but the only one whose vocabulary maps to published
   remote-sensing semantics. Use as a *semantic baseline* in mixed
   vegetation scenes.
-- **V17 (sparse-coding dictionary, K=64 atoms, lasso-LARS n_nz=8)** —
+- **V17 (sparse-coding dictionary, K=64 atoms, lasso-LARS n_nz=8)**, 
   F-2 mean 0.42, F-7 mean 0.22. The 512-atom vocab combined with 8
   non-zero coefficients per pixel produces extreme sparsity. Don't
   use under LDA.
-- **V18 (graph-Laplacian eigenvectors, K=16, k-NN=10 cosine)** — 3rd
+- **V18 (graph-Laplacian eigenvectors, K=16, k-NN=10 cosine)**: 3rd
   on F-7 mean among new recipes (0.43); highest c_v on PaviaU among
   the V13..V20 set (0.66). Best on scenes whose classes form
   manifold-connected regions (urban, agricultural fields). Novel:
   LDA over Laplacian spectral coordinates.
-- **V19 (UMAP 3D coordinate tokens)** — F-2 mean 0.38, F-7 mean 0.29.
+- **V19 (UMAP 3D coordinate tokens)**: F-2 mean 0.38, F-7 mean 0.29.
   3 axes × Q=8 = 24-word vocabulary is too small to support 12 topics
-  on the labelled scenes. Token names are abstract — no semantic
+  on the labelled scenes. Token names are abstract, no semantic
   bridge. Below V1 on every cell.
-- **V20 (MI-weighted bands, MAX_COPIES=8)** — *winner on Indian Pines
+- **V20 (MI-weighted bands, MAX_COPIES=8)**: *winner on Indian Pines
   for both F-2 (0.88) and F-7 (0.44)*; F-7 mean 0.52 (top 3 overall).
   Cheapest, most interpretable extension: V1 with per-band MI-weighted
   emission multiplicities. The only label-aware wordification in the
@@ -261,7 +261,7 @@ preserves topic diversity despite the per-band amplification.
 | V10 | 0.10 |
 
 V14 (CWT-Morlet 16 × 8 cells) is the new portable recipe added in
-c420 — its (scale_idx, position_bucket) vocabulary is structurally
+c420, its (scale_idx, position_bucket) vocabulary is structurally
 identical across sensors and so the topic basis fit on one scene can
 be reused to transform another scene's docs. V14 lands second to V2
 on transfer NMI. V20 / V18 / V13 / V17 / V19 are not directly
@@ -278,7 +278,7 @@ five-seed reproduction):
 | V2 | 1.000 | vocab-limited artefact (Q=8 forces top-10 overlap) |
 | V8 | 1.000 | vocab-limited (K_endmember×Q small) |
 | V6 | 0.952 | vocab-limited (Db4 levels small) |
-| V18 | **0.722** | **best non-trivial-vocab recipe** — graph-Laplacian topics survive reseeds robustly |
+| V18 | **0.722** | **best non-trivial-vocab recipe**, graph-Laplacian topics survive reseeds robustly |
 | V13 | 0.622 | VQ-VAE codebook surprisingly stable across seeds |
 | V10 | 0.539 | VNIR/SWIR coarse groups (vocab 24) |
 | V14 | 0.492 | CWT-Morlet (vocab 128) |
@@ -288,16 +288,16 @@ five-seed reproduction):
 | V1 | 0.255 | canonical band-frequency |
 | V20 | 0.221 | informative-but-seed-sensitive |
 | V4 | 0.201 | derivative-bin |
-| V3 | 0.195 | joint (band, q-bin) — large vocab penalty |
+| V3 | 0.195 | joint (band, q-bin), large vocab penalty |
 | V7 | 0.150 | absorption triplet |
 | V5 | 0.149 | second-derivative |
-| V12 | 0.141 | GMM-token — large vocab penalty |
+| V12 | 0.141 | GMM-token, large vocab penalty |
 | V17 | 0.139 | sparse-coding dict (vocab 512) |
-| V9 | 0.000 | one token per doc — undefined |
+| V9 | 0.000 | one token per doc, undefined |
 
 **Reading.** V18 (graph-Laplacian eigenvectors) is the most
 reliable recipe in the sweep among those with non-trivial
-(>=128-token) vocabularies — its topics survive reseeds with top-10
+(>=128-token) vocabularies, its topics survive reseeds with top-10
 cosine >= 0.7 on 72.2% of (scene, seed-pair) cells. V20 reliability
 0.221 is on par with V1 (0.255) and competitive with V3 / V12
 (~0.13–0.20). The vocabulary-size confounder noted in the F-15
@@ -316,19 +316,19 @@ threshold) across the top-3 contenders at Q=8, Q=16 and Q=32:
 
 All measured across 6 scenes at each Q (n=6, full coverage).
 
-### F-1 macro-F1 (5-fold) Q-trajectory — saturation observation
+### F-1 macro-F1 (5-fold) Q-trajectory: saturation observation
 
 | Recipe | Q=8 | Q=16 | Q=32 |
 |---|---|---|---|
 | V20 | 0.9168 | 0.9161 | 0.9156 |
 | V8 | 0.9163 | 0.9158 | 0.9172 |
 | V2 | 0.9173 | 0.9175 | 0.9180 |
-| V12 (reference) | 0.9216 | — | — |
+| V12 (reference) | 0.9216 | – | – |
 
 (n=6 scenes at every Q.)
 
 **F-1 saturates near 0.91-0.92 across all three top-3 recipes and
-all three Q levels** — five-fold logistic on enough topics solves
+all three Q levels**, five-fold logistic on enough topics solves
 the macro-F1 task regardless of recipe. F-1 is therefore *not* the
 axis that differentiates V20 from V8 from V2 from V12; the
 differentiation lives in F-2 (coherence), F-7 (label coupling),
@@ -345,15 +345,15 @@ The geometric origin of V8's vocabulary (NFINDR convex hull endmembers
 with NNLS abundance fractions discretised by Q) is the mechanism: the
 endmember basis is invariant under quantisation refinement, so finer
 Q only sharpens the rank-ordering of fractions without introducing
-new seed-dependent splits — until Q=32 oversaturates the discretisation
+new seed-dependent splits, until Q=32 oversaturates the discretisation
 and a small portion of the cross-seed alignment is lost.
 
 V20 stays flat in the low-reliability regime (~0.45 across Q=8/16/32),
-mirroring V12's "informative-but-seed-sensitive" profile — V20's
+mirroring V12's "informative-but-seed-sensitive" profile, V20's
 MI-reweighting flattens the topic-word distribution in low-MI regions,
 leaving room for seed-dependent refinement that is invariant to Q.
 
-V2 collapses with Q (1.000 → 0.875 → 0.781) — the vocabulary-size
+V2 collapses with Q (1.000 → 0.875 → 0.781), the vocabulary-size
 artefact that propped it up at Q=8 disappears as vocab grows to 32.
 
 **V8 therefore becomes the cross-axis recommendation when both
@@ -372,7 +372,7 @@ rather than dropping them):
 
 | V | mean median L1 across 6 scenes | Note |
 |---|---|---|
-| **V20** | **26.33** | MI-weighted bands — **most robust topic basis in the sweep** |
+| **V20** | **26.33** | MI-weighted bands, **most robust topic basis in the sweep** |
 | V12 | 24.50 | GMM-token (previous champion) |
 | V3  | 23.50 | joint (band, q-bin) |
 | V14 | 7.67 | CWT-Morlet multi-scale |
@@ -393,7 +393,7 @@ rather than dropping them):
 | V9  | 1.00 | Felzenszwalb region (one token per doc) |
 
 **Headline.** V20 (MI-weighted bands, new in this revision) now has
-the highest mean counterfactual L1 of any recipe — its topics survive
+the highest mean counterfactual L1 of any recipe, its topics survive
 the most adversarial bag-of-token perturbation. On Salinas-A, Pavia U
 and Botswana every sampled document required >= 50 single-band
 perturbations to flip its argmax topic; the run was capped at 50
@@ -417,11 +417,11 @@ a sharp non-monotonic peak for V20 at Q=16:
 
 **Headline.** V20's adversarial robustness is not monotonic in Q. At
 Q=16 V20 needs ~42 single-band perturbations on average to flip an
-argmax topic — a 59% increase over Q=8. At Q=32 the discriminative
+argmax topic, a 59% increase over Q=8. At Q=32 the discriminative
 subspectrum is split too finely across more codewords, so the gain
 collapses back to ~26. V12 (GMM-token) reclaims the top spot at Q=32,
 matching its F-7 Q-trajectory peak at Q=16. V8 is the only top
-contender whose adversarial robustness rises monotonically with Q —
+contender whose adversarial robustness rises monotonically with Q, 
 consistent with its cross-backbone F-7 portability.
 
 ## F-15 LLM-judge alignment (Claude Opus 4.7 self-judgment)
@@ -430,7 +430,7 @@ V2/V6/V8/V9/V10 trivially 1.0 (small vocabularies force top-10
 alignment); V12 / V3 fall to 0.16 / 0.12 because their 1600-word
 vocabularies make top-10 overlap rare even when topics are coherent.
 **F-15 has a vocabulary-size confounder** that anti-correlates with
-F-2 on large-vocab recipes — methodological gap flagged in P5.
+F-2 on large-vocab recipes, methodological gap flagged in P5.
 
 ## B-12 LLM tea-leaves (word-intrusion + label generation)
 
@@ -443,7 +443,7 @@ accuracy across 12 topics each (Salinas-A has 6):
 | Scene             | Topics | Intrusion accuracy | Note                           |
 |-------------------|--------|--------------------|--------------------------------|
 | botswana          | 12     | **0.75** (9/12)    | Diverse SWIR-1/SWIR-2 mix      |
-| pavia-university  | 9      | 0.56 (5/9)         | VNIR-only — clean visible split |
+| pavia-university  | 9      | 0.56 (5/9)         | VNIR-only, clean visible split |
 | indian-pines      | 12     | 0.25 (3/12)        | SWIR-2 dominated, weak split    |
 | salinas-corrected | 12     | 0.17 (2/12)        | Tight SWIR-2 cluster            |
 | salinas-a-corr.   | 6      | 0.00               | Too few topics, near-identical  |
@@ -496,9 +496,9 @@ Per-cell ProdLDA values:
 
 LDA + ETM (Dirichlet-prior) agree on V12 / V3. HDP (stick-breaking
 truncation) picks V7. ProdLDA (logistic-normal) picks V3 (old),
-**V20 (new) ranks 4th in ProdLDA at 0.744 — within 0.12 of V3 0.863**
+**V20 (new) ranks 4th in ProdLDA at 0.744, within 0.12 of V3 0.863**
 and ahead of every V13..V19 cell. The new V20 under ETM (0.770)
-also ranks third behind V3 (0.793) and V12 (0.816) — confirms V20
+also ranks third behind V3 (0.793) and V12 (0.816), confirms V20
 as a versatile recipe across backbones. **V18 under HDP is the
 highest of the V13..V20 set under HDP** (0.421), 11 points above
 V20 and 25 above V14, suggesting that graph-Laplacian tokens align
@@ -512,7 +512,7 @@ mutual-information-weighted band design.
 
 LDVAE-T (fifth proposed backbone) parked pending public code.
 
-## Top-3 recipe per axis — recipe-mean ranking (c428 endpoint)
+## Top-3 recipe per axis: recipe-mean ranking (c428 endpoint)
 
 | Axis | 1st | 2nd | 3rd |
 |---|---|---|---|
@@ -558,7 +558,7 @@ to test whether the headline ranking holds:
 | V14 (CWT-Morlet) | 0.457 | 0.458 | +0.001 |
 | V18 (graph-Laplacian) | 0.428 | 0.413 | -0.015 |
 
-**Headline at Q=16 (c431).** V20 overtakes V3 on F-7 NMI — the
+**Headline at Q=16 (c431).** V20 overtakes V3 on F-7 NMI, the
 ranking flips from V12 / V3 / V20 to V12 / V20 / V3. At Q=16 the
 F-7 top-3 spread compresses further (V12 0.552 / V20 0.534 / V3
 0.521, range 0.031 NMI vs 0.014 at Q=8). V20 gains the most on F-2
@@ -573,7 +573,7 @@ scenes = 1026 LDA fits, plus the 13 axes downstream).
 
 ### Full 19-recipe Q-sensitivity (c441-c445, corrected)
 
-After extending the Q-sweep to every recipe (V13 excluded — VQ-VAE
+After extending the Q-sweep to every recipe (V13 excluded, VQ-VAE
 codebook is structurally Q-insensitive; the only knob is the codebook
 size K which trains separately), the full F-7 NMI ranking by
 trajectory:
@@ -627,7 +627,7 @@ topics; V20's 0.009 is among recipes with vocabularies >= 200 word
 types.) This is the strongest single-recipe result the matrix
 produces: V20 lands at the top of all three quality axes
 simultaneously at finer quantisation. The mechanism is the MI-
-weighted band amplification — high-MI bands emit more copies, which gives the
+weighted band amplification, high-MI bands emit more copies, which gives the
 LDA likelihood enough signal to produce both coherent AND
 discriminative AND diverse topics, while low-MI bands stay
 zero-copy and so do not pollute the diversity calculation.
@@ -642,7 +642,7 @@ three universal monotonic improvers:
   +0.043), the highest absolute F-7 value at Q=32 (0.563, +0.030
   margin over V12, 5/6 per-scene wins), and is the only label-aware
   recipe in the family. F-2 c_v at Q=32 is V20 0.910 vs V12 0.909
-  — statistical tie (margin 0.0016 ≈ noise, per-scene 3-3 split),
+ , statistical tie (margin 0.0016 ≈ noise, per-scene 3-3 split),
   so V20's F-2 leadership is *mean-only* and not robust.
 - V2 (intensity-bin, vocab Q) and V8 (NFINDR endmember, vocab ≤ K_e)
   are simpler label-unaware compressions whose monotonic gain is
@@ -651,7 +651,7 @@ three universal monotonic improvers:
 **At Q=8 V20 trails V12 on the LDA F-7 mean by 0.014 NMI
 (0.5198 vs 0.5336); the ranking inverts at Q=32 where V20 leads V12
 by 0.030 (0.5628 vs 0.5329, robust, 5/6 per-scene wins).** This is a
-ranking inversion, not a pre-existing lead that doubles — V20 had no
+ranking inversion, not a pre-existing lead that doubles, V20 had no
 lead at Q=8. The earlier "V20 monotonic-only" framing was an artefact
 of testing only seven top contenders at finer Q levels; the full
 19-recipe sweep shows it shares the monotonic-↑ property with V2 and
@@ -670,14 +670,14 @@ plus partial V5/V15) all share a structural limitation:
   with Q (≤ 6 absorption features for V7, 1 token per doc for V9),
   so finer binning fragments rather than enriches the topic prior.
 - **V11**: product-quantisation codebook size is M·K_s, with Q only
-  changing K_s — structural ceiling at K_s = 32 codewords.
+  changing K_s, structural ceiling at K_s = 32 codewords.
 - **V17**: sparse-coding atom vocab K_atoms·Q grows with Q, but
   per-pixel non-zero count stays at 8, increasing token rarity and
   starving the LDA likelihood.
 - **V18**: graph-Laplacian eigenvector vocab K_e·Q grows with Q
   while the K_e = 16 manifold modes provide the same discriminative
-  signal — finer Q just fragments topics across more bins.
-- **V19**: 3-axis UMAP with 3Q tokens per doc — the manifold has
+  signal, finer Q just fragments topics across more bins.
+- **V19**: 3-axis UMAP with 3Q tokens per doc: the manifold has
   ~constant intrinsic dimension, so finer Q dilutes the per-bin
   information.
 
@@ -688,7 +688,7 @@ plus partial V5/V15) all share a structural limitation:
 | **V20** | 0.850 | 0.901 | **0.910** | 0.520 | 0.534 | **0.563** |
 | V8 | 0.360 | (skipped) | 0.341 | 0.463 | (skipped) | 0.482 |
 
-**V20 F-7 at Q=32 is 0.563** — higher than the LDA Q=8 winner V12
+**V20 F-7 at Q=32 is 0.563**, higher than the LDA Q=8 winner V12
 at 0.534. Per-scene F-7 NMI Q=32 for V20:
 
 - Indian Pines 0.419 (vs Q=8 0.442, slight drop)
@@ -702,7 +702,7 @@ at 0.534. Per-scene F-7 NMI Q=32 for V20:
 sweep high. V8 sees marginal F-7 improvement (0.463→0.482) but no
 F-2 gain because its vocabulary (number of endmembers, ≤ 16) does
 not scale with Q. **V20 is the recipe that benefits most from finer
-quantisation** — consistent with the MI-weighted-bands mechanism
+quantisation**, consistent with the MI-weighted-bands mechanism
 where each high-MI band gets a finer-grained intensity histogram.
 
 This suggests the broader recipe headline as quantisation is varied:
@@ -718,7 +718,7 @@ already write `f14_mean_pairwise_jaccard` to their per-cell JSONs, so
 we have full F-14 coverage under all four backbones without an extra
 sweep. Per-recipe means across 6 scenes (lower = more diverse):
 
-### HDP — most diverse top-7
+### HDP: most diverse top-7
 | Recipe | F-14 |
 |---|---|
 | V3 (joint band-bin) | 0.005 |
@@ -729,7 +729,7 @@ sweep. Per-recipe means across 6 scenes (lower = more diverse):
 | V9 (Felzenszwalb region) | 0.016 |
 | V6 (Db4 wavelet) | 0.027 |
 
-### ProdLDA — most diverse top-7
+### ProdLDA: most diverse top-7
 | Recipe | F-14 |
 |---|---|
 | V12 (GMM-token) | 0.261 |
@@ -740,7 +740,7 @@ sweep. Per-recipe means across 6 scenes (lower = more diverse):
 | V14 (CWT-Morlet) | 0.734 |
 | V7 (absorption triplet) | 0.742 |
 
-### ETM — most diverse top-7
+### ETM: most diverse top-7
 | Recipe | F-14 |
 |---|---|
 | V7 (absorption triplet) | 0.003 |
@@ -761,7 +761,7 @@ much higher jaccard absolute values across all recipes because the
 free-form topic-word distributions have less natural diversity than
 the Dirichlet-prior backbones.
 
-## Backbone F-7 NMI extension — full 4-backbone × 19-recipe sweep (c432-c436)
+## Backbone F-7 NMI extension: full 4-backbone × 19-recipe sweep (c432-c436)
 
 Until c432 the backbone factorial only carried F-2 c_v. The
 c432-c436 sequence extended F-7 NMI under each non-LDA backbone to
@@ -773,17 +773,17 @@ all 19 recipes. The complete 4-backbone × 19-recipe sweep
 | Recipe | LDA | HDP | ProdLDA | ETM | **4-mean** | Per-backbone wins |
 |---|---|---|---|---|---|---|
 | **V8 (NFINDR endmember)** | 0.463 | 0.451 | **0.328** | 0.482 | **0.431** | ProdLDA |
-| **V20 (MI-weighted)** | 0.520 | 0.356 | 0.221 | 0.490 | 0.397 | — |
-| V2 (intensity-bin) | 0.453 | 0.347 | 0.324 | 0.456 | 0.395 | — |
+| **V20 (MI-weighted)** | 0.520 | 0.356 | 0.221 | 0.490 | 0.397 | – |
+| V2 (intensity-bin) | 0.453 | 0.347 | 0.324 | 0.456 | 0.395 | – |
 | V11 (product quantisation) | 0.292 | **0.571** | 0.088 | **0.530** | 0.370 | HDP, ETM |
 | V12 (GMM-token) | **0.534** | 0.220 | 0.238 | 0.488 | 0.370 | LDA |
-| V3 (joint band-bin) | 0.524 | 0.200 | 0.169 | 0.443 | 0.334 | — |
-| V19 (UMAP coord) | 0.286 | 0.530 | 0.051 | 0.394 | 0.315 | — |
-| V15 (spectral indices) | 0.313 | 0.438 | 0.058 | 0.449 | 0.315 | — |
-| V13 (VQ-VAE) | 0.311 | 0.399 | 0.113 | 0.406 | 0.307 | — |
-| V14 (CWT-Morlet) | 0.457 | 0.220 | 0.114 | 0.430 | 0.306 | — |
-| V18 (graph-Laplacian) | 0.428 | 0.198 | 0.080 | 0.330 | 0.259 | — |
-| V1 (band-frequency) | 0.455 | 0.081 | 0.091 | 0.381 | 0.252 | — |
+| V3 (joint band-bin) | 0.524 | 0.200 | 0.169 | 0.443 | 0.334 | – |
+| V19 (UMAP coord) | 0.286 | 0.530 | 0.051 | 0.394 | 0.315 | – |
+| V15 (spectral indices) | 0.313 | 0.438 | 0.058 | 0.449 | 0.315 | – |
+| V13 (VQ-VAE) | 0.311 | 0.399 | 0.113 | 0.406 | 0.307 | – |
+| V14 (CWT-Morlet) | 0.457 | 0.220 | 0.114 | 0.430 | 0.306 | – |
+| V18 (graph-Laplacian) | 0.428 | 0.198 | 0.080 | 0.330 | 0.259 | – |
+| V1 (band-frequency) | 0.455 | 0.081 | 0.091 | 0.381 | 0.252 | – |
 
 ### Per-backbone winners
 
@@ -803,7 +803,7 @@ $\sigma$ = 0.06) makes it the most label-portable recipe in the
 sweep. V20 is the second-most cross-backbone-consistent recipe at
 0.397, retains its LDA + ETM strength, and remains the only
 *label-aware* recipe in the family. V11 (product quantisation, vocab
-$M K_s = 32$) is the surprise discovery — wins HDP and ETM outright
+$M K_s = 32$) is the surprise discovery, wins HDP and ETM outright
 but ranks 12th under LDA and 17th under ProdLDA, suggesting a
 non-trivial interaction between PQ's coarse vocabulary and the
 non-conjugate priors.
@@ -818,7 +818,7 @@ non-conjugate priors.
    elsewhere.
 
 V20's distinctive contribution is being the only label-*aware*
-recipe in family 1 — V8 and V2 are label-unaware compressions of
+recipe in family 1, V8 and V2 are label-unaware compressions of
 the spectrum, so V20's MI weighting offers an interpretable
 mechanism for why it lands top-2 across backbones.
 

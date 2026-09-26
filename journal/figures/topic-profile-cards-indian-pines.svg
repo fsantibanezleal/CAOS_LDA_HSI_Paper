@@ -6675,7 +6675,7 @@ z
    </g>
   </g>
   <g id="text_133">
-   <!-- Per-topic profile cards — Indian Pines corrected, K = 12. Each panel: φ_k(λ) with top-5 word λ-marks (red dashed); title = dominant label + per-topic prevalence + dominant-doc count. -->
+   <!-- Per-topic profile cards, Indian Pines corrected, K = 12. Each panel: φ_k(λ) with top-5 word λ-marks (red dashed); title = dominant label + per-topic prevalence + dominant-doc count. -->
    <g transform="translate(49.073969 14.798438) scale(0.1 -0.1)">
     <defs>
      <path id="DejaVuSans-50" d="M 1259 4147 

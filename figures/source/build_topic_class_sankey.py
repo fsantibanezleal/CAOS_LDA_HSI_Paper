@@ -7,7 +7,7 @@ For each scene, render a 2-stage bipartite flow:
   ribbons    = topic -> class mass
 
 Demonstrates where the topic basis aggregates / disperses class
-labels — visually surfaces the one-to-many and many-to-one mappings
+labels, visually surfaces the one-to-many and many-to-one mappings
 that the ARI scalar hides. Reference: Sankey diagram tradition
 (Sankey 1898; modern revivals in Data-to-Viz / d3-sankey). Salinas-A
 is the cleanest example because K=6 and L=6 produce a legible
@@ -34,8 +34,8 @@ OUT_DIR = REPO_ROOT / "figures"
 JOUR_FIG_DIR = REPO_ROOT / "journal" / "figures"
 
 SCENES = [
-    ("salinas-a-corrected", "Salinas-A (K=6, L=6) — band-robust"),
-    ("botswana", "Botswana (K=12, L=14) — band-fragile"),
+    ("salinas-a-corrected", "Salinas-A (K=6, L=6), band-robust"),
+    ("botswana", "Botswana (K=12, L=14), band-fragile"),
 ]
 
 
@@ -160,7 +160,7 @@ def main() -> int:
     for ax, (scene_id, title) in zip(axes, SCENES):
         draw_sankey(ax, scene_id, title)
     fig.suptitle(
-        "Topic → class Sankey/alluvial flow — ribbon thickness = number "
+        "Topic → class Sankey/alluvial flow, ribbon thickness = number "
         "of pixels with dominant topic $t$ and ground-truth label $\\ell$",
         fontsize=11, y=0.995,
     )
@@ -171,7 +171,7 @@ def main() -> int:
                     format="svg", bbox_inches="tight")
         fig.savefig(outdir / "topic-class-sankey.pdf",
                     format="pdf", bbox_inches="tight")
-        # Closes paper #3 audit item 'Suppl I figure quality pass —
+        # Closes paper #3 audit item 'Suppl I figure quality pass, 
         # rasterise the Sankey vector for any reviewer system that
         # struggles with vector PDFs'. 600 dpi is the IEEE recommended
         # minimum for combo art; uses the same bbox as the SVG/PDF

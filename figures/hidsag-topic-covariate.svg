@@ -1877,7 +1877,7 @@ z
    </g>
   </g>
   <g id="text_57">
-   <!-- HIDSAG topic × covariate-tag heatmaps — three subsets with non-degenerate tags. GEOMET and MINERAL2 omitted (single 'unknown' covariate, fall-back behaviour from the band-mask builder). -->
+   <!-- HIDSAG topic × covariate-tag heatmaps, three subsets with non-degenerate tags. GEOMET and MINERAL2 omitted (single 'unknown' covariate, fall-back behaviour from the band-mask builder). -->
    <g transform="translate(7.2 15.178359) scale(0.105 -0.105)">
     <defs>
      <path id="DejaVuSans-44" d="M 1259 4147 

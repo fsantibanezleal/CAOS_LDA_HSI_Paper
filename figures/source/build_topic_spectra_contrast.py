@@ -1,4 +1,4 @@
-"""Topic spectra contrast — every phi_k(lambda) overlaid on a single
+"""Topic spectra contrast, every phi_k(lambda) overlaid on a single
 panel per scene with annotated physical features.
 
 Single-panel-per-scene contrast figure: superposing all K basis
@@ -92,11 +92,11 @@ def main() -> int:
     fig, axes = plt.subplots(2, 1, figsize=(9.2, 8.0), dpi=150,
                              sharex=False)
     panel(axes[0], "salinas-a-corrected",
-          "(a) Salinas-A K=6 — band-robust (SWIR paired ARI 0.766)")
+          "(a) Salinas-A K=6, band-robust (SWIR paired ARI 0.766)")
     panel(axes[1], "kennedy-space-center",
-          "(b) Kennedy Space Center K=12 — band-fragile "
+          "(b) Kennedy Space Center K=12, band-fragile "
           "(paired ARI ≈ 0.01 across all masks)")
-    fig.suptitle("Topic spectra contrast — every φ_k overlaid; "
+    fig.suptitle("Topic spectra contrast, every φ_k overlaid; "
                  "line width = topic prevalence; vertical lines = "
                  "diagnostic absorption / reflectance features",
                  fontsize=10.5, y=0.995)

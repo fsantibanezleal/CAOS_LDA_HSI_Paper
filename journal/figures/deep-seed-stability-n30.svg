@@ -3232,7 +3232,7 @@ L 752.411418 423.766372
    </g>
   </g>
   <g id="text_45">
-   <!-- Deep-encoder seed stability at N=30 — per-seed dots, mean bar with std-error bar, 4 methods × 6 scenes -->
+   <!-- Deep-encoder seed stability at N=30, per-seed dots, mean bar with std-error bar, 4 methods × 6 scenes -->
    <g transform="translate(98.760312 15.558281) scale(0.11 -0.11)">
     <defs>
      <path id="DejaVuSans-70" d="M 1159 525 

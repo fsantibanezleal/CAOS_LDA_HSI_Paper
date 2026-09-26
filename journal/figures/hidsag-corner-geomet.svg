@@ -15602,7 +15602,7 @@ L 878.734932 657.996
    </g>
   </g>
   <g id="text_59">
-   <!-- GEOMET corner plot — 5 assays vs dominant topic (K=6; off-diagonal = 2σ Gaussian confidence ellipses; diagonal = KDE per topic). Foreman-Mackey 2016 *corner.py* idiom. -->
+   <!-- GEOMET corner plot, 5 assays vs dominant topic (K=6; off-diagonal = 2σ Gaussian confidence ellipses; diagonal = KDE per topic). Foreman-Mackey 2016 *corner.py* idiom. -->
    <g transform="translate(7.2 15.178359) scale(0.105 -0.105)">
     <defs>
      <path id="DejaVuSans-47" d="M 3809 666 

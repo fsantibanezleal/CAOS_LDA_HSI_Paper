@@ -1,4 +1,4 @@
-"""Basis-spectra grid — the K topic-word distributions phi_k plotted
+"""Basis-spectra grid, the K topic-word distributions phi_k plotted
 as continuous spectra against wavelength (nm).
 
 Reads `topic_views/<scene>.json` whose `topic_band_profiles` field
@@ -73,7 +73,7 @@ def main() -> int:
         ax.set_visible(False)
 
     fig.suptitle(r"Canonical-fit topic basis spectra $\phi$ "
-                 "(per-scene K topics) — water-vapour bands shaded",
+                 "(per-scene K topics), water-vapour bands shaded",
                  fontsize=11, y=0.995)
     fig.tight_layout(rect=[0, 0, 1, 0.97])
 

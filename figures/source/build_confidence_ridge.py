@@ -101,7 +101,7 @@ def main() -> int:
     for ax, (sid, slab) in zip(axes, SCENES):
         panel(ax, sid, slab)
     fig.suptitle(
-        "Per-topic confidence ridge — KDE of "
+        "Per-topic confidence ridge, KDE of "
         r"$\max_k \theta_{d,k}$ over documents with dominant topic $k$; "
         "vertical dashed line = $1/K$ (uniform-θ baseline)",
         fontsize=10.5, y=0.995,

@@ -1,7 +1,11 @@
 """Provenance spot-check for audit (2026-05-24). Sample 15 artefacts and inspect generated_at + builder_version."""
 import json, os
 
-BASE = 'd:/_Repos/_Web_Projects/CAOS_LDA_HSI'
+# The companion repository, a sibling checkout by default; CAOS_LDA_HSI_ROOT overrides it.
+BASE = os.environ.get(
+    'CAOS_LDA_HSI_ROOT',
+    os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'CAOS_LDA_HSI')),
+)
 
 samples = [
     'data/derived/topic_views/botswana.json',

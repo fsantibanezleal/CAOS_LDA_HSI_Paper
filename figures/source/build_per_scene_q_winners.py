@@ -79,7 +79,7 @@ def main() -> int:
                 boxstyle="round,pad=0.05",
                 facecolor=colour, edgecolor="white", linewidth=2, alpha=0.92,
             ))
-            ax.text(si, qi - 0.08, best_r or "—",
+            ax.text(si, qi - 0.08, best_r or ", ",
                     ha="center", va="center",
                     fontsize=15, fontweight="bold", color="white")
             ax.text(si, qi + 0.22, f"NMI = {best_v:.3f}",

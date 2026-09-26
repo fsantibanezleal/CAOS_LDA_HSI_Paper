@@ -1,4 +1,4 @@
-"""Topic pairwise distance heatmap — cosine + JS distance between
+"""Topic pairwise distance heatmap, cosine + JS distance between
 phi_k and phi_j per scene.
 
 Quantitatively answers 'are topic spectra different?' for every pair
@@ -81,7 +81,7 @@ def main() -> int:
         cbar.set_label("cosine distance d(φ_i, φ_j)", fontsize=9)
 
     fig.suptitle(
-        "Pairwise topic-spectrum cosine distance — "
+        "Pairwise topic-spectrum cosine distance, "
         "high values = visually distinct basis spectra, "
         "low values = similar basis spectra",
         fontsize=10.5, y=1.00,

@@ -1327,7 +1327,7 @@ z
     </g>
    </g>
    <g id="text_16">
-    <!-- GEOMET — geometallurgical (146 samples) -->
+    <!-- GEOMET, geometallurgical (146 samples) -->
     <g transform="translate(19.925 105.800004) scale(0.09 -0.09)">
      <defs>
       <path id="DejaVuSans-47" d="M 3809 666 
@@ -2032,7 +2032,7 @@ L 633.605 233.914914
     </g>
    </g>
    <g id="text_32">
-    <!-- MINERAL1 — silicates / sulfides (99 samples) -->
+    <!-- MINERAL1, silicates / sulfides (99 samples) -->
     <g transform="translate(19.925 227.914914) scale(0.09 -0.09)">
      <defs>
       <path id="DejaVuSans-49" d="M 628 4666 
@@ -2685,7 +2685,7 @@ z
     </g>
    </g>
    <g id="text_46">
-    <!-- MINERAL2 — high-sulfid. epithermal (20 samples) -->
+    <!-- MINERAL2, high-sulfid. epithermal (20 samples) -->
     <g transform="translate(19.925 350.029823) scale(0.09 -0.09)">
      <defs>
       <path id="DejaVuSans-68" d="M 3513 2113 
@@ -3260,7 +3260,7 @@ L 633.605 478.144733
     </g>
    </g>
    <g id="text_61">
-    <!-- GEOCHEM — geochemistry (28 samples) -->
+    <!-- GEOCHEM, geochemistry (28 samples) -->
     <g transform="translate(19.925 472.144733) scale(0.09 -0.09)">
      <defs>
       <path id="DejaVuSans-43" d="M 4122 4306 
@@ -3590,7 +3590,7 @@ L 592.693 600.259642
      </g>
     </g>
     <g id="text_70">
-     <!-- wavelength (nm) — top-30 word λ per topic -->
+     <!-- wavelength (nm), top-30 word λ per topic -->
      <g transform="translate(228.269844 676.144719) scale(0.09 -0.09)">
       <defs>
        <path id="DejaVuSans-77" d="M 269 3500 
@@ -4018,7 +4018,7 @@ L 633.605 600.259642
     </g>
    </g>
    <g id="text_86">
-    <!-- PORPHYRY — porphyry-copper (28 samples) -->
+    <!-- PORPHYRY, porphyry-copper (28 samples) -->
     <g transform="translate(19.925 594.259642) scale(0.09 -0.09)">
      <defs>
       <path id="DejaVuSans-50" d="M 1259 4147 
@@ -4098,7 +4098,7 @@ z
    </g>
   </g>
   <g id="text_87">
-   <!-- HIDSAG topic-spectral fingerprints — top-30 words per topic as λ tick marks; mineral absorption features annotated -->
+   <!-- HIDSAG topic-spectral fingerprints, top-30 words per topic as λ tick marks; mineral absorption features annotated -->
    <g transform="translate(15.543242 15.178359) scale(0.105 -0.105)">
     <defs>
      <path id="DejaVuSans-44" d="M 1259 4147 

@@ -98,7 +98,7 @@ def main() -> int:
         ax.set_title(scene_label, fontsize=10, pad=20)
 
     fig.suptitle(
-        "Topic × class soft heatmap — P(label | dominant topic) per "
+        "Topic × class soft heatmap, P(label | dominant topic) per "
         "scene. Top strip = label marginal weighted by topic "
         "prevalence.",
         fontsize=11, y=0.995,

@@ -106,7 +106,7 @@ def main() -> int:
                   fontsize=10, frameon=False, ncol=2)
 
     fig.suptitle(
-        "Q-sensitivity for top-contender recipes — V20 keeps climbing at finer quantisation",
+        "Q-sensitivity for top-contender recipes, V20 keeps climbing at finer quantisation",
         fontsize=13, fontweight="bold", y=1.0,
     )
     fig.text(

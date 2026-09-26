@@ -2396,7 +2396,7 @@ L 532.275937 394.6
    </g>
   </g>
   <g id="text_32">
-   <!-- LDA capacity sweep (axis F-4) — perplexity, diversity, cross-seed basis cosine -->
+   <!-- LDA capacity sweep (axis F-4), perplexity, diversity, cross-seed basis cosine -->
    <g transform="translate(54.730156 15.558281) scale(0.11 -0.11)">
     <defs>
      <path id="DejaVuSans-4c" d="M 628 4666 

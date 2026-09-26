@@ -1,7 +1,7 @@
 """Permutation null + bootstrap CI on paired ARI per (scene, mask).
 
 Closes one item from issue #7 ("Permutation null / bootstrap CI on
-paired ARI — headline 0.766 vs 0.01 has no error bars").
+paired ARI, headline 0.766 vs 0.01 has no error bars").
 
 Reads:
 - Per-scene canonical dominant-topic map (uint8) from
@@ -30,7 +30,7 @@ Sampling-budget caveat: 1000 permutations + 1000 bootstraps per
 tuple = 48,000 ARI computations. On a 2812-pixel scene this is
 ~30 s wall-clock; on Salinas (10366 pixels) ~2 min per tuple. We
 cap pixels at 10000 per tuple via random subsample with a fixed
-seed for reproducibility — the resulting permutation null is
+seed for reproducibility, the resulting permutation null is
 identical in distribution to the full-population null on this
 sample size.
 """

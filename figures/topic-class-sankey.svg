@@ -1353,7 +1353,7 @@ z
     </g>
    </g>
    <g id="text_18">
-    <!-- Salinas-A (K=6, L=6) — band-robust -->
+    <!-- Salinas-A (K=6, L=6), band-robust -->
     <g transform="translate(127.883263 46.74) scale(0.1 -0.1)">
      <defs>
       <path id="DejaVuSans-53" d="M 3425 4513 
@@ -2769,7 +2769,7 @@ z
     </g>
    </g>
    <g id="text_45">
-    <!-- Botswana (K=12, L=14) — band-fragile -->
+    <!-- Botswana (K=12, L=14), band-fragile -->
     <g transform="translate(603.287326 46.74) scale(0.1 -0.1)">
      <defs>
       <path id="DejaVuSans-66" d="M 2375 4863 
@@ -2834,7 +2834,7 @@ z
    </g>
   </g>
   <g id="text_46">
-   <!-- Topic → class Sankey/alluvial flow — ribbon thickness = number of pixels with dominant topic $t$ and ground-truth label $\ell$ -->
+   <!-- Topic → class Sankey/alluvial flow, ribbon thickness = number of pixels with dominant topic $t$ and ground-truth label $\ell$ -->
    <g transform="translate(147.720834 15.56) scale(0.11 -0.11)">
     <defs>
      <path id="DejaVuSans-54" d="M -19 4666 

@@ -91,7 +91,7 @@ def main() -> int:
     ax.set_xlabel(r"topic-word coherence $c_v$ (top-15 words, Röder 2015)",
                   fontsize=10)
     ax.set_ylabel(r"downstream KMeans-vs-label ARI", fontsize=10)
-    ax.set_title("Coherence vs cluster ARI on HSI — "
+    ax.set_title("Coherence vs cluster ARI on HSI, "
                  "LDA, ProdLDA, ETM on six scenes",
                  fontsize=10)
     ax.grid(alpha=0.25)
