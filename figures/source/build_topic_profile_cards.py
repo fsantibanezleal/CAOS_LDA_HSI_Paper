@@ -1,4 +1,4 @@
-"""Per-topic profile cards (Salinas-A) — each topic gets a 3-row card:
+"""Per-topic profile cards (Salinas-A), each topic gets a 3-row card:
   (top)    its basis spectrum phi_k(lambda) with top-5 words marked
   (mid)    P(L|t) horizontal bar chart with class colours
   (bot)    summary stats: prevalence, dominant label, doc count
@@ -104,7 +104,7 @@ def build_one(scene_id: str, layout: tuple[int, int], outname: str) -> None:
 
     scene_label = tv.get("scene_name", scene_id)
     fig.suptitle(
-        f"Per-topic profile cards — {scene_label}, "
+        f"Per-topic profile cards, {scene_label}, "
         f"K = {K}. Each panel: φ_k(λ) with top-5 word λ-marks "
         "(red dashed); title = dominant label + per-topic prevalence + "
         "dominant-doc count.",

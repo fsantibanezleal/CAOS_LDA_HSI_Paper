@@ -1,4 +1,4 @@
-"""P3 headline figure — winners per (axis, scene) across V1..V20.
+"""P3 headline figure, winners per (axis, scene) across V1..V20.
 
 Reads the F-1, F-2, F-7 cells from the CAOS_LDA_HSI repo and produces
 a publication-grade matrix figure that highlights the V20 triple-axis

@@ -144,7 +144,7 @@ def main() -> int:
                bbox_to_anchor=(0.99, 0.99), ncol=1,
                fontsize=9, frameon=False)
     fig.suptitle(
-        "GEOMET corner plot — 5 assays vs dominant topic "
+        "GEOMET corner plot, 5 assays vs dominant topic "
         f"(K={K}; off-diagonal = 2σ Gaussian confidence ellipses; "
         "diagonal = KDE per topic). Foreman-Mackey 2016 *corner.py* idiom.",
         fontsize=10.5, y=0.995,

@@ -1,4 +1,4 @@
-"""Deep-encoder seed stability at N=30 — complement to the
+"""Deep-encoder seed stability at N=30, complement to the
 LDA/ProdLDA/ETM N=5 swarm of axis F-3.
 
 For each scene, plot the per-seed ARI vs ground truth across 30
@@ -84,7 +84,7 @@ def main() -> int:
         row[0].set_ylabel("ARI vs ground-truth label", fontsize=9.5)
 
     fig.suptitle(
-        "Deep-encoder seed stability at N=30 — per-seed dots, "
+        "Deep-encoder seed stability at N=30, per-seed dots, "
         "mean bar with std-error bar, 4 methods × 6 scenes",
         fontsize=11, y=1.00,
     )

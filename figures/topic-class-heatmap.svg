@@ -7243,7 +7243,7 @@ L 885.637734 746.741304
    </g>
   </g>
   <g id="text_330">
-   <!-- Topic × class soft heatmap — P(label | dominant topic) per scene. Top strip = label marginal weighted by topic prevalence. -->
+   <!-- Topic × class soft heatmap, P(label | dominant topic) per scene. Top strip = label marginal weighted by topic prevalence. -->
    <g transform="translate(107.728828 15.606406) scale(0.11 -0.11)">
     <defs>
      <path id="DejaVuSans-d7" d="M 4488 3438 

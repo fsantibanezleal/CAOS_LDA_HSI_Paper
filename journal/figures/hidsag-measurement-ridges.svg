@@ -16093,7 +16093,7 @@ z
    </g>
   </g>
   <g id="text_62">
-   <!-- HIDSAG continuous-measurement ridge per dominant topic — one variable per subset selected by largest per-topic-mean range (normalised) -->
+   <!-- HIDSAG continuous-measurement ridge per dominant topic, one variable per subset selected by largest per-topic-mean range (normalised) -->
    <g transform="translate(109.405107 15.178359) scale(0.105 -0.105)">
     <defs>
      <path id="DejaVuSans-53" d="M 3425 4513 

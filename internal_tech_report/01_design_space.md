@@ -1,4 +1,4 @@
-# Design space — V1..V20 rationale, gaps, and resolutions
+# Design space: V1..V20 rationale, gaps, and resolutions
 
 Covers the full nineteen-recipe sweep (V1–V15, V17–V20; V16 is a
 scaffolded foundation-model slot, weights not vendored). Formal token
@@ -12,26 +12,26 @@ Every wordification recipe is a map `Phi: R^B -> N^|V|` from a pixel
 spectrum to a doc-term count vector (canonical `eq:quantiser` for the
 shared uniform quantiser). The nineteen recipes span:
 
-1. **Token alphabet / semantics** — what a token *means*:
-   - *Intensity* — V1 band-frequency (`eq:v1`), V2 intensity-as-word,
+1. **Token alphabet / semantics**: what a token *means*:
+   - *Intensity*: V1 band-frequency (`eq:v1`), V2 intensity-as-word,
      V3 joint (band, bin) (`eq:v3`), V10 band-group.
-   - *Differentiated / multi-scale* — V4 first-derivative bin,
+   - *Differentiated / multi-scale*: V4 first-derivative bin,
      V5 second-derivative bin, V6 Db4 wavelet level-4, V14 CWT-Morlet.
-   - *Absorption / chemistry* — V7 absorption triplet, V8 NFINDR
+   - *Absorption / chemistry*: V7 absorption triplet, V8 NFINDR
      endmember-fraction (`eq:v8`), V15 spectral indices.
-   - *Learnt codebook* — V11 product-quantisation, V12 GMM-token
+   - *Learnt codebook*: V11 product-quantisation, V12 GMM-token
      responsibilities (`eq:v12`), V13 VQ-VAE codebook, V17 sparse-coding
      dictionary atoms.
-   - *Manifold* — V18 graph-Laplacian eigenvectors, V19 UMAP coords.
-   - *Label-aware* — V20 MI-weighted bands (`eq:v20`), the only recipe
+   - *Manifold*: V18 graph-Laplacian eigenvectors, V19 UMAP coords.
+   - *Label-aware*: V20 MI-weighted bands (`eq:v20`), the only recipe
      that consults the label `y` when building the vocabulary.
-2. **Spatial vs spectral** — pure spectral for everything except
+2. **Spatial vs spectral**: pure spectral for everything except
    V9 (Felzenszwalb region + SAM), the one spatial-aware recipe.
-3. **Local vs global vocabulary** — local per-band (V1, V3, V4, V5,
+3. **Local vs global vocabulary**: local per-band (V1, V3, V4, V5,
    V12, V20); global band-agnostic (V2, V11, V13, V17); coarse
    group-level (V8, V10); manifold-coordinate (V18, V19); sparse
    event-level (V7, V9).
-4. **Document length** — dense ~`B` tokens/doc (V1–V6, V12, V14, V18,
+4. **Document length**: dense ~`B` tokens/doc (V1–V6, V12, V14, V18,
    V20); coarse 3–10 (V8, V10, V11, V13, V15, V17, V19); sparse `<= 6`
    (V7, V9).
 
@@ -46,7 +46,7 @@ shared uniform quantiser). The nineteen recipes span:
 | Manifold | V18, V19 | graph / embedding coordinates |
 | Spatial | V9, V10 | region / band-group aggregation |
 | Label-aware | V20 | per-band mutual information with `y` |
-| Foundation (scaffold) | V16 | HyperSIGMA embedding — not vendored |
+| Foundation (scaffold) | V16 | HyperSIGMA embedding, not vendored |
 
 ## Discrepancies between UI/paper schematics and code (RESOLVED)
 
@@ -54,9 +54,9 @@ Three discrepancies caught during the original V1–V12 code audit. The
 manuscripts and the web app now state the *actual implementation*; the
 app/wiki copy was corrected (2026-05-31) to match.
 
-### V3 — "concat trigram" → joint (band, bin)
+### V3: "concat trigram" → joint (band, bin)
 
-- **Original UI label**: "concat trigram" — implied a 3-band context
+- **Original UI label**: "concat trigram": implied a 3-band context
   window `(bin(x_{b-1}), bin(x_b), bin(x_{b+1}))`.
 - **Actual implementation** (`build_wordifications.py`): joint
   `(band, bin)` Cartesian product, vocab `B x Q`, NO context window
@@ -67,7 +67,7 @@ app/wiki copy was corrected (2026-05-31) to match.
 - **Why it matters**: V3's F-7 strength comes from the larger `B x Q`
   vocabulary, not from any local-shape semantics.
 
-### V9 — "SLIC-500 superpixel" → Felzenszwalb region + SAM
+### V9: "SLIC-500 superpixel" → Felzenszwalb region + SAM
 
 - **Original UI label**: "Aggregate pixels within a SLIC-500
   superpixel; emit V1 tokens on the region-mean spectrum."
@@ -81,7 +81,7 @@ app/wiki copy was corrected (2026-05-31) to match.
   the K-policy forced K=4; its F-1 is a lower bound, not a ceiling for
   spatial-aware wordifications.
 
-### V11 — nanopq seed unfixed
+### V11: nanopq seed unfixed
 
 - **Symptom**: `nanopq.PQ(M=4, Ks=Q)` invoked without an explicit
   `random_state`; the k-means codebook fit can drift across versions.
@@ -121,20 +121,20 @@ identifiable (every token is band `b` at intensity bin `q`).
 The V-sweep refines, not invalidates, that choice. The corrected
 findings (single source of truth: `03_v_sweep_results.md`):
 
-- **V1** — reproducibility canonical. Never the *most* label-aligned
+- **V1**: reproducibility canonical. Never the *most* label-aligned
   recipe, but the most reliable with an informative vocabulary.
-- **V12** (GMM-token) — leads LDA at Q=8 on F-2 and F-7; informative
+- **V12** (GMM-token): leads LDA at Q=8 on F-2 and F-7; informative
   but seed-sensitive (low F-18). F-1 is a non-discriminating tie.
-- **V20** (MI-weighted) — LDA + ETM Q-scaling peak: wins F-2 + F-7 on
+- **V20** (MI-weighted): LDA + ETM Q-scaling peak: wins F-2 + F-7 on
   Indian Pines, F-7 ranking inverts to a robust lead over V12 at Q=32,
   most counterfactually robust basis at Q=8 (F-22), lowest F-14 among
   informative-vocabulary recipes. Pays in F-18 reliability (~0.45).
-- **V8** (NFINDR endmember) — the cross-axis composite leader: top of
+- **V8** (NFINDR endmember): the cross-axis composite leader: top of
   the cross-backbone F-7 mean (0.431) AND F-18 reliability ~0.96 stable
   across Q. Recommended when the backbone is uncertain or
   reproducibility matters; its reliability is geometric (convex hull),
   not a vocabulary-size artefact.
-- **V11** (product quantisation) — backbone-specialist: wins HDP and
+- **V11** (product quantisation): backbone-specialist: wins HDP and
   ETM outright but collapses under LDA / ProdLDA.
 
 Recommendation matrix: V1 for new reproducibility studies; V20 when LDA

@@ -50,7 +50,7 @@ value-add over an existing figure is marginal:
 
 - **Per-pixel dominant-topic rasters.** Each scene has a
   `dominant_topic_map.bin` (uint8 H×W) and rendering them as a 6-panel
-  raster would be informative — but the spatial sizes are very
+  raster would be informative, but the spatial sizes are very
   heterogeneous (Salinas-A 83×86 vs Botswana 1476×256) and faithful
   rendering across the grid would crowd the page. The web app at
   `lda-hsi.fasl-work.com/workspace > raster` is the appropriate

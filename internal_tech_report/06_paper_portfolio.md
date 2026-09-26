@@ -1,4 +1,4 @@
-# Paper portfolio — what each paper claims, depends on, and ships
+# Paper portfolio: what each paper claims, depends on, and ships
 
 Decision recorded 2026-05-26 after the literature search and full
 F-2 + F-7 + F-1 sweep results. The literature search confirmed that:
@@ -17,11 +17,11 @@ F-2 + F-7 + F-1 sweep results. The literature search confirmed that:
 | P1 | Beyond accuracy: 12-axis framework (V1 only) | journal #1 | written | -- | Framework introduces 12 axes; V1 baseline. |
 | P2 | Band-mask robustness diagnostic | conference companion to P1 | written | -- | F-5 deep-dive on V1; complements P1. |
 | P3 | Which wordification matters? V-sweep + F-13/F-14/F-17/F-18/F-22 extensions | journal #2 | **draft 5pp + bootstrap posterior** | sweep done | 19-recipe sweep, no universal winner: V12 leads F-2+F-7 on most scenes; V20 (MI-weighted) wins F-22 robustness and ties V12 on F-2 at Q=32; F-1 non-discriminating; V1 retains canonical. |
-| P4 | Which backbone picks which wordification? 4×19 factorial | journal #3 | **draft 3pp** | #617 (4/5 backbones) | LDA+ETM→V12, HDP→V7, ProdLDA→V3 (F-2 headline axis) — backbone choice inverts the recipe winner. |
+| P4 | Which backbone picks which wordification? 4×19 factorial | journal #3 | **draft 3pp** | #617 (4/5 backbones) | LDA+ETM→V12, HDP→V7, ProdLDA→V3 (F-2 headline axis), backbone choice inverts the recipe winner. |
 | P5 | Post-hoc interpretability of LDA on HSI (F-13 SHAP + F-22 counterfactual + F-15 LLM-judge) | journal #4 | **draft 2pp** | F-13/F-22/F-15 done | F-13 SHAP is defensible; F-15 has vocab-size confounder. |
 | P6 (internal) | V-sweep technical report | internal-only | this directory | -- | Single source of truth for design decisions + reproducibility audit. |
 
-## P1 — status
+## P1: status
 
 Compiles (12 pages). Author block + ORCID + email fixed in c361
 (2026-05-26). The "canonical" V1 framing is preserved; P3 extends
@@ -31,12 +31,12 @@ Open items before submission:
 - Verify Stammbach citation year (see `04_reproducibility_audit.md`).
 - Confirm AMTC + FONDECYT grant numbers.
 
-## P2 — status
+## P2: status
 
 Same as P1 (compiles, author block fixed). Reports F-5 band-mask
 diagnostic on V1 only. Stays narrow; do not retrofit V-sweep.
 
-## P3 — status
+## P3: status
 
 Scaffold at `journal_v_sweep/tex/main.tex` (PR #35 on paper repo).
 Full F-2 + F-7 tables populated. F-1 section pending Bayesian
@@ -50,7 +50,7 @@ Open items:
 - LDVAE-T comparison (issue #618) optional but recommended.
 - Target journal not conference (Procemin discoverability lesson).
 
-## P4 — proposal
+## P4: proposal
 
 Scope: take the V-sweep cross-product and substitute the LDA backbone
 for each of {LDA, HDP, ProdLDA, ETM, LDVAE}. 12 × 5 = 60 cells per
@@ -63,7 +63,7 @@ backbone choice matter more, less, or about the same?".
 
 Dependencies: issues #617 (factorial), #621 (HDP), #618 (LDVAE-T).
 
-## P5 — proposal
+## P5: proposal
 
 Scope: bring post-hoc interpretability tools (SHAP, counterfactual,
 LLM-judge F-14/F-15) to the V-sweep canonical fits. Argues that the
@@ -73,7 +73,7 @@ lists.
 Decision: P5 lives downstream of P4 (needs F-13..F-15 from #615,
 #616, #622). Speculative until P3 is out.
 
-## P6 (internal) — purpose
+## P6 (internal): purpose
 
 This directory. Living source of truth for design decisions,
 reproducibility audits, deferred axes, and portfolio thinking.

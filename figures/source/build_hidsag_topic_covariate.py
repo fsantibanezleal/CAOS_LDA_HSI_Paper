@@ -82,7 +82,7 @@ def main() -> int:
                             location="right")
         cbar.set_label("P(covariate | dominant topic)", fontsize=9)
     fig.suptitle(
-        "HIDSAG topic × covariate-tag heatmaps — three subsets with "
+        "HIDSAG topic × covariate-tag heatmaps, three subsets with "
         "non-degenerate tags. GEOMET and MINERAL2 omitted (single "
         "'unknown' covariate, fall-back behaviour from the band-mask "
         "builder).",

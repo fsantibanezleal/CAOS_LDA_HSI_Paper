@@ -172,7 +172,7 @@ def main() -> int:
               bbox_to_anchor=(1.0, 1.05), ncol=K,
               fontsize=8, frameon=False)
     fig.suptitle(
-        "PORPHYRY hammock plot — topic ↔ Bt% ↔ Mb% ↔ Py% "
+        "PORPHYRY hammock plot, topic ↔ Bt% ↔ Mb% ↔ Py% "
         "(Schonlau 2025 mixed-type parallel-coordinates idiom)",
         fontsize=11, y=0.995,
     )

@@ -2799,7 +2799,7 @@ z
    </g>
   </g>
   <g id="text_107">
-   <!-- HIDSAG mineral subsets — band-mask sweep (axis F-5 complement, no per-pixel ground truth) -->
+   <!-- HIDSAG mineral subsets, band-mask sweep (axis F-5 complement, no per-pixel ground truth) -->
    <g transform="translate(130.271641 15.558281) scale(0.11 -0.11)">
     <defs>
      <path id="DejaVuSans-44" d="M 1259 4147 

@@ -17220,7 +17220,7 @@ L 304.8 50.784
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_1">
-    <!-- Salinas-A — coloured by topic (K=6) -->
+    <!-- Salinas-A, coloured by topic (K=6) -->
     <g transform="translate(65.452344 44.784) scale(0.1 -0.1)">
      <defs>
       <path id="DejaVuSans-53" d="M 3425 4513 
@@ -43764,7 +43764,7 @@ L 613.2 50.784
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_2">
-    <!-- Indian Pines — coloured by topic (K=12) -->
+    <!-- Indian Pines, coloured by topic (K=12) -->
     <g transform="translate(363.466406 44.784) scale(0.1 -0.1)">
      <defs>
       <path id="DejaVuSans-49" d="M 628 4666 
@@ -69908,7 +69908,7 @@ L 921.6 50.784
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_3">
-    <!-- Botswana — coloured by topic (K=12) -->
+    <!-- Botswana, coloured by topic (K=12) -->
     <g transform="translate(677.596094 44.784) scale(0.1 -0.1)">
      <defs>
       <path id="DejaVuSans-42" d="M 1259 2228 
@@ -74164,7 +74164,7 @@ L 304.8 308.064
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_4">
-    <!-- Salinas-A — coloured by label (2σ ellipses) -->
+    <!-- Salinas-A, coloured by label (2σ ellipses) -->
     <g transform="translate(49.698437 302.064) scale(0.1 -0.1)">
      <defs>
       <path id="DejaVuSans-3c3" d="M 1959 3044 
@@ -80733,7 +80733,7 @@ L 613.2 308.064
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_5">
-    <!-- Indian Pines — coloured by label (2σ ellipses) -->
+    <!-- Indian Pines, coloured by label (2σ ellipses) -->
     <g transform="translate(350.89375 302.064) scale(0.1 -0.1)">
      <use xlink:href="#DejaVuSans-49"/>
      <use xlink:href="#DejaVuSans-6e" x="29.492188"/>
@@ -87222,7 +87222,7 @@ L 921.6 308.064
 " style="fill: none; stroke: #000000; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_6">
-    <!-- Botswana — coloured by label (2σ ellipses) -->
+    <!-- Botswana, coloured by label (2σ ellipses) -->
     <g transform="translate(665.023438 302.064) scale(0.1 -0.1)">
      <use xlink:href="#DejaVuSans-42"/>
      <use xlink:href="#DejaVuSans-6f" x="68.603516"/>
@@ -87270,7 +87270,7 @@ L 921.6 308.064
    </g>
   </g>
   <g id="text_7">
-   <!-- PCA-2D embedding of θ — top row: dominant topic; bottom row: ground-truth label with 2σ Gaussian confidence ellipses -->
+   <!-- PCA-2D embedding of θ, top row: dominant topic; bottom row: ground-truth label with 2σ Gaussian confidence ellipses -->
    <g transform="translate(132.376172 15.644219) scale(0.11 -0.11)">
     <defs>
      <path id="DejaVuSans-43" d="M 4122 4306 

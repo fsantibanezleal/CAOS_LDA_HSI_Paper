@@ -59,7 +59,7 @@ def heatmap(ax, M, title, cmap, fmt, vmin=None, vmax=None) -> None:
         for j in range(M.shape[1]):
             v = M[i, j]
             if np.isnan(v):
-                ax.text(j, i, "—", ha="center", va="center",
+                ax.text(j, i, ", ", ha="center", va="center",
                         fontsize=8, color="#777")
                 continue
             ref = (vmax if vmax is not None else np.nanmax(M))
@@ -93,7 +93,7 @@ def main() -> int:
     for ax, im in zip(axes, (im1, im2, im3)):
         fig.colorbar(im, ax=ax, fraction=0.04, pad=0.03)
 
-    fig.suptitle("HIDSAG mineral subsets — band-mask sweep "
+    fig.suptitle("HIDSAG mineral subsets, band-mask sweep "
                  "(axis F-5 complement, no per-pixel ground truth)",
                  fontsize=11, y=1.02)
     fig.tight_layout()

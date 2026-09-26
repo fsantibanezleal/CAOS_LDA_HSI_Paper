@@ -33,11 +33,11 @@ OUT_DIR = REPO_ROOT / "figures"
 JOUR_FIG_DIR = REPO_ROOT / "journal" / "figures"
 
 SUBSETS = [
-    ("GEOMET", "GEOMET — geometallurgical (146 samples)"),
-    ("MINERAL1", "MINERAL1 — silicates / sulfides (99 samples)"),
-    ("MINERAL2", "MINERAL2 — high-sulfid. epithermal (20 samples)"),
-    ("GEOCHEM", "GEOCHEM — geochemistry (28 samples)"),
-    ("PORPHYRY", "PORPHYRY — porphyry-copper (28 samples)"),
+    ("GEOMET", "GEOMET, geometallurgical (146 samples)"),
+    ("MINERAL1", "MINERAL1, silicates / sulfides (99 samples)"),
+    ("MINERAL2", "MINERAL2, high-sulfid. epithermal (20 samples)"),
+    ("GEOCHEM", "GEOCHEM, geochemistry (28 samples)"),
+    ("PORPHYRY", "PORPHYRY, porphyry-copper (28 samples)"),
 ]
 
 # SWIR-band mineral absorption features (nm)
@@ -111,10 +111,10 @@ def main() -> int:
         ax.set_title(label, fontsize=9, loc="left")
         ax.grid(axis="x", alpha=0.18)
 
-    axes[-1].set_xlabel("wavelength (nm) — top-30 word λ per topic",
+    axes[-1].set_xlabel("wavelength (nm), top-30 word λ per topic",
                        fontsize=9)
     fig.suptitle(
-        "HIDSAG topic-spectral fingerprints — top-30 words per topic "
+        "HIDSAG topic-spectral fingerprints, top-30 words per topic "
         "as λ tick marks; mineral absorption features annotated",
         fontsize=10.5, y=0.997,
     )

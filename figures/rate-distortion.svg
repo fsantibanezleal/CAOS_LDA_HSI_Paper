@@ -2971,7 +2971,7 @@ z
    </g>
   </g>
   <g id="text_40">
-   <!-- F-11 distortion vs dictionary size K of θ — LDA vs NMF vs PCA per scene -->
+   <!-- F-11 distortion vs dictionary size K of θ, LDA vs NMF vs PCA per scene -->
    <g transform="translate(194.460859 15.644219) scale(0.11 -0.11)">
     <defs>
      <path id="DejaVuSans-3b8" d="M 2953 2219 

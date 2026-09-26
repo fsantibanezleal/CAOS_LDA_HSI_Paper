@@ -1,4 +1,4 @@
-# 04 — Reproducibility audit and methodology caveats
+# 04: Reproducibility audit and methodology caveats
 
 Single-file home for disclosure of methodology gaps, data leakage
 caveats, degenerate-cell rates, and reproducibility status across
@@ -12,7 +12,7 @@ Last update: 2026-05-31.
 information weights using `mutual_info_classif(X, sample_labels)`
 over the full labelled stratified sample (`SAMPLES_PER_CLASS = 220`).
 The resulting `doc_term` matrix encodes those weights into the vocabulary
-itself — bands with high MI emit more copies, bands with near-zero MI
+itself, bands with high MI emit more copies, bands with near-zero MI
 emit none.
 
 `build_v_sweep_f1_classification.py` then runs a 5-fold `StratifiedKFold`
@@ -25,14 +25,14 @@ upstream MI-weighting that has already incorporated test-fold label
 information into the vocabulary structure.
 
 **Practical bias.** V20 F-1 macro-F1 saturates at 0.917 across
-Q=8/16/32 — identical to V8 (0.916) and V2 (0.917), both of which
+Q=8/16/32, identical to V8 (0.916) and V2 (0.917), both of which
 have NO label leakage. So the practical bias appears to be ~0,
 masked by the saturation effect of the topic_routed_soft classifier
 working on enough topics.
 
 **Scope of the caveat.** The leakage only contaminates F-1 macro-F1.
 The following V20 metrics are NOT affected:
-- F-7 NMI (computed against labels per scene, all recipes equivalent — labels are part of the metric definition, not the recipe)
+- F-7 NMI (computed against labels per scene, all recipes equivalent: labels are part of the metric definition, not the recipe)
 - F-2 c_v (no labels involved)
 - F-14 jaccard repetitiveness (no labels)
 - F-18 reliability (no labels)
@@ -76,8 +76,8 @@ or near-zero values:
 
 **ProdLDA** systematically fails on:
 - V1 / V6 / V9 / V10 in indian-pines and botswana (encoder-decoder collapse on small-effective-vocabulary recipes)
-- **V20 indian-pines (NMI = 0.0)** — the only V20 zero across all backbones. Contributes to V20's ProdLDA mean of 0.221, which is the headline "V20 collapses under ProdLDA" finding in P3
-- V12 indian-pines (NMI = 0.0) — contributes to V12's poor ProdLDA performance
+- **V20 indian-pines (NMI = 0.0)**: the only V20 zero across all backbones. Contributes to V20's ProdLDA mean of 0.221, which is the headline "V20 collapses under ProdLDA" finding in P3
+- V12 indian-pines (NMI = 0.0): contributes to V12's poor ProdLDA performance
 
 ### Effect on cross-backbone composite
 
@@ -94,7 +94,7 @@ Excluding zero cells from per-backbone means:
 
 | Recipe | Cross-backbone mean (zeros excluded) | Δ vs current |
 |---|---|---|
-| V8 | 0.431 | 0 (no zeros) — **robust** |
+| V8 | 0.431 | 0 (no zeros), **robust** |
 | V20 | 0.408 | +0.011 |
 | V11 | 0.382 | +0.012 |
 | V12 | 0.393 | +0.023 |
@@ -113,7 +113,7 @@ as cross-backbone leader."
 
 Tracked in issue #764.
 
-## 3. F-15 LLM alignment coverage — CLOSED (full 19-recipe coverage)
+## 3. F-15 LLM alignment coverage: CLOSED (full 19-recipe coverage)
 
 F-15 LLM-judge cells now exist for all 19 recipes (114 cells = 19 × 6);
 the V14-V20 extension was completed 2026-05-30 (issue #758 closed).
@@ -133,7 +133,7 @@ Table IV (commit eac6c11). Issue #758 closed.
 
 ## 4. HIDSAG family-D coverage (resolved under #765)
 
-Now **150 cells** under `data/derived/v_sweep/hidsag/` — 15 recipes
+Now **150 cells** under `data/derived/v_sweep/hidsag/`, 15 recipes
 (V1-V7, V10-V14, V17-V19) × 5 subsets × 2 axes (topic_views + owner-NMI),
 and every cell carries a `source_id` (= subset code). V8/V9 are
 precompute-blocked (need scene-level endmember/segmentation precompute
@@ -142,7 +142,7 @@ HIDSAG lacks); V15/V16 are out-of-scope.
 V20 is **n/a on HIDSAG by design**: it is label-aware and needs a
 per-document mineral class label, which the region documents do not
 carry (only a `sample_owner` provenance id). So the "V20 = LDA peak"
-finding is not transferable to HIDSAG — not an untested gap. Among the
+finding is not transferable to HIDSAG, not an untested gap. Among the
 recipes that do transfer, **V18** (graph-Laplacian) is the best new
 recipe (mean owner-NMI 0.204; leads MINERAL1 at 0.270). See
 [`07_hidsag_results.md`](07_hidsag_results.md).
@@ -159,7 +159,7 @@ the `build_b12_self_judge.py` deterministic rule judges word intrusion
 by parsing wavelength values from the candidate tokens (e.g. `"0823nm"`,
 `"2400nm"`) and computing the one farthest from the candidate-set
 median. V12 tokens are GMM-component IDs (`gmm_c0` ... `gmm_c{N}`),
-V20 tokens are MI-weighted band indices (`miw_b000_q28`) — neither
+V20 tokens are MI-weighted band indices (`miw_b000_q28`), neither
 encodes wavelength information directly accessible to the parser.
 
 The 2026-05-31 attempt to run `--recipe V12` and `--recipe V20`

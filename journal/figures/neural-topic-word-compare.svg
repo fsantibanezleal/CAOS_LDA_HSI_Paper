@@ -2199,7 +2199,7 @@ L 800.87625 376.66
      </g>
     </g>
     <g id="text_36">
-     <!-- wavelength (nm) — top-15 word λ per topic -->
+     <!-- wavelength (nm), top-15 word λ per topic -->
      <g transform="translate(311.947051 531.776562) scale(0.1 -0.1)">
       <defs>
        <path id="DejaVuSans-77" d="M 269 3500 
@@ -2812,7 +2812,7 @@ z
    </g>
   </g>
   <g id="text_50">
-   <!-- Cross-method top-word λ comparison on Indian Pines (K=12) — LDA / ProdLDA / ETM -->
+   <!-- Cross-method top-word λ comparison on Indian Pines (K=12), LDA / ProdLDA / ETM -->
    <g transform="translate(178.659999 15.558281) scale(0.11 -0.11)">
     <defs>
      <path id="DejaVuSans-43" d="M 4122 4306 
