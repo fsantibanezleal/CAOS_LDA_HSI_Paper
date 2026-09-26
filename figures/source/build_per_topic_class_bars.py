@@ -2,7 +2,7 @@
 categorical labels).
 
 For each canonical topic on a chosen scene, render a horizontal bar
-chart of P(label | dominant topic) — every topic gets its own row,
+chart of P(label | dominant topic), every topic gets its own row,
 all rows stacked on a shared label-axis. The visual is the categorical
 analogue of a ridge plot: each topic's 'distribution' is the
 discrete bar set on its row. A topic that resolves one or two labels
@@ -83,7 +83,7 @@ def main() -> int:
     for ax, (sid, slab) in zip(axes, SCENES):
         panel(ax, sid, slab)
     fig.suptitle(
-        "Per-topic class distribution — each row = one canonical "
+        "Per-topic class distribution, each row = one canonical "
         "topic, bar height = P(label | dominant topic); coloured "
         "with the canonical class palette",
         fontsize=10.5, y=0.997,

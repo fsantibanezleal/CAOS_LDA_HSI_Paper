@@ -132,7 +132,7 @@ def main() -> int:
     for ax in flat[len(SUBSETS):]:
         ax.set_visible(False)
     fig.suptitle(
-        "HIDSAG continuous-measurement ridge per dominant topic — "
+        "HIDSAG continuous-measurement ridge per dominant topic, "
         "one variable per subset selected by largest "
         "per-topic-mean range (normalised)",
         fontsize=10.5, y=0.99,

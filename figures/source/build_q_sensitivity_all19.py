@@ -33,7 +33,7 @@ RECIPES = [
 ]
 Q_VALUES = [8, 16, 32]
 
-# Mono-UP recipes — bold colour
+# Mono-UP recipes: bold colour
 MONO_UP_F7 = {"V20", "V2", "V8", "V6"}
 MONO_UP_BOTH = {"V20", "V2", "V8"}
 

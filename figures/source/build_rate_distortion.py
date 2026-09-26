@@ -82,7 +82,7 @@ def main() -> int:
     axes[0, 0].legend(loc="upper right", fontsize=8.5, frameon=False)
 
     fig.suptitle(
-        "F-11 distortion vs dictionary size K of θ — LDA vs NMF vs PCA per scene",
+        "F-11 distortion vs dictionary size K of θ, LDA vs NMF vs PCA per scene",
         fontsize=11, y=1.00,
     )
     fig.tight_layout()

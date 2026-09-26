@@ -2406,7 +2406,7 @@ L 655.347609 267.626778
 " clip-path="url(#p8db5f108e9)" style="fill: none; stroke: #98df8a; stroke-opacity: 0.95; stroke-width: 3.6; stroke-linecap: square"/>
    </g>
    <g id="text_26">
-    <!-- (a) Salinas-A K=6 — band-robust (SWIR paired ARI 0.766) -->
+    <!-- (a) Salinas-A K=6, band-robust (SWIR paired ARI 0.766) -->
     <g transform="translate(243.017836 43.68) scale(0.1 -0.1)">
      <defs>
       <path id="DejaVuSans-53" d="M 3425 4513 
@@ -3564,7 +3564,7 @@ L 655.347609 539.709273
 " clip-path="url(#pe5c8319511)" style="fill: none; stroke: #9467bd; stroke-opacity: 0.95; stroke-width: 3.6; stroke-linecap: square"/>
    </g>
    <g id="text_57">
-    <!-- (b) Kennedy Space Center K=12 — band-fragile (paired ARI ≈ 0.01 across all masks) -->
+    <!-- (b) Kennedy Space Center K=12, band-fragile (paired ARI ≈ 0.01 across all masks) -->
     <g transform="translate(175.180336 315.84) scale(0.1 -0.1)">
      <defs>
       <path id="DejaVuSans-43" d="M 4122 4306 
@@ -3935,7 +3935,7 @@ L 639.830898 382.382344
    </g>
   </g>
   <g id="text_70">
-   <!-- Topic spectra contrast — every φ_k overlaid; line width = topic prevalence; vertical lines = diagnostic absorption / reflectance features -->
+   <!-- Topic spectra contrast, every φ_k overlaid; line width = topic prevalence; vertical lines = diagnostic absorption / reflectance features -->
    <g transform="translate(7.2 15.178359) scale(0.105 -0.105)">
     <defs>
      <path id="DejaVuSans-54" d="M -19 4666 

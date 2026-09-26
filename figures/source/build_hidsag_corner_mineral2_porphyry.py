@@ -165,7 +165,7 @@ def build_one(subset: str, outname: str, title_suffix: str) -> None:
                bbox_to_anchor=(0.99, 0.99), ncol=1,
                fontsize=9, frameon=False)
     fig.suptitle(
-        f"{subset} corner plot — 5 most-discriminative assays vs "
+        f"{subset} corner plot, 5 most-discriminative assays vs "
         f"dominant topic (K={K}). {title_suffix}",
         fontsize=10.5, y=0.995,
     )

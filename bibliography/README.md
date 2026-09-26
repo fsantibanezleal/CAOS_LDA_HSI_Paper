@@ -1,4 +1,4 @@
-# Bibliography — verification protocol
+# Bibliography: verification protocol
 
 `refs.bib` is the single source of truth for citations across both
 manuscripts.

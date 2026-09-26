@@ -4174,7 +4174,7 @@ z
    </g>
   </g>
   <g id="text_48">
-   <!-- Per-topic class distribution — each row = one canonical topic, bar height = P(label | dominant topic); coloured with the canonical class palette -->
+   <!-- Per-topic class distribution, each row = one canonical topic, bar height = P(label | dominant topic); coloured with the canonical class palette -->
    <g transform="translate(90.031657 15.224297) scale(0.105 -0.105)">
     <defs>
      <path id="DejaVuSans-2014" d="M 313 1978 

@@ -1,4 +1,4 @@
-# Per-V K-policy — derivation and alternatives rejected
+# Per-V K-policy: derivation and alternatives rejected
 
 ## P1 policy
 
@@ -22,11 +22,11 @@ For each recipe we measured mean tokens per document on Indian Pines
 | V4  | 585 | 12 | ✓ |
 | V5  | 622 | 12 | ✓ |
 | V6  | 75  | 12 | borderline |
-| V7  | 6   | 12 | ❌ — only 6 tokens but K=12 → topics collapse |
-| V8  | 14  | 12 | ❌ — only 14 tokens / 12 endmembers |
-| V9  | 1   | 12 | ❌ catastrophic — 1 token, K=12 |
-| V10 | 3   | 12 | ❌ — only 3 tokens, K=12 |
-| V11 | 4   | 12 | ❌ — only 4 PQ codes, K=12 |
+| V7  | 6   | 12 | ❌, only 6 tokens but K=12 → topics collapse |
+| V8  | 14  | 12 | ❌, only 14 tokens / 12 endmembers |
+| V9  | 1   | 12 | ❌ catastrophic, 1 token, K=12 |
+| V10 | 3   | 12 | ❌, only 3 tokens, K=12 |
+| V11 | 4   | 12 | ❌, only 4 PQ codes, K=12 |
 | V12 | 200 | 12 | ✓ |
 
 LDA's posterior on a document with $L$ tokens and $K > L$ topics is
@@ -56,18 +56,18 @@ policy (avoiding spurious gain for V1 due to lower K).
 
 ## Alternatives rejected
 
-### Option A — keep $K = K_{\text{P1}}$ for all recipes
+### Option A: keep $K = K_{\text{P1}}$ for all recipes
 
 Rejected. Lets V1 win F-1 by construction because V7 / V9 / V10 / V11
 have collapsing topics. Not a fair comparison.
 
-### Option B — set $K$ per recipe + scene to maximise F-1 separately
+### Option B: set $K$ per recipe + scene to maximise F-1 separately
 
 Rejected. Optimising K per cell would let recipes overfit on the
 scene they're tested on, conflating recipe quality with K-selection
 quality. (The F-4 axis already measures K-sensitivity separately.)
 
-### Option C — use Hierarchical Dirichlet Process to infer $K$
+### Option C: use Hierarchical Dirichlet Process to infer $K$
 
 Deferred to a follow-up paper (issue
 [#621](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/621)).
@@ -75,7 +75,7 @@ HDP changes the model class, not just the K choice, so it belongs in
 the backbone-factorial study (issue
 [#617](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/617)).
 
-### Option D — fix $K = K_{\text{P1}}$ for V1..V6, V12 (dense); use document-aware K for V7..V11 (sparse)
+### Option D: fix $K = K_{\text{P1}}$ for V1..V6, V12 (dense); use document-aware K for V7..V11 (sparse)
 
 This is essentially what the V-sweep policy does. Adopted.
 
@@ -98,5 +98,5 @@ Option A, fixed K=4 across all) and observed:
 The K-policy table above is computed deterministically at
 `build_v_sweep_canonical_fit.topic_count_for(scene_id, mean_doc)`.
 For the factorial study (issue #617) each backbone (HDP / ProdLDA /
-ETM / LDVAE) needs its own K-policy because their priors differ —
+ETM / LDVAE) needs its own K-policy because their priors differ, 
 the V-sweep policy assumes online-VB LDA's Dirichlet prior.

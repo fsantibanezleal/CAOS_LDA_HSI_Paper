@@ -4436,7 +4436,7 @@ z
    </g>
   </g>
   <g id="text_102">
-   <!-- Per-topic profile cards — Salinas-A corrected, K = 6. Each panel: φ_k(λ) with top-5 word λ-marks (red dashed); title = dominant -->
+   <!-- Per-topic profile cards, Salinas-A corrected, K = 6. Each panel: φ_k(λ) with top-5 word λ-marks (red dashed); title = dominant -->
    <g transform="translate(22.20875 14.798437) scale(0.1 -0.1)">
     <defs>
      <path id="DejaVuSans-50" d="M 1259 4147 

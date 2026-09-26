@@ -1,4 +1,4 @@
-"""P5 contrast figure — F-15 LLM-judge alignment vs *nominal* vocabulary |V|.
+"""P5 contrast figure, F-15 LLM-judge alignment vs *nominal* vocabulary |V|.
 
 Companion to build_p5_dispersion_scatter.py. Same recipes, same F-15
 values, but the x-axis is the nominal vocabulary size |V| (log scale)

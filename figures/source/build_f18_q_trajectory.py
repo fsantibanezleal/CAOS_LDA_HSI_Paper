@@ -91,7 +91,7 @@ def main() -> int:
     ax_f7.legend(loc="lower right", fontsize=10, frameon=False)
 
     fig.suptitle(
-        "F-18 reliability vs F-7 informativeness — V8 is the only recipe high on both",
+        "F-18 reliability vs F-7 informativeness, V8 is the only recipe high on both",
         fontsize=13.5, fontweight="bold", y=1.0,
     )
     fig.text(

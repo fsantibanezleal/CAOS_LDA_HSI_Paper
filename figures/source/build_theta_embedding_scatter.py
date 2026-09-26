@@ -112,14 +112,14 @@ def main() -> int:
                          for item in label_meta}
 
         panel_topic(axes[0, col], emb, topic_colours)
-        axes[0, col].set_title(f"{scene_label} — coloured by topic "
+        axes[0, col].set_title(f"{scene_label}, coloured by topic "
                                f"(K={K})", fontsize=10)
         panel_label(axes[1, col], emb, label_colours)
         axes[1, col].set_title(
-            f"{scene_label} — coloured by label "
+            f"{scene_label}, coloured by label "
             f"(2σ ellipses)", fontsize=10)
     fig.suptitle(
-        "PCA-2D embedding of θ — top row: dominant topic; "
+        "PCA-2D embedding of θ, top row: dominant topic; "
         "bottom row: ground-truth label with 2σ Gaussian confidence "
         "ellipses",
         fontsize=11, y=0.995,

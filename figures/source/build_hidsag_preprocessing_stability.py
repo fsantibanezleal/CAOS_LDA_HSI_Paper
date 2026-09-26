@@ -94,7 +94,7 @@ def main() -> int:
         cbar.set_label("matched Jaccard@top-15", fontsize=9)
 
     fig.suptitle(
-        "F-9 cross-preprocessing stability on HIDSAG — "
+        "F-9 cross-preprocessing stability on HIDSAG, "
         "pairwise matched Jaccard@top-15 between LDA refits",
         fontsize=11, y=1.00,
     )

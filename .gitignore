@@ -1,4 +1,4 @@
-# LaTeX build artifacts (transient — re-creatable by latexmk)
+# LaTeX build artifacts (transient, re-creatable by latexmk)
 # Final PDFs in build/ are tracked (see explicit !**/build/*.pdf below).
 **/build/
 *.aux
@@ -74,7 +74,7 @@ journal_backbone_factorial/tex/*.pdf
 journal_interpretability/tex/*.pdf
 figures/source/__pycache__/
 
-# Python virtualenvs (any name, any depth) — never commit venvs
+# Python virtualenvs (any name, any depth): never commit venvs
 .venv/
 .venv*
 **/.venv*

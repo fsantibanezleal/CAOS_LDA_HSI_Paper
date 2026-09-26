@@ -1,6 +1,6 @@
 """Posterior predictive check for the F-1 hierarchical Bayesian model.
 
-Closes one item from issue #7 — Suppl G claims residuals on the F-1
+Closes one item from issue #7, Suppl G claims residuals on the F-1
 likelihood `y ~ N(method_effect + scene_effect, sigma^2)` are
 "not visibly non-Gaussian" without an actual PPC figure. This
 builder produces the missing figure.

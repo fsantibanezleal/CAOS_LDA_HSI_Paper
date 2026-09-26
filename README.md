@@ -1,23 +1,23 @@
-# CAOS_LDA_HSI — Paper Manuscripts
+# CAOS_LDA_HSI: Paper Manuscripts
 
 [![License](https://img.shields.io/github/license/fsantibanezleal/CAOS_LDA_HSI_Paper)](LICENSE)
 
-Manuscripts repository for the **CAOS_LDA_HSI** project — topic
+Manuscripts repository for the **CAOS_LDA_HSI** project, topic
 modelling on hyperspectral imagery, with strong emphasis on
 reproducibility and a multi-axis evaluation framework.
 
 Companion repositories:
 
-- [`CAOS_LDA_HSI`](https://github.com/fsantibanezleal/CAOS_LDA_HSI) —
+- [`CAOS_LDA_HSI`](https://github.com/fsantibanezleal/CAOS_LDA_HSI), 
   code, data pipeline, FastAPI backend and React frontend
   (web app at <https://lda-hsi.fasl-work.com>)
-- [`CAOS_LDA_HSI.wiki`](https://github.com/fsantibanezleal/CAOS_LDA_HSI/wiki) —
+- [`CAOS_LDA_HSI.wiki`](https://github.com/fsantibanezleal/CAOS_LDA_HSI/wiki), 
   technical documentation
 
 ## 📄 Compiled PDFs
 
 **All current manuscript PDFs in one place: [`pdfs/`](pdfs/).**
-That is the canonical link to share — not the repository root.
+That is the canonical link to share, not the repository root.
 
 ## Manuscripts
 
@@ -32,7 +32,7 @@ circulates as preprints.
 | 3 | Which Wordification Matters? A Nineteen-Recipe Sweep of the Interpretable-Topic-Model Framework on Hyperspectral Imagery | Journal article | [`journal_v_sweep/`](journal_v_sweep/) | [pdf](pdfs/journal-wordification-sweep.pdf) | [10.5281/zenodo.21504117](https://doi.org/10.5281/zenodo.21504117) |
 | 4 | Which Backbone Picks Which Wordification? A Factorial Study of Topic-Model Families on Hyperspectral Imagery | Journal article | [`journal_backbone_factorial/`](journal_backbone_factorial/) | [pdf](pdfs/journal-backbone-factorial.pdf) | [10.5281/zenodo.21504111](https://doi.org/10.5281/zenodo.21504111) |
 | 5 | Post-hoc Interpretability of LDA on Hyperspectral Imagery: SHAP Attributions, Counterfactual Topic Flips, and LLM-judge Alignment | Journal article | [`journal_interpretability/`](journal_interpretability/) | [pdf](pdfs/journal-interpretability.pdf) | [10.5281/zenodo.21504113](https://doi.org/10.5281/zenodo.21504113) |
-| — | Internal technical report (design space, K-policy, V-sweep results, reproducibility audit, paper portfolio, HIDSAG results) | Internal notes (Markdown) | [`internal_tech_report/`](internal_tech_report/) | — | — |
+| – | Internal technical report (design space, K-policy, V-sweep results, reproducibility audit, paper portfolio, HIDSAG results) | Internal notes (Markdown) | [`internal_tech_report/`](internal_tech_report/) | – | – |
 
 All five manuscripts are published as CC-BY-4.0 preprints on Zenodo. The DOIs
 above are the **concept DOIs** (each always resolves to the latest version:
@@ -41,9 +41,9 @@ text and figures are CC-BY-4.0; the companion code and derived artefacts remain 
 
 Each LaTeX manuscript ships in two formats:
 
-- **LaTeX source** (`<form>/tex/`) — primary, with IEEEtran class +
+- **LaTeX source** (`<form>/tex/`): primary, with IEEEtran class +
   validated bibliography
-- **Word** (`<form>/word/`) — Pandoc-converted from LaTeX
+- **Word** (`<form>/word/`): Pandoc-converted from LaTeX
 
 ## Repository layout
 
@@ -73,8 +73,8 @@ CAOS_LDA_HSI_Paper/
 
 ## Branch flow
 
-- `main` — release-ready manuscripts
-- `develop` — work in progress, integration before main
+- `main`: release-ready manuscripts
+- `develop`: work in progress, integration before main
 
 All other work happens on `task/<5-digit-id>/<descriptor>` branches
 PR'd to `develop`.

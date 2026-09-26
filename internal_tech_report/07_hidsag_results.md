@@ -1,7 +1,7 @@
-# 07 — HIDSAG cross-domain results (mineral region-document corpus)
+# 07: HIDSAG cross-domain results (mineral region-document corpus)
 
 Internal technical report section covering the wordification-recipe sweep
-on the HIDSAG mineral corpus — the cross-domain counterpart to the
+on the HIDSAG mineral corpus, the cross-domain counterpart to the
 labelled-scene V-sweep in `03_v_sweep_results.md`. Numbers are produced by
 `build_v_sweep_hidsag.py` / `build_v_sweep_hidsag_f7.py` (repo
 `CAOS_LDA_HSI`) into the derived JSON cells under
@@ -16,10 +16,10 @@ PORPHYRY. There is no per-document mineral class label, so the
 labelled-scene F-1/F-7 do not apply directly; instead we report:
 
 - **F-2 coherence** (`f2_c_v`, `f2_c_npmi`, `f2_u_mass`) on the top-10
-  words per topic — `build_v_sweep_hidsag.py` →
+  words per topic, `build_v_sweep_hidsag.py` →
   `data/derived/v_sweep/hidsag/topic_views/`.
-- **F-7 owner-NMI** — NMI of topic-argmax against the per-document
-  `sample_owner` id — `build_v_sweep_hidsag_f7.py` →
+- **F-7 owner-NMI**: NMI of topic-argmax against the per-document
+  `sample_owner` id, `build_v_sweep_hidsag_f7.py` →
   `data/derived/v_sweep/hidsag/f7_topic_to_owner/`.
 
 Each cell carries a `source_id` field equal to its subset code (e.g.
@@ -43,7 +43,7 @@ Not covered, with reasons:
 | V20 (MI-weighted, label-aware) | out of scope | requires a per-document mineral class label HIDSAG region documents do not carry (only a `sample_owner` provenance id) |
 
 V13/V14/V17/V18/V19 were added to the HIDSAG sweep under issue #765;
-prior to that the HIDSAG corpus covered only V1-V7, V10-V12 (10 recipes —
+prior to that the HIDSAG corpus covered only V1-V7, V10-V12 (10 recipes, 
 not "12", since V8/V9 are skipped).
 
 V13 (VQ-VAE codebook, M=4, K=32), V14 (CWT-Morlet, S=16 scales,
@@ -97,7 +97,7 @@ Mean owner-NMI per recipe (n=5 subsets each), highest first:
 Notes on the newly-ported recipes (#765): **V18 (graph-Laplacian) is the
 strongest of the five and the best recipe overall on MINERAL1**; V19
 (UMAP) is mid-pack; V17 (sparse coding) is near V7; V14 (CWT) and V13
-(VQ-VAE) sit at the bottom — V13's single dominant codebook column tends
+(VQ-VAE) sit at the bottom, V13's single dominant codebook column tends
 to collapse topics (mean owner-NMI ≈ 0.02), so it underperforms the
 hand-crafted quantisers on this corpus. All 25 new cells passed the
 finite-metric gate (finite c_v and finite owner-NMI), independently
@@ -107,10 +107,10 @@ cells).
 ## Cross-domain note vs the labelled scenes
 
 On the labelled HSI scenes (03), V8 (NFINDR endmember) is the
-cross-backbone leader and V20 (MI-weighted, label-aware) the LDA peak —
+cross-backbone leader and V20 (MI-weighted, label-aware) the LDA peak, 
 but neither is available here (V8 precompute-blocked, V20 needs a class
 label HIDSAG lacks). Among the recipes that DO transfer to the unlabelled
 mineral corpus, the manifold recipe **V18** and the soft-cluster recipe
-**V12** lead owner-recovery — a different winner profile from the
+**V12** lead owner-recovery, a different winner profile from the
 labelled-scene F-7, which is itself the cross-domain finding: recipe
 optimality is corpus-dependent, not universal.

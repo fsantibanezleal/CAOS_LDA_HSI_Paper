@@ -1,10 +1,10 @@
-# Deferred axes — F-13 through F-18 candidates
+# Deferred axes: F-13 through F-18 candidates
 
 Six F-axis extensions identified by the 2026-05-26 literature search
 that are not in the current F-1..F-12 framework. Each is independently
 publishable as a follow-up and tracked as its own GitHub issue.
 
-## F-13 — SHAP/LIME over wordified pixels
+## F-13: SHAP/LIME over wordified pixels
 
 **What**: pixel-level SHAP attributions of topic assignments. The
 features are recipe-specific tokens (V1: bands; V7: absorption
@@ -20,7 +20,7 @@ predict-proba wrapper.
 
 **Issue**: [#615](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/615).
 
-## F-14 — repetitiveness (**SHIPPED 2026-05-27 c366**)
+## F-14: repetitiveness (**SHIPPED 2026-05-27 c366**)
 
 **What**: mean off-diagonal jaccard of top-10 word sets across topics.
 Low = diverse topics; high = redundant topics (LDA's common failure
@@ -39,7 +39,7 @@ under `data/derived/v_sweep/f14_repetitiveness/`.
 
 **Issue**: [#616](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/616).
 
-## F-15 — topic-document alignment (LLM-judge)
+## F-15: topic-document alignment (LLM-judge)
 
 **What**: probability that an LLM, shown a document's top-3 tokens and
 the topic-word list, agrees the document belongs to that topic. Forces
@@ -54,7 +54,7 @@ identifiable.
 
 **Issue**: [#616](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/616).
 
-## F-16 — model-selection adequacy (HDP)
+## F-16: model-selection adequacy (HDP)
 
 **What**: drop fixed K; fit HDP per (V, scene); report inferred K vs.
 ground-truth class count. Low absolute error means the topic count
@@ -68,7 +68,7 @@ LDA; the per-V LDA refit-per-fold protocol may need adjustment.
 
 **Issue**: [#621](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/621).
 
-## F-17 — cross-scene transfer (**SHIPPED 2026-05-27 c366**)
+## F-17: cross-scene transfer (**SHIPPED 2026-05-27 c366**)
 
 **What**: fit phi on scene S1; transform pixels of scene S2; compute
 F-7 NMI on S2. Tests vocabulary reusability across scenes.
@@ -87,9 +87,9 @@ under `data/derived/v_sweep/f17_cross_scene/`.
 
 **Issue**: [#623](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/623).
 
-## F-18 — test-retest reliability beyond seed stability (**SHIPPED 2026-05-27 c366**)
+## F-18: test-retest reliability beyond seed stability (**SHIPPED 2026-05-27 c366**)
 
-**What**: Maier 2024 reliability protocol — top-N word indicator cosine
+**What**: Maier 2024 reliability protocol, top-N word indicator cosine
 similarity > 0.7 proportion across reseed runs. Augments F-3 (which
 uses ARI on argmax dominant topic).
 
@@ -99,7 +99,7 @@ Hungarian alignment across seed pairs. Output thresholds: 0.5, 0.7.
 Running in background as of 2026-05-27. Numbers will populate the
 per-V reliability column in P3 supplementary once complete.
 
-**Issue**: [#624](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/624) — implementation done; results pending.
+**Issue**: [#624](https://github.com/fsantibanezleal/CAOS_LDA_HSI/issues/624), implementation done; results pending.
 
 ## Cost / benefit
 
@@ -113,7 +113,7 @@ per-V reliability column in P3 supplementary once complete.
 | F-18 | low | low | medium (reviewer ask) |
 
 Recommended order:
-1. **F-13** (highest interpretability ROI) — earmark for P5.
+1. **F-13** (highest interpretability ROI): earmark for P5.
 2. **F-14 + F-18** (cheap; lump into P3's "extension" section).
 3. **F-17** (cheap; lump into P3).
 4. **F-15** (LLM cost; defer to P5).

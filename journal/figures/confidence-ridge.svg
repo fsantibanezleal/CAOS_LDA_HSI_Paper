@@ -15292,7 +15292,7 @@ z
    </g>
   </g>
   <g id="text_55">
-   <!-- Per-topic confidence ridge — KDE of $\max_k \theta_{d,k}$ over documents with dominant topic $k$; vertical dashed line = $1/K$ (uniform-θ baseline) -->
+   <!-- Per-topic confidence ridge, KDE of $\max_k \theta_{d,k}$ over documents with dominant topic $k$; vertical dashed line = $1/K$ (uniform-θ baseline) -->
    <g transform="translate(117.268894 15.285) scale(0.105 -0.105)">
     <defs>
      <path id="DejaVuSans-67" d="M 2906 1791 

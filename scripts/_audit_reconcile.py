@@ -1,7 +1,11 @@
 """Throwaway reconciler for the manifest vs filesystem audit (2026-05-24)."""
 import json, os, sys
 
-BASE = 'd:/_Repos/_Web_Projects/CAOS_LDA_HSI'
+# The companion repository, a sibling checkout by default; CAOS_LDA_HSI_ROOT overrides it.
+BASE = os.environ.get(
+    'CAOS_LDA_HSI_ROOT',
+    os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'CAOS_LDA_HSI')),
+)
 
 m = json.load(open(os.path.join(BASE, 'data/derived/manifests/index.json'), encoding='utf-8'))
 manifest_paths = set(a['path'] for a in m['artifacts'])

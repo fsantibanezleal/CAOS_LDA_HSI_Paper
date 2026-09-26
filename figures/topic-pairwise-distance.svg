@@ -8775,7 +8775,7 @@ z
    </g>
   </g>
   <g id="text_770">
-   <!-- Pairwise topic-spectrum cosine distance — high values = visually distinct basis spectra, low values = similar basis spectra -->
+   <!-- Pairwise topic-spectrum cosine distance, high values = visually distinct basis spectra, low values = similar basis spectra -->
    <g transform="translate(88.467656 15.178359) scale(0.105 -0.105)">
     <defs>
      <path id="DejaVuSans-72" d="M 2631 2963 
